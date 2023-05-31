@@ -1,0 +1,3 @@
+[submodule "Makeshift/vendor/spdlog"]
+	path = Makeshift/vendor/spdlog
+	url = https://github.com/gabime/spdlog
