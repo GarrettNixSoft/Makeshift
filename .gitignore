@@ -361,11 +361,14 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/bin-int/Debug-x64
+/bin
+/bin-int
 /Dependencies
 /Makeshift/Makeshift.vcxproj.filters
 /Makeshift/Makeshift.vcxproj
 /Sandbox/Sandbox.vcxproj.filters
 /Sandbox/Sandbox.vcxproj
 /Makeshift.sln
-/bin-int/Debug-windows-x86_64
+/Makeshift/vendor/Glad/bin-int/Debug-windows-x86_64/Glad
+/Makeshift/vendor/Glad/Glad.vcxproj.filters
+/Makeshift/vendor/Glad/Glad.vcxproj

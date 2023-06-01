@@ -31,6 +31,8 @@ namespace Makeshift {
     class MK_API Event {
         friend class EventDispatcher;
     public:
+        bool handled = false;
+
         virtual EventType getEventType() const = 0;
         virtual const char* getName() const = 0;
         virtual int getCategoryFlags() const = 0;
@@ -39,8 +41,6 @@ namespace Makeshift {
         inline bool isInCategory(EventCategory category) {
             return getCategoryFlags() & category;
         }
-    protected:
-        bool handled = false;
     };
 
     class EventDispatcher {

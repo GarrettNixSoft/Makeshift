@@ -1,7 +1,7 @@
 #include "mkpch.hpp"
 #include "Application.hpp"
 
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 namespace Makeshift {
 
@@ -16,12 +16,25 @@ namespace Makeshift {
 
 	}
 
+	void Application::pushLayer(Layer* layer) {
+		layerStack.pushLayer(layer);
+	}
+
+	void Application::pushOverlay(Layer* overlay) {
+		layerStack.pushOverlay(overlay);
+	}
+
 	void Application::onEvent(Event& e) {
 
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(onWindowClose));
 
-		MK_CORE_TRACE("{0}", e);
+		for (auto it = layerStack.end(); it != layerStack.begin(); ) {
+			(*--it)->onEvent(e);
+			if (e.handled) {
+				break;
+			}
+		}
 	}
 
 	void Application::run() {
@@ -29,6 +42,11 @@ namespace Makeshift {
 		while (running) {
 			glClearColor(1, 0, 1, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			for (Layer* layer : layerStack) {
+				layer->onUpdate();
+			}
+
 			window->onUpdate();
 		}
 

@@ -5,6 +5,9 @@
 #include "Makeshift/Events/MouseEvent.hpp"
 #include "Makeshift/Events/ApplicationEvent.hpp"
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 namespace Makeshift {
 
 	static bool GLFWinitialized = false;
@@ -45,6 +48,10 @@ namespace Makeshift {
 
 		window = glfwCreateWindow((int)properties.width, (int)properties.height, data.title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(window);
+
+		int status = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+		MK_CORE_ASSERT(status, "Failed to initialize Glad!");
+
 		glfwSetWindowUserPointer(window, &data);
 		setVsync(true);
 

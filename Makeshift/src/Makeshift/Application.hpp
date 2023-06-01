@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Core.hpp"
+
+#include "Window.hpp"
+#include "Makeshift/LayerStack.hpp"
 #include "Events/Event.hpp"
 #include "Makeshift/Events/ApplicationEvent.hpp"
 
-#include "Window.hpp"
 
 namespace Makeshift {
 
@@ -17,11 +19,16 @@ namespace Makeshift {
 		void run();
 
 		void onEvent(Event& e);
+
+		void pushLayer(Layer* layer);
+		void pushOverlay(Layer* overlay);
 	private:
 		bool onWindowClose(WindowCloseEvent& e);
 
 		std::unique_ptr<Window> window;
 		bool running = true;
+
+		LayerStack layerStack;
 
 	};
 

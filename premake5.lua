@@ -12,8 +12,10 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include directories relative to solution (root) dir
 IncludeDir = {}
 IncludeDir["GLFW"] = "Makeshift/vendor/GLFW/include"
+IncludeDir["Glad"] = "Makeshift/vendor/Glad/include"
 
 include "Makeshift/vendor/GLFW"
+include "Makeshift/vendor/Glad"
 
 project "Makeshift"
 	location "Makeshift"
@@ -34,11 +36,13 @@ project "Makeshift"
 	includedirs {
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Glad}"
 	}
 
 	links {
 		"GLFW",
+		"Glad",
 		"opengl32.lib"
 	}
 
@@ -50,7 +54,8 @@ project "Makeshift"
 
 		defines {
 			"MK_PLATFORM_WINDOWS",
-			"MK_BUILD_DLL"
+			"MK_BUILD_DLL",
+			"GLFW_INCLUDE_NONE"
 		}
 
 		postbuildcommands {
@@ -59,14 +64,17 @@ project "Makeshift"
 
 	filter "configurations:Debug"
 		defines "MK_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "MK_RELEASE"
+		buildoptions "/MD"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "MK_DIST"
+		buildoptions "/MD"
 		optimize "On"
 
 project "Sandbox"
@@ -102,12 +110,15 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "MK_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "MK_RELEASE"
+		buildoptions "/MD"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "MK_DIST"
+		buildoptions "/MD"
 		optimize "On"
