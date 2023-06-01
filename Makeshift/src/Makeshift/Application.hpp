@@ -2,6 +2,7 @@
 
 #include "Core.hpp"
 #include "Events/Event.hpp"
+#include "Window.hpp"
 
 namespace Makeshift {
 
@@ -12,6 +13,9 @@ namespace Makeshift {
 		virtual ~Application();
 
 		void run();
+	private:
+		std::unique_ptr<Window> window;
+		bool running = true;
 
 	};
 

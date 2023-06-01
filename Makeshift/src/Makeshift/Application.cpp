@@ -4,10 +4,12 @@
 #include "Makeshift/Events/ApplicationEvent.hpp"
 #include "Makeshift/Logger.hpp"
 
+#include <GLFW/glfw3.h>
+
 namespace Makeshift {
 
 	Application::Application() {
-
+		window = std::unique_ptr<Window>(Window::create());
 	}
 
 	Application::~Application() {
@@ -16,16 +18,11 @@ namespace Makeshift {
 
 	void Application::run() {
 
-		WindowResizeEvent e(1280, 720);
-		if (e.isInCategory(EventCategoryApplication)) {
-			MK_TRACE(e);
+		while (running) {
+			glClearColor(1, 0, 1, 1);
+			glClear(GL_COLOR_BUFFER_BIT);
+			window->onUpdate();
 		}
-
-		else if (e.isInCategory(EventCategoryInput)) {
-			MK_TRACE(e);
-		}
-
-		while (true);
 
 	}
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mkpch.hpp"
 #include "Makeshift/Core.hpp"
 
 namespace Makeshift {
