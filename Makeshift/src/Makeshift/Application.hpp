@@ -2,6 +2,8 @@
 
 #include "Core.hpp"
 #include "Events/Event.hpp"
+#include "Makeshift/Events/ApplicationEvent.hpp"
+
 #include "Window.hpp"
 
 namespace Makeshift {
@@ -13,7 +15,11 @@ namespace Makeshift {
 		virtual ~Application();
 
 		void run();
+
+		void onEvent(Event& e);
 	private:
+		bool onWindowClose(WindowCloseEvent& e);
+
 		std::unique_ptr<Window> window;
 		bool running = true;
 

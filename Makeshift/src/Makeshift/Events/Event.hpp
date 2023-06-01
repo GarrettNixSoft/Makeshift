@@ -51,7 +51,7 @@ namespace Makeshift {
 
         template<typename T>
         bool dispatch(EventFn<T> func) {
-            if (event.getEventType() == T::GetStaticType()) {
+            if (event.getEventType() == T::getStaticType()) {
                 event.handled = func(*(T*)&event);
                 return true;
             }
