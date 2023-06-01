@@ -1,3 +1,4 @@
+#include "mkpch.hpp"
 #include "Application.hpp"
 
 #include "Makeshift/Events/ApplicationEvent.hpp"

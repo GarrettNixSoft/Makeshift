@@ -1,3 +1,4 @@
+#include "mkpch.hpp"
 #include "Logger.hpp"
 #include "Core.hpp"
 

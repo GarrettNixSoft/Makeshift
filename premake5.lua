@@ -17,6 +17,9 @@ project "Makeshift"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
+	pchheader "mkpch.hpp"
+	pchsource "Makeshift/src/mkpch.cpp"
+
 	files {
 		"%{prj.name}/src/**.hpp",
 		"%{prj.name}/src/**.cpp"

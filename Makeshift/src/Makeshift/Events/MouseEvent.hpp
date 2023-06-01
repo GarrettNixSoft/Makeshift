@@ -5,7 +5,6 @@
 #include "Event.hpp"
 // -------- Library --------
 // -------- Standard --------
-#include <sstream>
 // ================ INCLUDES ================
 
 namespace Makeshift {

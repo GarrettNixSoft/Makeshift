@@ -2,9 +2,6 @@
 
 #include "Makeshift/Core.hpp"
 
-#include <string>
-#include <functional>
-
 namespace Makeshift {
 
 	enum class EventType {
