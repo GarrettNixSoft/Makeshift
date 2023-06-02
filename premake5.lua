@@ -1,6 +1,8 @@
 workspace "Makeshift"
 	architecture "x64"
 
+	startproject "Sandbox"
+
 	configurations {
 		"Debug",
 		"Release",
@@ -23,6 +25,7 @@ project "Makeshift"
 	location "Makeshift"
 	kind "SharedLib"
 	language "C++"
+	staticruntime "Off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -52,7 +55,6 @@ project "Makeshift"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "Off"
 		runtime "Debug"
 		systemversion "latest"
 
@@ -68,23 +70,24 @@ project "Makeshift"
 
 	filter "configurations:Debug"
 		defines "MK_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "MK_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "MK_DIST"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "Off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -105,7 +108,6 @@ project "Sandbox"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines {
@@ -114,15 +116,15 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "MK_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "MK_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "MK_DIST"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"

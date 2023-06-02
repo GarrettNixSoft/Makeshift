@@ -10,7 +10,11 @@
 	#error Makeshift currently only supports Windows!
 #endif
 
-#ifdef MK_ENALE_ASSERTS
+#ifdef MK_DEBUG
+	#define MK_ENABLE_ASSERTS
+#endif
+
+#ifdef MK_ENABLE_ASSERTS
 	#define MK_ASSERT(x, ...) { if (!(x)) { MK_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak(); } }
 	#define MK_CORE_ASSERT(x, ...) { if (!(x)) { MK_CORE_ERROR("Assertion failed: {0}"); __debugbreak(); } }
 #else
