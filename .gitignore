@@ -361,9 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/bin
-/bin-int
-/Dependencies
+/bin/
+/bin-int/
+/Dependencies/
 /Makeshift/Makeshift.vcxproj.filters
 /Makeshift/Makeshift.vcxproj
 /Sandbox/Sandbox.vcxproj.filters

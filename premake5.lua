@@ -17,9 +17,12 @@ IncludeDir["GLFW"] = "Makeshift/vendor/GLFW/include"
 IncludeDir["Glad"] = "Makeshift/vendor/Glad/include"
 IncludeDir["ImGui"] = "Makeshift/vendor/imgui"
 
-include "Makeshift/vendor/GLFW"
-include "Makeshift/vendor/Glad"
-include "Makeshift/vendor/imgui"
+group "Dependencies"
+	include "Makeshift/vendor/GLFW"
+	include "Makeshift/vendor/Glad"
+	include "Makeshift/vendor/imgui"
+
+group ""
 
 project "Makeshift"
 	location "Makeshift"
@@ -65,7 +68,7 @@ project "Makeshift"
 		}
 
 		postbuildcommands {
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
+			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
 		}
 
 	filter "configurations:Debug"

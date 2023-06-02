@@ -2,7 +2,7 @@
 #include "ImGuiLayer.hpp"
 
 #include "imgui.h"
-#include "Platform/OpenGL/ImGuiOpenGLRenderer.h"
+#include "Platform/OpenGL/ImGuiOpenGLRenderer.hpp"
 
 #include "Makeshift/Application.hpp"
 
