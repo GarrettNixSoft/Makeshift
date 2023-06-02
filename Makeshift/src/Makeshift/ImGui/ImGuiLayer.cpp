@@ -75,8 +75,63 @@ namespace Makeshift {
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
+
+#define BIND_EVENT_FN(x) std::bind(&ImGuiLayer::x, this, std::placeholders::_1)
+
 	void ImGuiLayer::onEvent(Event& event) {
 
+		EventDispatcher dispatcher(event);
+		dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(onKeyPressed));
+		dispatcher.dispatch<KeyReleasedEvent>(BIND_EVENT_FN(onKeyReleased));
+		dispatcher.dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(onMouseButtonPressed));
+		dispatcher.dispatch<MouseButtonReleasedEvent>(BIND_EVENT_FN(onMouseButtonReleased));
+		dispatcher.dispatch<MouseMovedEvent>(BIND_EVENT_FN(onMouseMoved));
+		dispatcher.dispatch<MouseScrolledEvent>(BIND_EVENT_FN(onMouseScrolled));
+
 	}
+
+	bool ImGuiLayer::onKeyPressed(KeyPressedEvent& event) {
+		ImGuiIO& io = ImGui::GetIO();
+		io.KeysDown[event.getKeyCode()] = true;
+
+		return true;
+	}
+
+	bool ImGuiLayer::onKeyReleased(KeyReleasedEvent& event) {
+		ImGuiIO& io = ImGui::GetIO();
+		io.KeysDown[event.getKeyCode()] = false;
+
+		return true;
+	}
+
+	bool ImGuiLayer::onMouseButtonPressed(MouseButtonPressedEvent& event) {
+		ImGuiIO& io = ImGui::GetIO();
+		io.MouseDown[event.getMouseButton()] = true;
+
+		return true;
+	}
+
+	bool ImGuiLayer::onMouseButtonReleased(MouseButtonReleasedEvent& event) {
+		ImGuiIO& io = ImGui::GetIO();
+		io.MouseDown[event.getMouseButton()] = false;
+
+		return true;
+	}
+
+	bool ImGuiLayer::onMouseMoved(MouseMovedEvent& event) {
+		ImGuiIO& io = ImGui::GetIO();
+		io.MousePos = ImVec2(event.getX(), event.getY());
+
+		return true;
+	}
+
+	bool ImGuiLayer::onMouseScrolled(MouseScrolledEvent& event) {
+		ImGuiIO& io = ImGui::GetIO();
+		io.MouseWheelH += event.getXOffset();
+		io.MouseWheel += event.getYOffset();
+
+		return true;
+	}
+
 
 }
