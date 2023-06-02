@@ -3,9 +3,12 @@
 
 #include "imgui.h"
 #include "Platform/OpenGL/ImGuiOpenGLRenderer.h"
-#include "GLFW/glfw3.h"
 
 #include "Makeshift/Application.hpp"
+
+// TEMPORARY
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 namespace Makeshift {
 
@@ -76,17 +79,17 @@ namespace Makeshift {
 	}
 
 
-#define BIND_EVENT_FN(x) std::bind(&ImGuiLayer::x, this, std::placeholders::_1)
-
 	void ImGuiLayer::onEvent(Event& event) {
 
 		EventDispatcher dispatcher(event);
-		dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(onKeyPressed));
-		dispatcher.dispatch<KeyReleasedEvent>(BIND_EVENT_FN(onKeyReleased));
-		dispatcher.dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(onMouseButtonPressed));
-		dispatcher.dispatch<MouseButtonReleasedEvent>(BIND_EVENT_FN(onMouseButtonReleased));
-		dispatcher.dispatch<MouseMovedEvent>(BIND_EVENT_FN(onMouseMoved));
-		dispatcher.dispatch<MouseScrolledEvent>(BIND_EVENT_FN(onMouseScrolled));
+		dispatcher.dispatch<KeyPressedEvent>(MK_BIND_EVENT_FN(ImGuiLayer::onKeyPressed));
+		dispatcher.dispatch<KeyReleasedEvent>(MK_BIND_EVENT_FN(ImGuiLayer::onKeyReleased));
+		dispatcher.dispatch<KeyTypedEvent>(MK_BIND_EVENT_FN(ImGuiLayer::onKeyTyped));
+		dispatcher.dispatch<MouseButtonPressedEvent>(MK_BIND_EVENT_FN(ImGuiLayer::onMouseButtonPressed));
+		dispatcher.dispatch<MouseButtonReleasedEvent>(MK_BIND_EVENT_FN(ImGuiLayer::onMouseButtonReleased));
+		dispatcher.dispatch<MouseMovedEvent>(MK_BIND_EVENT_FN(ImGuiLayer::onMouseMoved));
+		dispatcher.dispatch<MouseScrolledEvent>(MK_BIND_EVENT_FN(ImGuiLayer::onMouseScrolled));
+		dispatcher.dispatch<WindowResizeEvent>(MK_BIND_EVENT_FN(ImGuiLayer::onWindowResized));
 
 	}
 
@@ -94,35 +97,51 @@ namespace Makeshift {
 		ImGuiIO& io = ImGui::GetIO();
 		io.KeysDown[event.getKeyCode()] = true;
 
-		return true;
+		return false;
 	}
 
 	bool ImGuiLayer::onKeyReleased(KeyReleasedEvent& event) {
 		ImGuiIO& io = ImGui::GetIO();
 		io.KeysDown[event.getKeyCode()] = false;
 
-		return true;
+		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
+		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+
+		return false;
+	}
+
+	bool ImGuiLayer::onKeyTyped(KeyTypedEvent& event) {
+		ImGuiIO& io = ImGui::GetIO();
+		int keycode = event.getKeyCode();
+
+		if (keycode > 0 << keycode < 0x10000) {
+			io.AddInputCharacter((unsigned short)keycode);
+		}
+
+		return false;
 	}
 
 	bool ImGuiLayer::onMouseButtonPressed(MouseButtonPressedEvent& event) {
 		ImGuiIO& io = ImGui::GetIO();
 		io.MouseDown[event.getMouseButton()] = true;
 
-		return true;
+		return false;
 	}
 
 	bool ImGuiLayer::onMouseButtonReleased(MouseButtonReleasedEvent& event) {
 		ImGuiIO& io = ImGui::GetIO();
 		io.MouseDown[event.getMouseButton()] = false;
 
-		return true;
+		return false;
 	}
 
 	bool ImGuiLayer::onMouseMoved(MouseMovedEvent& event) {
 		ImGuiIO& io = ImGui::GetIO();
 		io.MousePos = ImVec2(event.getX(), event.getY());
 
-		return true;
+		return false;
 	}
 
 	bool ImGuiLayer::onMouseScrolled(MouseScrolledEvent& event) {
@@ -130,7 +149,16 @@ namespace Makeshift {
 		io.MouseWheelH += event.getXOffset();
 		io.MouseWheel += event.getYOffset();
 
-		return true;
+		return false;
+	}
+
+	bool ImGuiLayer::onWindowResized(WindowResizeEvent& event) {
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2(event.getWidth(), event.getHeight());
+		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+		glViewport(0, 0, event.getWidth(), event.getHeight());
+
+		return false;
 	}
 
 

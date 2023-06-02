@@ -3,6 +3,7 @@
 #include "Makeshift/Layer.hpp"
 #include "Makeshift/Events/KeyEvent.hpp"
 #include "Makeshift/Events/MouseEvent.hpp"
+#include "Makeshift/Events/ApplicationEvent.hpp"
 
 namespace Makeshift {
 
@@ -16,12 +17,15 @@ namespace Makeshift {
 		void onUpdate();
 		void onEvent(Event& event);
 
+	private:
 		bool onKeyPressed(KeyPressedEvent& event);
 		bool onKeyReleased(KeyReleasedEvent& event);
+		bool onKeyTyped(KeyTypedEvent& event);
 		bool onMouseButtonPressed(MouseButtonPressedEvent& event);
 		bool onMouseButtonReleased(MouseButtonReleasedEvent& event);
 		bool onMouseMoved(MouseMovedEvent& event);
 		bool onMouseScrolled(MouseScrolledEvent& event);
+		bool onWindowResized(WindowResizeEvent& event);
 	private:
 		float lastTime = 0.0f;
 	};

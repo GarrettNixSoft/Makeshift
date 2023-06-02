@@ -49,4 +49,17 @@ namespace Makeshift {
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
 
+	class MK_API KeyTypedEvent : public KeyEvent {
+	public:
+		KeyTypedEvent(int keycode) : KeyEvent(keycode) {}
+
+		std::string toString() const override {
+			std::stringstream ss;
+			ss << "KeyTypedEvent: " << keyCode;
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(KeyTyped)
+	};
+
 }
