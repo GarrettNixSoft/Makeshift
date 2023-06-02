@@ -18,6 +18,7 @@ class Sandbox : public Makeshift::Application {
 public:
 	Sandbox() {
 		pushLayer(new ExampleLayer());
+		pushOverlay(new Makeshift::ImGuiLayer());
 	}
 
 	~Sandbox() {

@@ -22,6 +22,9 @@ namespace Makeshift {
 
 		void pushLayer(Layer* layer);
 		void pushOverlay(Layer* overlay);
+
+		inline Window& getWindow() { return *window; }
+		inline static Application& get() { return *instance; }
 	private:
 		bool onWindowClose(WindowCloseEvent& e);
 
@@ -29,6 +32,8 @@ namespace Makeshift {
 		bool running = true;
 
 		LayerStack layerStack;
+	private:
+		static Application* instance;
 
 	};
 
