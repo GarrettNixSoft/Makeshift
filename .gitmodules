@@ -7,3 +7,6 @@
 [submodule "Makeshift/vendor/imgui"]
 	path = Makeshift/vendor/imgui
 	url = https://github.com/GarrettNixSoft/imgui
+[submodule "Makeshift/vendor/glm"]
+	path = Makeshift/vendor/glm
+	url = https://github.com/g-truc/glm

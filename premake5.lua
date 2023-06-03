@@ -16,6 +16,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Makeshift/vendor/GLFW/include"
 IncludeDir["Glad"] = "Makeshift/vendor/Glad/include"
 IncludeDir["ImGui"] = "Makeshift/vendor/imgui"
+IncludeDir["glm"] = "Makeshift/vendor/glm"
 
 group "Dependencies"
 	include "Makeshift/vendor/GLFW"
@@ -46,7 +47,8 @@ project "Makeshift"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}"
 	}
 
 	links {
@@ -102,7 +104,8 @@ project "Sandbox"
 
 	includedirs {
 		"Makeshift/vendor/spdlog/include",
-		"Makeshift/src"
+		"Makeshift/src",
+		"%{IncludeDir.glm}"
 	}
 
 	links {
