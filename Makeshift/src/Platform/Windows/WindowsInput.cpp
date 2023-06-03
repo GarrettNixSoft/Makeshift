@@ -10,20 +10,20 @@ namespace Makeshift {
 	Input* Input::instance = new WindowsInput();
 
 	bool WindowsInput::isKeyPressedImpl(int keycode) {
-		auto window = static_cast<GLFWwindow*>(Application::get().getWindow().getNativeWindow());
+		auto window = static_cast<GLFWwindow*>(Application::Get().getWindow().getNativeWindow());
 		auto state = glfwGetKey(window, keycode);
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
 	bool WindowsInput::isMouseButtonPressedImpl(int button) {
-		auto window = static_cast<GLFWwindow*>(Application::get().getWindow().getNativeWindow());
+		auto window = static_cast<GLFWwindow*>(Application::Get().getWindow().getNativeWindow());
 		auto state = glfwGetMouseButton(window, button);
 		return state == GLFW_PRESS;
 	}
 
 
 	std::pair<float, float> WindowsInput::getMousePositionImpl() {
-		auto window = static_cast<GLFWwindow*>(Application::get().getWindow().getNativeWindow());
+		auto window = static_cast<GLFWwindow*>(Application::Get().getWindow().getNativeWindow());
 		double x, y;
 		glfwGetCursorPos(window, &x, &y);
 		return { (float)x, (float)y };
@@ -40,13 +40,13 @@ namespace Makeshift {
 	}
 
 	float WindowsInput::getMouseScrollXImpl() {
-		auto window = static_cast<GLFWwindow*>(Application::get().getWindow().getNativeWindow());
+		auto window = static_cast<GLFWwindow*>(Application::Get().getWindow().getNativeWindow());
 		// TODO
 		return 0;
 	}
 
 	float WindowsInput::getMouseScrollYImpl() {
-		auto window = static_cast<GLFWwindow*>(Application::get().getWindow().getNativeWindow());
+		auto window = static_cast<GLFWwindow*>(Application::Get().getWindow().getNativeWindow());
 		// TODO
 		return 0;
 	}

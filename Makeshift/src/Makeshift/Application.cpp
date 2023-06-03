@@ -15,6 +15,9 @@ namespace Makeshift {
 
 		window = std::unique_ptr<Window>(Window::create());
 		window->setEventCallback(MK_BIND_EVENT_FN(Application::onEvent));
+
+		imGuiLayer = new ImGuiLayer();
+		pushOverlay(imGuiLayer);
 	}
 
 	Application::~Application() {
@@ -54,8 +57,11 @@ namespace Makeshift {
 				layer->onUpdate();
 			}
 
-			//auto [x, y] = Input::getMousePosition();
-			//MK_CORE_TRACE("{0}, {1}", x, y);
+			imGuiLayer->begin();
+			for (Layer* layer : layerStack) {
+				layer->onImGuiRender();
+			}
+			imGuiLayer->end();
 
 			window->onUpdate();
 		}

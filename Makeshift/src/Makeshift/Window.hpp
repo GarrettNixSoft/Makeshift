@@ -12,7 +12,7 @@ namespace Makeshift {
 		unsigned int width;
 		unsigned int height;
 
-		WindowProperties(const std::string& title = "Makeshift Enfine", unsigned int width = 1920, unsigned int height = 1080)
+		WindowProperties(const std::string& title = "Makeshift Engine", unsigned int width = 1920, unsigned int height = 1080)
 			: title(title), width(width), height(height) {}
 	};
 

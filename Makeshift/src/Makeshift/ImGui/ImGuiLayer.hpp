@@ -12,20 +12,12 @@ namespace Makeshift {
 		ImGuiLayer();
 		~ImGuiLayer();
 
-		void onAttach();
-		void onDetach();
-		void onUpdate();
-		void onEvent(Event& event);
+		virtual void onAttach() override;
+		virtual void onDetach() override;
+		virtual void onImGuiRender() override;
 
-	private:
-		bool onKeyPressed(KeyPressedEvent& event);
-		bool onKeyReleased(KeyReleasedEvent& event);
-		bool onKeyTyped(KeyTypedEvent& event);
-		bool onMouseButtonPressed(MouseButtonPressedEvent& event);
-		bool onMouseButtonReleased(MouseButtonReleasedEvent& event);
-		bool onMouseMoved(MouseMovedEvent& event);
-		bool onMouseScrolled(MouseScrolledEvent& event);
-		bool onWindowResized(WindowResizeEvent& event);
+		void begin();
+		void end();
 	private:
 		float lastTime = 0.0f;
 	};

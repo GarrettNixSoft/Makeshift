@@ -105,6 +105,7 @@ project "Sandbox"
 	includedirs {
 		"Makeshift/vendor/spdlog/include",
 		"Makeshift/src",
+		"Makeshift/vendor",
 		"%{IncludeDir.glm}"
 	}
 

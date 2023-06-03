@@ -7,6 +7,7 @@
 #include "Events/Event.hpp"
 #include "Makeshift/Events/ApplicationEvent.hpp"
 
+#include "Makeshift/ImGui/ImGuiLayer.hpp"
 
 namespace Makeshift {
 
@@ -24,11 +25,12 @@ namespace Makeshift {
 		void pushOverlay(Layer* overlay);
 
 		inline Window& getWindow() { return *window; }
-		inline static Application& get() { return *instance; }
+		inline static Application& Get() { return *instance; }
 	private:
 		bool onWindowClose(WindowCloseEvent& e);
 
 		std::unique_ptr<Window> window;
+		ImGuiLayer* imGuiLayer;
 		bool running = true;
 
 		LayerStack layerStack;

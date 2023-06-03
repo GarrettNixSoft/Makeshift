@@ -1,5 +1,7 @@
 #include <Makeshift.hpp>
 
+#include "imgui/imgui.h"
+
 class ExampleLayer : public Makeshift::Layer {
 public:
 	ExampleLayer() : Layer("Example") {}
@@ -16,6 +18,12 @@ public:
 			MK_TRACE("{0}", (char) e.getKeyCode());
 		}
 	}
+
+	void onImGuiRender() override {
+		ImGui::Begin("Test");
+		ImGui::Text("Hello World");
+		ImGui::End();
+	}
 };
 
 class Sandbox : public Makeshift::Application {
@@ -23,7 +31,6 @@ class Sandbox : public Makeshift::Application {
 public:
 	Sandbox() {
 		pushLayer(new ExampleLayer());
-		pushOverlay(new Makeshift::ImGuiLayer());
 	}
 
 	~Sandbox() {

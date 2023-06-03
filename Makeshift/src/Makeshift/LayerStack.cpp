@@ -4,7 +4,7 @@
 namespace Makeshift {
 
 	LayerStack::LayerStack() {
-		layerInsert = layers.begin();
+		
 	}
 
 	LayerStack::~LayerStack() {
@@ -14,7 +14,8 @@ namespace Makeshift {
 	}
 
 	void LayerStack::pushLayer(Layer* layer) {
-		layerInsert = layers.emplace(layerInsert, layer);
+		layers.emplace(layers.begin() + layerInsertIndex, layer);
+		layerInsertIndex++;
 	}
 
 	void LayerStack::pushOverlay(Layer* overlay) {
@@ -26,7 +27,7 @@ namespace Makeshift {
 		auto it = std::find(layers.begin(), layers.end(), layer);
 		if (it != layers.end()) {
 			layers.erase(it);
-			layerInsert--;
+			layerInsertIndex--;
 		}
 
 	}

@@ -24,7 +24,7 @@ namespace Makeshift {
 		std::vector<Layer*>::iterator end() { return layers.end(); }
 	private:
 		std::vector<Layer*> layers;
-		std::vector<Layer*>::iterator layerInsert;
+		unsigned int layerInsertIndex = 0;
 	};
 
 }
