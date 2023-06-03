@@ -20,6 +20,8 @@ namespace Makeshift {
 		inline void setEventCallback(const EventCallbackFn& callback) override { data.eventCallback = callback; }
 		void setVsync(bool enabled) override;
 		bool isVsync() const override;
+
+		inline virtual void* getNativeWindow() const { return window; }
 	private:
 		virtual void init(const WindowProperties& properties);
 		virtual void shutdown();

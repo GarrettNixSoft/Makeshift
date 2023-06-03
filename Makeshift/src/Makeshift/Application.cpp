@@ -3,6 +3,8 @@
 
 #include <glad/glad.h>
 
+#include "Input.hpp"
+
 namespace Makeshift {
 
 	Application* Application::instance = nullptr;
@@ -51,6 +53,9 @@ namespace Makeshift {
 			for (Layer* layer : layerStack) {
 				layer->onUpdate();
 			}
+
+			auto [x, y] = Input::getMousePosition();
+			MK_CORE_TRACE("{0}, {1}", x, y);
 
 			window->onUpdate();
 		}
