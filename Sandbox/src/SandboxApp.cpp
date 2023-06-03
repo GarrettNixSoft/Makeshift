@@ -5,11 +5,16 @@ public:
 	ExampleLayer() : Layer("Example") {}
 
 	void onUpdate() override {
-		MK_INFO("ExampleLayer::update");
+		if (Makeshift::Input::isKeyPressed(MK_KEY_TAB)) {
+			MK_TRACE("Tab key pressed");
+		}
 	}
 
 	void onEvent(Makeshift::Event& event) override {
-		MK_TRACE("{0}", event);
+		if (event.getEventType() == Makeshift::EventType::KeyPressed) {
+			Makeshift::KeyPressedEvent& e = (Makeshift::KeyPressedEvent&)event;
+			MK_TRACE("{0}", (char) e.getKeyCode());
+		}
 	}
 };
 

@@ -54,8 +54,8 @@ namespace Makeshift {
 				layer->onUpdate();
 			}
 
-			auto [x, y] = Input::getMousePosition();
-			MK_CORE_TRACE("{0}, {1}", x, y);
+			//auto [x, y] = Input::getMousePosition();
+			//MK_CORE_TRACE("{0}, {1}", x, y);
 
 			window->onUpdate();
 		}
