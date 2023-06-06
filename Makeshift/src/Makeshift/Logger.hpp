@@ -41,5 +41,5 @@ namespace Makeshift {
 #define MK_ERROR(...) ::Makeshift::Logger::getClientLogger()->error(__VA_ARGS__)
 #define MK_WARN(...)  ::Makeshift::Logger::getClientLogger()->warn(__VA_ARGS__)
 #define MK_INFO(...)  ::Makeshift::Logger::getClientLogger()->info(__VA_ARGS__)
-#define MK_DEBUG(...) ::Makeshift::Logger::getClientLogger()->debug(__VA_ARGS__)
+#define MK_DEBUGL(...) ::Makeshift::Logger::getClientLogger()->debug(__VA_ARGS__)
 #define MK_TRACE(...) ::Makeshift::Logger::getClientLogger()->trace(__VA_ARGS__)

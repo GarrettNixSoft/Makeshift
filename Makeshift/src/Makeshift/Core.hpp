@@ -1,11 +1,15 @@
 #pragma once
 
 #ifdef MK_PLATFORM_WINDOWS
+#if MK_DYNAMIC_LINK
 	#ifdef MK_BUILD_DLL
 		#define MK_API __declspec(dllexport)
 	#else
 		#define MK_API __declspec(dllimport)
 	#endif
+#else
+	#define MK_API
+#endif
 #else
 	#error Makeshift currently only supports Windows!
 #endif
