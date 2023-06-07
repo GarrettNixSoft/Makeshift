@@ -9,6 +9,8 @@
 
 #include "Makeshift/ImGui/ImGuiLayer.hpp"
 
+#include "Makeshift/Renderer/Shader.hpp"
+
 namespace Makeshift {
 
 	class MK_API Application {
@@ -36,6 +38,7 @@ namespace Makeshift {
 		LayerStack layerStack;
 
 		unsigned int vertexArray, vertexBuffer, indexBuffer;
+		std::unique_ptr<Shader> shader;
 	private:
 		static Application* instance;
 
