@@ -50,7 +50,10 @@ namespace Makeshift {
 			
 			layout(location = 0) in vec3 position;
 
+			out vec3 fragPos;
+
 			void main(void) {
+				fragPos = position;
 				gl_Position = vec4(position, 1.0);
 			}
 		)";
@@ -58,10 +61,12 @@ namespace Makeshift {
 		std::string fragmentSrc = R"(
 			#version 330 core
 
+			in vec3 fragPos;
+
 			layout(location = 0) out vec4 outColor;
 
 			void main(void) {
-				outColor = vec4(1.0, 0.0, 0.0, 1.0);
+				outColor = vec4(fragPos * 0.5 + 0.5, 1.0);
 			}
 		)";
 
