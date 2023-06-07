@@ -34,6 +34,8 @@ namespace Makeshift {
 		bool running = true;
 
 		LayerStack layerStack;
+
+		unsigned int vertexArray, vertexBuffer, indexBuffer;
 	private:
 		static Application* instance;
 

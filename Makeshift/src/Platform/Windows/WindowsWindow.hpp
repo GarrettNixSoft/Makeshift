@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Makeshift/Window.hpp"
+#include "Makeshift/Renderer/GraphicsContext.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -27,6 +28,7 @@ namespace Makeshift {
 		virtual void shutdown();
 	private:
 		GLFWwindow* window;
+		GraphicsContext* context;
 
 		struct WindowData {
 			std::string title;
