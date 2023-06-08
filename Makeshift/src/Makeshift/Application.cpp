@@ -65,7 +65,7 @@ namespace Makeshift {
 			}
 		)";
 
-		shader.reset(new Shader(vertexSrc, fragmentSrc));
+		shader.reset(Shader::Create(vertexSrc, fragmentSrc));
 
 	}
 
