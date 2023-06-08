@@ -10,6 +10,7 @@
 #include "Makeshift/ImGui/ImGuiLayer.hpp"
 
 #include "Makeshift/Renderer/Shader.hpp"
+#include "Makeshift/Renderer/Buffer.hpp"
 
 namespace Makeshift {
 
@@ -37,8 +38,10 @@ namespace Makeshift {
 
 		LayerStack layerStack;
 
-		unsigned int vertexArray, vertexBuffer, indexBuffer;
+		unsigned int vertexArray;
 		std::unique_ptr<Shader> shader;
+		std::unique_ptr<VertexBuffer> vertexBuffer;
+		std::unique_ptr<IndexBuffer> indexBuffer;
 	private:
 		static Application* instance;
 
