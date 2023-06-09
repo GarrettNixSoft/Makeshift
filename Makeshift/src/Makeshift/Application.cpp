@@ -7,6 +7,26 @@
 
 namespace Makeshift {
 
+	static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type) {
+
+		switch (type) {
+			case ShaderDataType::Float:	return GL_FLOAT;
+			case ShaderDataType::Int:	return GL_INT;
+			case ShaderDataType::Bool:	return GL_BOOL;
+			case ShaderDataType::Vec2:	return GL_FLOAT;
+			case ShaderDataType::Vec3:	return GL_FLOAT;
+			case ShaderDataType::Vec4:	return GL_FLOAT;
+			case ShaderDataType::Mat3:	return GL_FLOAT;
+			case ShaderDataType::Mat4:	return GL_FLOAT;
+			case ShaderDataType::Vec2i:	return GL_INT;
+			case ShaderDataType::Vec3i:	return GL_INT;
+			case ShaderDataType::Vec4i:	return GL_INT;
+		}
+
+		MK_CORE_ASSERT(false, "Unknown ShaderDataType");
+		return 0;
+	}
+
 	Application* Application::instance = nullptr;
 
 	Application::Application() {
@@ -22,17 +42,38 @@ namespace Makeshift {
 		glGenVertexArrays(1, &vertexArray);
 		glBindVertexArray(vertexArray);
 
-		float vertices[3 * 3] = {
-			-0.5f, -0.5f, 0.0f,
-			0.5f, -0.5f, 0.0f,
-			0.0f, 0.5f, 0.0f
+		float vertices[3 * 3 + 3 * 4] = {
+			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+			0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+			0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
 		};
 
 		vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-		vertexBuffer->bind();
+		
+		{
+			BufferLayout layout = {
+				{ ShaderDataType::Vec3, "position" },
+				{ ShaderDataType::Vec4, "color" }
+			};
 
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+			vertexBuffer->setLayout(layout);
+		}
+
+		uint32_t index = 0;
+		const auto& layout = vertexBuffer->getLayout();
+		for (const auto& element : layout) {
+
+			glEnableVertexAttribArray(index);
+			glVertexAttribPointer(
+				index,
+				element.getComponentCount(),
+				ShaderDataTypeToOpenGLBaseType(element.type),
+				element.normalized ? GL_TRUE : GL_FALSE,
+				layout.getStride(),
+				(const void*)element.offset);
+			index++;
+
+		}
 
 		unsigned int indices[3] = {
 			0, 1, 2
@@ -44,12 +85,15 @@ namespace Makeshift {
 			#version 330 core
 			
 			layout(location = 0) in vec3 position;
+			layout(location = 1) in vec4 color;
 
 			out vec3 fragPos;
+			out vec4 vertColor;
 
 			void main(void) {
 				fragPos = position;
 				gl_Position = vec4(position, 1.0);
+				vertColor = color;
 			}
 		)";
 
@@ -57,11 +101,13 @@ namespace Makeshift {
 			#version 330 core
 
 			in vec3 fragPos;
+			in vec4 vertColor;
 
 			layout(location = 0) out vec4 outColor;
 
 			void main(void) {
 				outColor = vec4(fragPos * 0.5 + 0.5, 1.0);
+				outColor = vertColor;
 			}
 		)";
 

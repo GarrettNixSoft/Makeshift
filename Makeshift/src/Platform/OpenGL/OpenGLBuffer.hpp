@@ -11,8 +11,12 @@ namespace Makeshift {
 
 		virtual void bind() const override;
 		virtual void unbind() const override;
+
+		virtual const BufferLayout& getLayout() const { return layout; };
+		virtual void setLayout(const BufferLayout& newLayout) { layout = newLayout; };
 	private:
 		uint32_t rendererId;
+		BufferLayout layout;
 	};
 
 	class OpenGLIndexBuffer : public IndexBuffer {
@@ -20,7 +24,7 @@ namespace Makeshift {
 		OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
 		virtual ~OpenGLIndexBuffer();
 
-		virtual uint32_t getCount() const { return count; }
+		virtual uint32_t getCount() const override { return count; }
 
 		virtual void bind() const override;
 		virtual void unbind() const override;
