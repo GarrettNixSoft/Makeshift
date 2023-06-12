@@ -11,6 +11,7 @@
 
 #include "Makeshift/Renderer/Shader.hpp"
 #include "Makeshift/Renderer/Buffer.hpp"
+#include "Makeshift/Renderer/VertexArray.hpp"
 
 namespace Makeshift {
 
@@ -38,10 +39,12 @@ namespace Makeshift {
 
 		LayerStack layerStack;
 
-		unsigned int vertexArray;
-		std::unique_ptr<Shader> shader;
-		std::unique_ptr<VertexBuffer> vertexBuffer;
-		std::unique_ptr<IndexBuffer> indexBuffer;
+		std::shared_ptr<Shader> shader;
+		std::shared_ptr<VertexArray> vertexArray;
+
+		std::shared_ptr<Shader> squareShader;
+		std::shared_ptr<VertexArray> squareVA;
+
 	private:
 		static Application* instance;
 

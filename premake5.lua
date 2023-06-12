@@ -17,11 +17,14 @@ IncludeDir["GLFW"] = "Makeshift/vendor/GLFW/include"
 IncludeDir["Glad"] = "Makeshift/vendor/Glad/include"
 IncludeDir["ImGui"] = "Makeshift/vendor/imgui"
 IncludeDir["glm"] = "Makeshift/vendor/glm"
+IncludeDir["Vulkan"] = "C:/VulkanSDK/1.3.246.1/Include"
+IncludeDir["vma"] = "Makeshift/vendor/vma/include"
 
 group "Dependencies"
 	include "Makeshift/vendor/GLFW"
 	include "Makeshift/vendor/Glad"
 	include "Makeshift/vendor/imgui"
+	include "Makeshift/vendor/vma"
 
 group ""
 
@@ -55,14 +58,17 @@ project "Makeshift"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.Vulkan}",
+		"%{IncludeDir.vma}"
 	}
 
 	links {
 		"GLFW",
 		"Glad",
 		"ImGui",
-		"opengl32.lib"
+		"opengl32.lib",
+		"C:/VulkanSDK/1.3.246.1/Lib/vulkan-1.lib"
 	}
 
 	filter "system:windows"

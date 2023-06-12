@@ -373,3 +373,5 @@ FodyWeavers.xsd
 /Makeshift/vendor/Glad/Glad.vcxproj.filters
 /Makeshift/vendor/Glad/Glad.vcxproj
 /Sandbox/imgui.ini
+/Makeshift/vendor/vma/bin/
+/Makeshift/vendor/vma/bin-int/

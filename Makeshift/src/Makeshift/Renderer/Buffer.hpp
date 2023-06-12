@@ -71,7 +71,7 @@ namespace Makeshift {
 		}
 
 		inline uint32_t getStride() const { return stride; }
-		inline const std::vector<BufferElement>& bufferElements() const { return elements; };
+		inline const std::vector<BufferElement>& getElements() const { return elements; };
 
 		std::vector<BufferElement>::iterator begin() { return elements.begin(); }
 		std::vector<BufferElement>::iterator end() { return elements.end(); }

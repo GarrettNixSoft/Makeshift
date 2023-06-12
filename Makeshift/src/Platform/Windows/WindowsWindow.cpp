@@ -5,7 +5,10 @@
 #include "Makeshift/Events/MouseEvent.hpp"
 #include "Makeshift/Events/ApplicationEvent.hpp"
 
+#include "Makeshift/Renderer/Renderer.hpp"
+
 #include "Platform/OpenGL/OpenGLContext.hpp"
+#include "Platform/Vulkan/VulkanContext.hpp"
 
 namespace Makeshift {
 
@@ -45,11 +48,29 @@ namespace Makeshift {
 
 		}
 
-		window = glfwCreateWindow((int)properties.width, (int)properties.height, data.title.c_str(), nullptr, nullptr);
-		context = new OpenGLContext(window);
-		context->init();
+		switch (Renderer::GetAPI()) {
+			case RendererAPI::None:		MK_CORE_ASSERT(false, "RendererAPI None is currently not supported"); return;
+			case RendererAPI::OpenGL:
+				MK_CORE_INFO("Using OpenGL!");
+				break;
+			case RendererAPI::Vulkan:
+				glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+				MK_CORE_INFO("Using Vulkan!");
+		}
 
+		window = glfwCreateWindow((int)properties.width, (int)properties.height, data.title.c_str(), nullptr, nullptr);
 		glfwSetWindowUserPointer(window, &data);
+
+		switch (Renderer::GetAPI()) {
+			case RendererAPI::None:		MK_CORE_ASSERT(false, "RendererAPI None is currently not supported"); return;
+			case RendererAPI::OpenGL:
+				context = new OpenGLContext(window);
+				break;
+			case RendererAPI::Vulkan:
+				context = new VulkanContext(window);
+		}
+
+		context->init();
 		setVsync(true);
 
 		// Set GLFW callbacks for events

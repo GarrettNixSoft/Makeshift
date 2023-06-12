@@ -7,26 +7,6 @@
 
 namespace Makeshift {
 
-	static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type) {
-
-		switch (type) {
-			case ShaderDataType::Float:	return GL_FLOAT;
-			case ShaderDataType::Int:	return GL_INT;
-			case ShaderDataType::Bool:	return GL_BOOL;
-			case ShaderDataType::Vec2:	return GL_FLOAT;
-			case ShaderDataType::Vec3:	return GL_FLOAT;
-			case ShaderDataType::Vec4:	return GL_FLOAT;
-			case ShaderDataType::Mat3:	return GL_FLOAT;
-			case ShaderDataType::Mat4:	return GL_FLOAT;
-			case ShaderDataType::Vec2i:	return GL_INT;
-			case ShaderDataType::Vec3i:	return GL_INT;
-			case ShaderDataType::Vec4i:	return GL_INT;
-		}
-
-		MK_CORE_ASSERT(false, "Unknown ShaderDataType");
-		return 0;
-	}
-
 	Application* Application::instance = nullptr;
 
 	Application::Application() {
@@ -39,8 +19,7 @@ namespace Makeshift {
 		imGuiLayer = new ImGuiLayer();
 		pushOverlay(imGuiLayer);
 
-		glGenVertexArrays(1, &vertexArray);
-		glBindVertexArray(vertexArray);
+		vertexArray.reset(VertexArray::Create());
 
 		float vertices[3 * 3 + 3 * 4] = {
 			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -48,38 +27,48 @@ namespace Makeshift {
 			0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
 		};
 
+		std::shared_ptr<VertexBuffer> vertexBuffer;
 		vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 		
-		{
-			BufferLayout layout = {
-				{ ShaderDataType::Vec3, "position" },
-				{ ShaderDataType::Vec4, "color" }
-			};
+		BufferLayout layout = {
+			{ ShaderDataType::Vec3, "position" },
+			{ ShaderDataType::Vec4, "color" }
+		};
 
-			vertexBuffer->setLayout(layout);
-		}
-
-		uint32_t index = 0;
-		const auto& layout = vertexBuffer->getLayout();
-		for (const auto& element : layout) {
-
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(
-				index,
-				element.getComponentCount(),
-				ShaderDataTypeToOpenGLBaseType(element.type),
-				element.normalized ? GL_TRUE : GL_FALSE,
-				layout.getStride(),
-				(const void*)element.offset);
-			index++;
-
-		}
+		vertexBuffer->setLayout(layout);
+		vertexArray->addVertexBuffer(vertexBuffer);
 
 		unsigned int indices[3] = {
 			0, 1, 2
 		};
 
+		std::shared_ptr<IndexBuffer> indexBuffer;
 		indexBuffer.reset(IndexBuffer::Create(indices, 3));
+		vertexArray->setIndexBuffer(indexBuffer);
+
+		float squareVertices[3 * 4] = {
+			-0.75f, -0.75f, 0.0f,
+			 0.75f, -0.75f, 0.0f,
+			 0.75f,  0.75f, 0.0f,
+			-0.75f,  0.75f, 0.0f
+		};
+
+		squareVA.reset(VertexArray::Create());
+
+		std::shared_ptr<VertexBuffer> squareVB; 
+		squareVB.reset(VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+
+		squareVB->setLayout({ { ShaderDataType::Vec3, "position" } });
+		squareVA->addVertexBuffer(squareVB);
+
+		unsigned int squareIndices[6] = {
+			0, 1, 2, 2, 3, 0
+		};
+
+		std::shared_ptr<IndexBuffer> squareIB;
+		squareIB.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+
+		squareVA->setIndexBuffer(squareIB);
 
 		std::string vertexSrc = R"(
 			#version 330 core
@@ -112,6 +101,33 @@ namespace Makeshift {
 		)";
 
 		shader.reset(Shader::Create(vertexSrc, fragmentSrc));
+
+		std::string squareVertexSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) in vec3 position;
+
+			out vec3 fragPos;
+
+			void main(void) {
+				fragPos = position;
+				gl_Position = vec4(position, 1.0);
+			}
+		)";
+
+		std::string squareFragmentSrc = R"(
+			#version 330 core
+
+			in vec3 fragPos;
+
+			layout(location = 0) out vec4 outColor;
+
+			void main(void) {
+				outColor = vec4(1.0, 1.0, 0.0, 1.0);
+			}
+		)";
+
+		squareShader.reset(Shader::Create(squareVertexSrc, squareFragmentSrc));
 
 	}
 
@@ -148,9 +164,13 @@ namespace Makeshift {
 			glClearColor(0.1f, 0.1f, 0.1f, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+			squareShader->bind();
+			squareVA->bind();
+			glDrawElements(GL_TRIANGLES, squareVA->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+
 			shader->bind();
-			glBindVertexArray(vertexArray);
-			glDrawElements(GL_TRIANGLES, indexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+			vertexArray->bind();
+			glDrawElements(GL_TRIANGLES, vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 
 			for (Layer* layer : layerStack) {
 				layer->onUpdate();
