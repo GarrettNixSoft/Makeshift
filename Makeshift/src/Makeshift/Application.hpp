@@ -7,13 +7,9 @@
 #include "Events/Event.hpp"
 #include "Makeshift/Events/ApplicationEvent.hpp"
 
+#include "Makeshift/Core/Timestep.hpp"
+
 #include "Makeshift/ImGui/ImGuiLayer.hpp"
-
-#include "Makeshift/Renderer/Shader.hpp"
-#include "Makeshift/Renderer/Buffer.hpp"
-#include "Makeshift/Renderer/VertexArray.hpp"
-
-#include "Makeshift/Renderer/OrthographicCamera.hpp"
 
 namespace Makeshift {
 
@@ -34,12 +30,14 @@ namespace Makeshift {
 		inline static Application& Get() { return *instance; }
 	private:
 		bool onWindowClose(WindowCloseEvent& e);
-
+	private:
 		std::unique_ptr<Window> window;
 		ImGuiLayer* imGuiLayer;
 		bool running = true;
 
 		LayerStack layerStack;
+
+		float lastFrameTime = 0.0f;
 	private:
 		static Application* instance;
 

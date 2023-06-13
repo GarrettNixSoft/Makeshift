@@ -6,6 +6,8 @@
 #include "Makeshift/Layer.hpp"
 #include "Makeshift/Logger.hpp"
 
+#include "Makeshift/Core/Timestep.hpp"
+
 #include "Makeshift/Input.hpp"
 #include "Makeshift/Keycodes.hpp"
 #include "Makeshift/MouseButtonCodes.hpp"

@@ -1,7 +1,7 @@
 #include "mkpch.hpp"
 #include "Application.hpp"
 
-#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 namespace Makeshift {
 
@@ -13,6 +13,7 @@ namespace Makeshift {
 
 		window = std::unique_ptr<Window>(Window::create());
 		window->setEventCallback(MK_BIND_EVENT_FN(Application::onEvent));
+		//window->setVsync(false);
 
 		imGuiLayer = new ImGuiLayer();
 		pushOverlay(imGuiLayer);
@@ -49,9 +50,12 @@ namespace Makeshift {
 
 		while (running) {
 			
+			float time = (float) glfwGetTime(); // future: Platform::GetTime
+			Timestep timestep = time - lastFrameTime;
+			lastFrameTime = time;
 
 			for (Layer* layer : layerStack) {
-				layer->onUpdate();
+				layer->onUpdate(timestep);
 			}
 
 			imGuiLayer->begin();

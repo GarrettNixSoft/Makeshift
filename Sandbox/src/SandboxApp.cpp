@@ -2,6 +2,8 @@
 
 #include "imgui/imgui.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 class ExampleLayer : public Makeshift::Layer {
 public:
 	ExampleLayer() : Layer("Example"), camera(-1.6f, 1.6f, -0.9f, 0.9f), cameraPos(0.0f) {
@@ -34,10 +36,10 @@ public:
 		vertexArray->setIndexBuffer(indexBuffer);
 
 		float squareVertices[3 * 4] = {
-			-0.75f, -0.75f, 0.0f,
-			 0.75f, -0.75f, 0.0f,
-			 0.75f,  0.75f, 0.0f,
-			-0.75f,  0.75f, 0.0f
+			-0.5f, -0.5f, 0.0f,
+			 0.5f, -0.5f, 0.0f,
+			 0.5f,  0.5f, 0.0f,
+			-0.5f,  0.5f, 0.0f
 		};
 
 		squareVA.reset(Makeshift::VertexArray::Create());
@@ -64,6 +66,7 @@ public:
 			layout(location = 1) in vec4 color;
 
 			uniform mat4 viewProjection;
+			uniform mat4 transform;
 
 			out vec3 fragPos;
 			out vec4 vertColor;
@@ -71,7 +74,7 @@ public:
 			void main(void) {
 				fragPos = position;
 				vertColor = color;
-				gl_Position = viewProjection * vec4(position, 1.0);
+				gl_Position = viewProjection * transform * vec4(position, 1.0);
 			}
 		)";
 
@@ -97,12 +100,13 @@ public:
 			layout(location = 0) in vec3 position;
 
 			uniform mat4 viewProjection;
+			uniform mat4 transform;
 
 			out vec3 fragPos;
 
 			void main(void) {
 				fragPos = position;
-				gl_Position = viewProjection * vec4(position, 1.0);
+				gl_Position = viewProjection * transform * vec4(position, 1.0);
 			}
 		)";
 
@@ -114,7 +118,7 @@ public:
 			layout(location = 0) out vec4 outColor;
 
 			void main(void) {
-				outColor = vec4(1.0, 1.0, 0.0, 1.0);
+				outColor = vec4(0.1, 0.4, 0.9, 1.0);
 			}
 		)";
 
@@ -122,28 +126,30 @@ public:
 
 	}
 
-	void onUpdate() override {
+	void onUpdate(Makeshift::Timestep ts) override {
+
+		//MK_TRACE("Delta time: {0}s ({1}ms)", ts.getSeconds(), ts.getMilliseconds());
 		
 		Makeshift::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Makeshift::RenderCommand::Clear();
 
 		if (Makeshift::Input::isKeyPressed(MK_KEY_A)) {
-			cameraPos.x -= cameraSpeed;
+			cameraPos.x -= cameraSpeed * ts;
 		}
 		if (Makeshift::Input::isKeyPressed(MK_KEY_D)) {
-			cameraPos.x += cameraSpeed;
+			cameraPos.x += cameraSpeed * ts;
 		}
 		if (Makeshift::Input::isKeyPressed(MK_KEY_W)) {
-			cameraPos.y += cameraSpeed;
+			cameraPos.y += cameraSpeed * ts;
 		}
 		if (Makeshift::Input::isKeyPressed(MK_KEY_S)) {
-			cameraPos.y -= cameraSpeed;
+			cameraPos.y -= cameraSpeed * ts;
 		}
 		if (Makeshift::Input::isKeyPressed(MK_KEY_LEFT)) {
-			cameraRotation += cameraRotationSpeed;
+			cameraRotation += cameraRotationSpeed * ts;
 		}
 		if (Makeshift::Input::isKeyPressed(MK_KEY_RIGHT)) {
-			cameraRotation -= cameraRotationSpeed;
+			cameraRotation -= cameraRotationSpeed * ts;
 		}
 
 		camera.setRotation(cameraRotation);
@@ -151,7 +157,16 @@ public:
 
 		Makeshift::Renderer::BeginScene(camera);
 
-		Makeshift::Renderer::Submit(squareShader, squareVA);
+		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+
+		for (int y = 0; y < 20; y++) {
+			for (int x = 0; x < 20; x++) {
+				glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+				Makeshift::Renderer::Submit(squareShader, squareVA, transform);
+			}
+		}
+
 		Makeshift::Renderer::Submit(shader, vertexArray);
 
 		Makeshift::Renderer::EndScene();
@@ -186,10 +201,10 @@ private:
 
 	Makeshift::OrthographicCamera camera;
 	glm::vec3 cameraPos;
-	float cameraSpeed = 0.02f;
+	float cameraSpeed = 2.0f;
 
 	float cameraRotation = 0.0f;
-	float cameraRotationSpeed = 0.2f;
+	float cameraRotationSpeed = 90.0f;
 };
 
 class Sandbox : public Makeshift::Application {

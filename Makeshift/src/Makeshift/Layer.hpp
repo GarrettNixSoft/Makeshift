@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Makeshift/Core.hpp"
+#include "Makeshift/Core/Timestep.hpp"
 #include "Makeshift/Events/Event.hpp"
 
 namespace Makeshift {
@@ -12,7 +13,7 @@ namespace Makeshift {
 
 		virtual void onAttach() {}
 		virtual void onDetach() {}
-		virtual void onUpdate() {}
+		virtual void onUpdate(Timestep ts) {}
 		virtual void onImGuiRender() {}
 		virtual void onEvent(Event& event) {}
 
