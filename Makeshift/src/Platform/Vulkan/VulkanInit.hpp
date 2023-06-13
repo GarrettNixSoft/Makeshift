@@ -39,7 +39,18 @@ namespace Makeshift {
 		static VkSwapchainKHR createSwapChain(VkSurfaceKHR surface, VkPhysicalDevice physicalDevice, VkDevice device, GLFWwindow* window, std::vector<VkImage>& swapChainImages, VkFormat& swapChainImageFormat, VkExtent2D& swapChainExtent);
 
 		static void createImageViews(VkDevice device, const std::vector<VkImage>& swapChainImages, VkFormat& swapChainImageFormat, std::vector<VkImageView>& imageViews);
-		
+
+		static void createGraphicsPipeline();
+
+
+	public:
+		static void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
+			auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+			if (func != nullptr) {
+				func(instance, debugMessenger, pAllocator);
+			}
+		}
+	private:
 		static std::vector<VkExtensionProperties> getAvailableExtensions();
 
 		static bool checkValidationLayerSupport();
@@ -76,13 +87,6 @@ namespace Makeshift {
 			}
 			else {
 				return VK_ERROR_EXTENSION_NOT_PRESENT;
-			}
-		}
-
-		static void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
-			auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-			if (func != nullptr) {
-				func(instance, debugMessenger, pAllocator);
 			}
 		}
 

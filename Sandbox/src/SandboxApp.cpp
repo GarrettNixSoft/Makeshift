@@ -94,7 +94,7 @@ public:
 
 		shader.reset(Makeshift::Shader::Create(vertexSrc, fragmentSrc));
 
-		std::string squareVertexSrc = R"(
+		std::string flatColorVertexSrc = R"(
 			#version 330 core
 			
 			layout(location = 0) in vec3 position;
@@ -110,19 +110,21 @@ public:
 			}
 		)";
 
-		std::string squareFragmentSrc = R"(
+		std::string flatColorFragmentSrc = R"(
 			#version 330 core
 
 			in vec3 fragPos;
 
+			uniform vec4 color;
+
 			layout(location = 0) out vec4 outColor;
 
 			void main(void) {
-				outColor = vec4(0.1, 0.4, 0.9, 1.0);
+				outColor = color;
 			}
 		)";
 
-		squareShader.reset(Makeshift::Shader::Create(squareVertexSrc, squareFragmentSrc));
+		flatColorShader.reset(Makeshift::Shader::Create(flatColorVertexSrc, flatColorFragmentSrc));
 
 	}
 
@@ -159,11 +161,18 @@ public:
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
+		glm::vec4 redColor(0.8f, 0.2f, 0.1f, 1.0f);
+		glm::vec4 blueColor(0.1f, 0.2f, 0.8f, 1.0f);
+
 		for (int y = 0; y < 20; y++) {
 			for (int x = 0; x < 20; x++) {
 				glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				Makeshift::Renderer::Submit(squareShader, squareVA, transform);
+				if ((x + y) % 2 == 0)
+					flatColorShader->uploadUniformVec4("color", redColor);
+				else
+					flatColorShader->uploadUniformVec4("color", blueColor);
+				Makeshift::Renderer::Submit(flatColorShader, squareVA, transform);
 			}
 		}
 
@@ -196,7 +205,7 @@ private:
 	std::shared_ptr<Makeshift::Shader> shader;
 	std::shared_ptr<Makeshift::VertexArray> vertexArray;
 
-	std::shared_ptr<Makeshift::Shader> squareShader;
+	std::shared_ptr<Makeshift::Shader> flatColorShader;
 	std::shared_ptr<Makeshift::VertexArray> squareVA;
 
 	Makeshift::OrthographicCamera camera;

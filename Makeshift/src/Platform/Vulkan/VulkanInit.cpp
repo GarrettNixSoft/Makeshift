@@ -525,4 +525,8 @@ namespace Makeshift {
 		}
 	}
 
+	void VulkanInit::createGraphicsPipeline() {
+
+	}
+
 }
