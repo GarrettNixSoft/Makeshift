@@ -49,11 +49,11 @@ namespace Makeshift {
 		}
 
 		switch (Renderer::GetAPI()) {
-			case RendererAPI::None:		MK_CORE_ASSERT(false, "RendererAPI None is currently not supported"); return;
-			case RendererAPI::OpenGL:
+			case RendererAPI::API::None:		MK_CORE_ASSERT(false, "RendererAPI None is currently not supported"); return;
+			case RendererAPI::API::OpenGL:
 				MK_CORE_INFO("Using OpenGL!");
 				break;
-			case RendererAPI::Vulkan:
+			case RendererAPI::API::Vulkan:
 				glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 				MK_CORE_INFO("Using Vulkan!");
 		}
@@ -62,11 +62,11 @@ namespace Makeshift {
 		glfwSetWindowUserPointer(window, &data);
 
 		switch (Renderer::GetAPI()) {
-			case RendererAPI::None:		MK_CORE_ASSERT(false, "RendererAPI None is currently not supported"); return;
-			case RendererAPI::OpenGL:
+			case RendererAPI::API::None:		MK_CORE_ASSERT(false, "RendererAPI None is currently not supported"); return;
+			case RendererAPI::API::OpenGL:
 				context = new OpenGLContext(window);
 				break;
-			case RendererAPI::Vulkan:
+			case RendererAPI::API::Vulkan:
 				context = new VulkanContext(window);
 		}
 

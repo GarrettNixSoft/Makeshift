@@ -12,6 +12,7 @@ namespace Makeshift {
 		virtual void bind() const override;
 		virtual void unbind() const override;
 
+		virtual void uploadUniformMat4(const std::string& name, const glm::mat4& matrix) override;
 	private:
 		uint32_t rendererId;
 	};

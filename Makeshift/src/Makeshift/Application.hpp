@@ -13,9 +13,11 @@
 #include "Makeshift/Renderer/Buffer.hpp"
 #include "Makeshift/Renderer/VertexArray.hpp"
 
+#include "Makeshift/Renderer/OrthographicCamera.hpp"
+
 namespace Makeshift {
 
-	class MK_API Application {
+	class Application {
 
 	public:
 		Application();
@@ -38,13 +40,6 @@ namespace Makeshift {
 		bool running = true;
 
 		LayerStack layerStack;
-
-		std::shared_ptr<Shader> shader;
-		std::shared_ptr<VertexArray> vertexArray;
-
-		std::shared_ptr<Shader> squareShader;
-		std::shared_ptr<VertexArray> squareVA;
-
 	private:
 		static Application* instance;
 
