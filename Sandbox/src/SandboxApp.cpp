@@ -1,8 +1,11 @@
 #include <Makeshift.hpp>
 
+#include "Platform/OpenGL/OpenGLShader.hpp"
+
 #include "imgui/imgui.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class ExampleLayer : public Makeshift::Layer {
 public:
@@ -115,12 +118,12 @@ public:
 
 			in vec3 fragPos;
 
-			uniform vec4 color;
+			uniform vec3 color;
 
 			layout(location = 0) out vec4 outColor;
 
 			void main(void) {
-				outColor = color;
+				outColor = vec4(color, 1.0);
 			}
 		)";
 
@@ -161,17 +164,13 @@ public:
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
-		glm::vec4 redColor(0.8f, 0.2f, 0.1f, 1.0f);
-		glm::vec4 blueColor(0.1f, 0.2f, 0.8f, 1.0f);
+		std::dynamic_pointer_cast<Makeshift::OpenGLShader>(flatColorShader)->bind();
+		std::dynamic_pointer_cast<Makeshift::OpenGLShader>(flatColorShader)->uploadUniformVec3("color", squareColor);
 
 		for (int y = 0; y < 20; y++) {
 			for (int x = 0; x < 20; x++) {
-				glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
+				glm::vec3 pos(x * (0.1f + squareSpacing), y * (0.1f + squareSpacing), 0.0f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				if ((x + y) % 2 == 0)
-					flatColorShader->uploadUniformVec4("color", redColor);
-				else
-					flatColorShader->uploadUniformVec4("color", blueColor);
 				Makeshift::Renderer::Submit(flatColorShader, squareVA, transform);
 			}
 		}
@@ -183,7 +182,10 @@ public:
 	}
 
 	void onImGuiRender() override {
-		
+		ImGui::Begin("Settings");
+		ImGui::ColorEdit3("Square Color", glm::value_ptr(squareColor));
+		ImGui::SliderFloat("Square Spacing", &squareSpacing, 0.01f, 0.1f);
+		ImGui::End();
 	}
 
 	void onEvent(Makeshift::Event& event) override {
@@ -214,6 +216,10 @@ private:
 
 	float cameraRotation = 0.0f;
 	float cameraRotationSpeed = 90.0f;
+
+	glm::vec3 squareColor = { 0.2f, 0.3f, 0.8f };
+
+	float squareSpacing = 0.01f;
 };
 
 class Sandbox : public Makeshift::Application {

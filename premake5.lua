@@ -114,7 +114,8 @@ project "Sandbox"
 		"Makeshift/vendor/spdlog/include",
 		"Makeshift/src",
 		"Makeshift/vendor",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.Glad}"
 	}
 
 	links {

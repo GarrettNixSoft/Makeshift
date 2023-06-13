@@ -122,14 +122,55 @@ namespace Makeshift {
 		glUseProgram(0);
 	}
 
-	void OpenGLShader::uploadUniformMat4(const std::string& name, const glm::mat4& matrix) {
-		GLint location = glGetUniformLocation(rendererId, name.c_str());
-		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+	void OpenGLShader::uploadUniformFloat(const std::string& name, float value) {
+		GLint location = getUniformLocation(name);
+		glUniform1f(location, value);
 	}
 
+	void OpenGLShader::uploadUniformVec2(const std::string& name, const glm::vec2& vector) {
+		GLint location = getUniformLocation(name);
+		glUniform2f(location, vector.x, vector.y);
+	}
+
+	void OpenGLShader::uploadUniformVec3(const std::string& name, const glm::vec3& vector) {
+		GLint location = getUniformLocation(name);
+		glUniform3f(location, vector.x, vector.y, vector.z);
+	}
+
+
 	void OpenGLShader::uploadUniformVec4(const std::string& name, const glm::vec4& vector) {
-		GLint location = glGetUniformLocation(rendererId, name.c_str());
+		GLint location = getUniformLocation(name);
 		glUniform4f(location, vector.x, vector.y, vector.z, vector.w);
+	}
+
+	void OpenGLShader::uploadUniformInt(const std::string& name, int value) {
+		GLint location = getUniformLocation(name);
+		glUniform1i(location, value);
+	}
+
+	void OpenGLShader::uploadUniformVec2i(const std::string& name, const glm::ivec2& vector) {
+		GLint location = getUniformLocation(name);
+		glUniform2i(location, vector.x, vector.y);
+	}
+
+	void OpenGLShader::uploadUniformVec3i(const std::string& name, const glm::ivec4& vector) {
+		GLint location = getUniformLocation(name);
+		glUniform3i(location, vector.x, vector.y, vector.z);
+	}
+
+	void OpenGLShader::uploadUniformVec4i(const std::string& name, const glm::ivec4& vector) {
+		GLint location = getUniformLocation(name);
+		glUniform4i(location, vector.x, vector.y, vector.z, vector.w);
+	}
+
+	void OpenGLShader::uploadUniformMat3(const std::string& name, const glm::mat3& matrix) {
+		GLint location = getUniformLocation(name);
+		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+	}
+
+	void OpenGLShader::uploadUniformMat4(const std::string& name, const glm::mat4& matrix) {
+		GLint location = getUniformLocation(name);
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 
 }
