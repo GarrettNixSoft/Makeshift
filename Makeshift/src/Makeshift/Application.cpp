@@ -1,6 +1,8 @@
 #include "mkpch.hpp"
 #include "Application.hpp"
 
+#include "Makeshift/Renderer/Renderer.hpp"
+
 #include <GLFW/glfw3.h>
 
 namespace Makeshift {
@@ -14,6 +16,8 @@ namespace Makeshift {
 		window = std::unique_ptr<Window>(Window::create());
 		window->setEventCallback(MK_BIND_EVENT_FN(Application::onEvent));
 		//window->setVsync(false);
+
+		Renderer::Init();
 
 		imGuiLayer = new ImGuiLayer();
 		pushOverlay(imGuiLayer);

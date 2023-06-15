@@ -17,13 +17,25 @@ namespace Makeshift {
 		width = w;
 		height = h;
 
+		GLenum internalFormat = 0, dataFormat = 0;
+		if (channels == 4) {
+			internalFormat = GL_RGBA8;
+			dataFormat = GL_RGBA;
+		}
+		else if (channels == 3) {
+			internalFormat = GL_RGB8;
+			dataFormat = GL_RGB;
+		}
+
+		MK_CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
+
 		glCreateTextures(GL_TEXTURE_2D, 1, &rendererId);
-		glTextureStorage2D(rendererId, 1, GL_RGB8, width, height);
+		glTextureStorage2D(rendererId, 1, internalFormat, width, height);
 
 		glTextureParameteri(rendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(rendererId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-		glTextureSubImage2D(rendererId, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glTextureSubImage2D(rendererId, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data);
 
 		stbi_image_free(data);
 

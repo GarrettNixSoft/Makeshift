@@ -166,7 +166,8 @@ public:
 
 		textureShader.reset(Makeshift::Shader::Create(textureVertexSrc, textureFragmentSrc));
 
-		texture = Makeshift::Texture2D::Create("assets/textures/nixon.png");
+		texture = Makeshift::Texture2D::Create("assets/textures/checkerboard.png");
+		makeshiftTexture = Makeshift::Texture2D::Create("assets/textures/makeshift.png");
 
 		std::dynamic_pointer_cast<Makeshift::OpenGLShader>(textureShader)->bind();
 		std::dynamic_pointer_cast<Makeshift::OpenGLShader>(flatColorShader)->uploadUniformInt("u_Texture", 0);
@@ -220,9 +221,11 @@ public:
 		// Render Textured Quad
 		texture->bind();
 		Makeshift::Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		makeshiftTexture->bind();
+		Makeshift::Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 		// Render Triangle
-		//Makeshift::Renderer::Submit(shader, vertexArray);
+		// Makeshift::Renderer::Submit(shader, vertexArray);
 
 		Makeshift::Renderer::EndScene();
 
@@ -258,6 +261,7 @@ private:
 	Makeshift::Ref<Makeshift::VertexArray> squareVA;
 
 	Makeshift::Ref<Makeshift::Texture2D> texture;
+	Makeshift::Ref<Makeshift::Texture2D> makeshiftTexture;
 
 	Makeshift::OrthographicCamera camera;
 	glm::vec3 cameraPos;
