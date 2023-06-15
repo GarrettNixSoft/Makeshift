@@ -38,11 +38,11 @@ public:
 		indexBuffer.reset(Makeshift::IndexBuffer::Create(indices, 3));
 		vertexArray->setIndexBuffer(indexBuffer);
 
-		float squareVertices[3 * 4] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.5f,  0.5f, 0.0f,
-			-0.5f,  0.5f, 0.0f
+		float squareVertices[5 * 4] = {
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
 
 		squareVA.reset(Makeshift::VertexArray::Create());
@@ -50,7 +50,10 @@ public:
 		Makeshift::Ref<Makeshift::VertexBuffer> squareVB;
 		squareVB.reset(Makeshift::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
 
-		squareVB->setLayout({ { Makeshift::ShaderDataType::Vec3, "position" } });
+		squareVB->setLayout({
+			{ Makeshift::ShaderDataType::Vec3, "position" },
+			{ Makeshift::ShaderDataType::Vec2, "texCoord" }
+		});
 		squareVA->addVertexBuffer(squareVB);
 
 		unsigned int squareIndices[6] = {
@@ -129,6 +132,45 @@ public:
 
 		flatColorShader.reset(Makeshift::Shader::Create(flatColorVertexSrc, flatColorFragmentSrc));
 
+		std::string textureVertexSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) in vec3 position;
+			layout(location = 1) in vec2 texCoord;
+
+			uniform mat4 viewProjection;
+			uniform mat4 transform;
+
+			out vec2 fragTexCoord;
+
+			void main(void) {
+				fragTexCoord = texCoord;
+				gl_Position = viewProjection * transform * vec4(position, 1.0);
+				
+			}
+		)";
+
+		std::string textureFragmentSrc = R"(
+			#version 330 core
+
+			in vec2 fragTexCoord;
+
+			layout(location = 0) out vec4 outColor;
+
+			uniform sampler2D u_Texture;
+
+			void main(void) {
+				outColor = texture(u_Texture, fragTexCoord);
+			}
+		)";
+
+		textureShader.reset(Makeshift::Shader::Create(textureVertexSrc, textureFragmentSrc));
+
+		texture = Makeshift::Texture2D::Create("assets/textures/nixon.png");
+
+		std::dynamic_pointer_cast<Makeshift::OpenGLShader>(textureShader)->bind();
+		std::dynamic_pointer_cast<Makeshift::OpenGLShader>(flatColorShader)->uploadUniformInt("u_Texture", 0);
+
 	}
 
 	void onUpdate(Makeshift::Timestep ts) override {
@@ -175,7 +217,12 @@ public:
 			}
 		}
 
-		Makeshift::Renderer::Submit(shader, vertexArray);
+		// Render Textured Quad
+		texture->bind();
+		Makeshift::Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+		// Render Triangle
+		//Makeshift::Renderer::Submit(shader, vertexArray);
 
 		Makeshift::Renderer::EndScene();
 
@@ -204,11 +251,13 @@ public:
 	}
 
 private:
-	Makeshift::Ref<Makeshift::Shader> shader;
+	Makeshift::Ref<Makeshift::Shader> shader, textureShader;
 	Makeshift::Ref<Makeshift::VertexArray> vertexArray;
 
 	Makeshift::Ref<Makeshift::Shader> flatColorShader;
 	Makeshift::Ref<Makeshift::VertexArray> squareVA;
+
+	Makeshift::Ref<Makeshift::Texture2D> texture;
 
 	Makeshift::OrthographicCamera camera;
 	glm::vec3 cameraPos;

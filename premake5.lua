@@ -19,6 +19,7 @@ IncludeDir["ImGui"] = "Makeshift/vendor/imgui"
 IncludeDir["glm"] = "Makeshift/vendor/glm"
 IncludeDir["Vulkan"] = "C:/VulkanSDK/1.3.246.1/Include"
 IncludeDir["vma"] = "Makeshift/vendor/vma/include"
+IncludeDir["stb_image"] = "Makeshift/vendor/stb_image"
 
 group "Dependencies"
 	include "Makeshift/vendor/GLFW"
@@ -44,6 +45,8 @@ project "Makeshift"
 	files {
 		"%{prj.name}/src/**.hpp",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/stb_image/**.h",
+		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl"
 	}
@@ -60,7 +63,8 @@ project "Makeshift"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Vulkan}",
-		"%{IncludeDir.vma}"
+		"%{IncludeDir.vma}",
+		"%{IncludeDir.stb_image}"
 	}
 
 	links {
