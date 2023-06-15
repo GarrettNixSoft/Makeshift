@@ -19,7 +19,7 @@ public:
 			0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
 		};
 
-		std::shared_ptr<Makeshift::VertexBuffer> vertexBuffer;
+		Makeshift::Ref<Makeshift::VertexBuffer> vertexBuffer;
 		vertexBuffer.reset(Makeshift::VertexBuffer::Create(vertices, sizeof(vertices)));
 
 		Makeshift::BufferLayout layout = {
@@ -34,7 +34,7 @@ public:
 			0, 1, 2
 		};
 
-		std::shared_ptr<Makeshift::IndexBuffer> indexBuffer;
+		Makeshift::Ref<Makeshift::IndexBuffer> indexBuffer;
 		indexBuffer.reset(Makeshift::IndexBuffer::Create(indices, 3));
 		vertexArray->setIndexBuffer(indexBuffer);
 
@@ -47,7 +47,7 @@ public:
 
 		squareVA.reset(Makeshift::VertexArray::Create());
 
-		std::shared_ptr<Makeshift::VertexBuffer> squareVB;
+		Makeshift::Ref<Makeshift::VertexBuffer> squareVB;
 		squareVB.reset(Makeshift::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
 
 		squareVB->setLayout({ { Makeshift::ShaderDataType::Vec3, "position" } });
@@ -57,7 +57,7 @@ public:
 			0, 1, 2, 2, 3, 0
 		};
 
-		std::shared_ptr<Makeshift::IndexBuffer> squareIB;
+		Makeshift::Ref<Makeshift::IndexBuffer> squareIB;
 		squareIB.reset(Makeshift::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
 
 		squareVA->setIndexBuffer(squareIB);
@@ -204,11 +204,11 @@ public:
 	}
 
 private:
-	std::shared_ptr<Makeshift::Shader> shader;
-	std::shared_ptr<Makeshift::VertexArray> vertexArray;
+	Makeshift::Ref<Makeshift::Shader> shader;
+	Makeshift::Ref<Makeshift::VertexArray> vertexArray;
 
-	std::shared_ptr<Makeshift::Shader> flatColorShader;
-	std::shared_ptr<Makeshift::VertexArray> squareVA;
+	Makeshift::Ref<Makeshift::Shader> flatColorShader;
+	Makeshift::Ref<Makeshift::VertexArray> squareVA;
 
 	Makeshift::OrthographicCamera camera;
 	glm::vec3 cameraPos;
