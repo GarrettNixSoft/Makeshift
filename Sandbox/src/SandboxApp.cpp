@@ -1,5 +1,9 @@
 #include <Makeshift.hpp>
 
+// ---------------- Entry Point ---------------------
+#include <Makeshift/Core/EntryPoint.hpp>
+// --------------------------------------------------
+
 #include "Platform/OpenGL/OpenGLShader.hpp"
 
 #include "imgui/imgui.h"
@@ -7,11 +11,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Sandbox2D.hpp"
+
 class ExampleLayer : public Makeshift::Layer {
 public:
 	ExampleLayer() : Layer("Example"), cameraController(1920.0f / 1080.0f) {
 
-		vertexArray.reset(Makeshift::VertexArray::Create());
+		vertexArray = Makeshift::VertexArray::Create();
 
 		float vertices[3 * 3 + 3 * 4] = {
 			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -45,7 +51,7 @@ public:
 			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
 
-		squareVA.reset(Makeshift::VertexArray::Create());
+		squareVA = Makeshift::VertexArray::Create();
 
 		Makeshift::Ref<Makeshift::VertexBuffer> squareVB;
 		squareVB.reset(Makeshift::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
@@ -232,7 +238,8 @@ class Sandbox : public Makeshift::Application {
 
 public:
 	Sandbox() {
-		pushLayer(new ExampleLayer());
+		//pushLayer(new ExampleLayer());
+		pushLayer(new Sandbox2D());
 	}
 
 	~Sandbox() {
