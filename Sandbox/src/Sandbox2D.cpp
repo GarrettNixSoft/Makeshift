@@ -31,7 +31,8 @@ void Sandbox2D::onUpdate(Makeshift::Timestep ts) {
 
 	Makeshift::Renderer2D::BeginScene(cameraController.getCamera());
 
-	Makeshift::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.9f, 0.1f, 0.1f, 1.0f });
+	Makeshift::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.9f, 0.1f, 0.1f, 1.0f }, 45.0f);
+	Makeshift::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, { 0.1f, 0.9f, 0.1f, 1.0f });
 
 	Makeshift::Renderer2D::EndScene();
 

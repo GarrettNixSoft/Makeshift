@@ -6,6 +6,8 @@
 
 #include "RenderCommand.hpp"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace Makeshift {
 
 	struct Renderer2DStorage {
@@ -59,7 +61,6 @@ namespace Makeshift {
 
 		s_Data->flatColorShader->bind();
 		s_Data->flatColorShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
-		s_Data->flatColorShader->setMat4("u_Transform", glm::mat4(1.0f));
 
 	}
 
@@ -67,16 +68,20 @@ namespace Makeshift {
 
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color) {
+	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation) {
 
-		DrawQuad({ position.x, position.y, 0.0f }, size, color);
+		DrawQuad({ position.x, position.y, 0.0f }, size, color, rotation);
 
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
+	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation) {
 
 		s_Data->flatColorShader->bind();
 		s_Data->flatColorShader->setVec4("u_Color", color);
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f }) * glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f });
+		s_Data->flatColorShader->setMat4("u_Transform", transform);
+
 		s_Data->quadVertexArray->bind();
 		RenderCommand::DrawIndexed(s_Data->quadVertexArray);
 
