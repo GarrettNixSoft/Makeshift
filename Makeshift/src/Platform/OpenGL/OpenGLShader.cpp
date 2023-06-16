@@ -180,6 +180,38 @@ namespace Makeshift {
 		glUseProgram(0);
 	}
 
+	void OpenGLShader::setFloat(const std::string& name, float value) {
+		uploadUniformFloat(name, value);
+	}
+
+	void OpenGLShader::setInt(const std::string& name, int value) {
+		uploadUniformInt(name, value);
+	}
+
+	void OpenGLShader::setBool(const std::string& name, int value) {
+		uploadUniformBool(name, value);
+	}
+
+	void OpenGLShader::setVec2(const std::string& name, const glm::vec2& value) {
+		uploadUniformVec2(name, value);
+	}
+
+	void OpenGLShader::setVec3(const std::string& name, const glm::vec3& value) {
+		uploadUniformVec3(name, value);
+	}
+
+	void OpenGLShader::setVec4(const std::string& name, const glm::vec4& value) {
+		uploadUniformVec4(name, value);
+	}
+
+	void OpenGLShader::setMat3(const std::string& name, const glm::mat3& value) {
+		uploadUniformMat3(name, value);
+	}
+
+	void OpenGLShader::setMat4(const std::string& name, const glm::mat4& value) {
+		uploadUniformMat4(name, value);
+	}
+
 	void OpenGLShader::uploadUniformFloat(const std::string& name, float value) {
 		GLint location = getUniformLocation(name);
 		glUniform1f(location, value);
@@ -229,6 +261,11 @@ namespace Makeshift {
 	void OpenGLShader::uploadUniformMat4(const std::string& name, const glm::mat4& matrix) {
 		GLint location = getUniformLocation(name);
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+	}
+
+	void OpenGLShader::uploadUniformBool(const std::string& name, bool value) {
+		GLint location = getUniformLocation(name);
+		glUniform1i(location, value);
 	}
 
 }

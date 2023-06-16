@@ -6,8 +6,6 @@
 
 #include "RenderCommand.hpp"
 
-#include "Platform/OpenGL/OpenGLShader.hpp"
-
 namespace Makeshift {
 
 	struct Renderer2DStorage {
@@ -59,9 +57,9 @@ namespace Makeshift {
 
 	void Renderer2D::BeginScene(const OrthographicCamera& camera) {
 
-		std::dynamic_pointer_cast<OpenGLShader>(s_Data->flatColorShader)->bind();
-		std::dynamic_pointer_cast<OpenGLShader>(s_Data->flatColorShader)->uploadUniformMat4("u_ViewProjection", camera.getViewProjectionMatrix());
-		std::dynamic_pointer_cast<OpenGLShader>(s_Data->flatColorShader)->uploadUniformMat4("u_Transform", glm::mat4(1.0f));
+		s_Data->flatColorShader->bind();
+		s_Data->flatColorShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
+		s_Data->flatColorShader->setMat4("u_Transform", glm::mat4(1.0f));
 
 	}
 
@@ -77,8 +75,8 @@ namespace Makeshift {
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
 
-		std::dynamic_pointer_cast<OpenGLShader>(s_Data->flatColorShader)->bind();
-		std::dynamic_pointer_cast<OpenGLShader>(s_Data->flatColorShader)->uploadUniformVec4("u_Color", color);
+		s_Data->flatColorShader->bind();
+		s_Data->flatColorShader->setVec4("u_Color", color);
 		s_Data->quadVertexArray->bind();
 		RenderCommand::DrawIndexed(s_Data->quadVertexArray);
 

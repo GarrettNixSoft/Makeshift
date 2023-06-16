@@ -35,10 +35,6 @@ void Sandbox2D::onUpdate(Makeshift::Timestep ts) {
 
 	Makeshift::Renderer2D::EndScene();
 
-	// TODO Add functions Shader::SetMat4, Shader::SetVec4 (abstract shader types away, get rid of OpenGL dependency here)
-	//std::dynamic_pointer_cast<Makeshift::OpenGLShader>(flatColorShader)->bind();
-	//std::dynamic_pointer_cast<Makeshift::OpenGLShader>(flatColorShader)->uploadUniformVec4("u_Color", squareColor);
-
 }
 
 void Sandbox2D::onImGuiRender() {
