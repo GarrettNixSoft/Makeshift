@@ -31,7 +31,7 @@ namespace Makeshift {
 		
 	}
 
-	void VulkanShader::setBool(const std::string& name, int value) {
+	void VulkanShader::setBool(const std::string& name, bool value) {
 		
 	}
 

@@ -188,7 +188,7 @@ namespace Makeshift {
 		uploadUniformInt(name, value);
 	}
 
-	void OpenGLShader::setBool(const std::string& name, int value) {
+	void OpenGLShader::setBool(const std::string& name, bool value) {
 		uploadUniformBool(name, value);
 	}
 
