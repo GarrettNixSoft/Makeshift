@@ -24,7 +24,7 @@
 #include "Makeshift/Renderer/Texture.hpp"
 #include "Makeshift/Renderer/VertexArray.hpp"
 
-#include "Makeshift/Renderer/OrthographicCamera.hpp"
+#include "Makeshift/OrthographicCameraController.hpp"
 // --------------------------------------------------
 
 // ---------------- Entry Point ---------------------

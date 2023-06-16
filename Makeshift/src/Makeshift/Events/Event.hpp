@@ -44,21 +44,19 @@ namespace Makeshift {
     };
 
     class EventDispatcher {
-        template<typename T>
-        using EventFn = std::function<bool(T&)>;
     public:
-        EventDispatcher(Event& event) : event{ event } {}
+        EventDispatcher(Event& event) : m_Event{ event } {}
 
-        template<typename T>
-        bool dispatch(EventFn<T> func) {
-            if (event.getEventType() == T::getStaticType()) {
-                event.handled = func(*(T*)&event);
+        template<typename T, typename F>
+        bool dispatch(const F& func) {
+            if (m_Event.getEventType() == T::getStaticType()) {
+                m_Event.handled = func(static_cast<T&>(m_Event));
                 return true;
             }
             return false;
         }
     private:
-        Event& event;
+        Event& m_Event;
     };
 
     // easily log events

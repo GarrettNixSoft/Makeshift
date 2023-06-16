@@ -7,6 +7,7 @@ namespace Makeshift {
 	class OrthographicCamera {
 	public:
 		OrthographicCamera(float left, float right, float bottom, float top);
+		void setProjection(float left, float right, float bottom, float top);
 
 		const glm::vec3& getPosition() const { return position; }
 		void setPosition(const glm::vec3& pos) { position = pos; recalculateViewMatrix(); }

@@ -9,7 +9,7 @@
 
 class ExampleLayer : public Makeshift::Layer {
 public:
-	ExampleLayer() : Layer("Example"), camera(-1.6f, 1.6f, -0.9f, 0.9f), cameraPos(0.0f) {
+	ExampleLayer() : Layer("Example"), cameraController(1920.0f / 1080.0f) {
 
 		vertexArray.reset(Makeshift::VertexArray::Create());
 
@@ -147,33 +147,15 @@ public:
 	void onUpdate(Makeshift::Timestep ts) override {
 
 		//MK_TRACE("Delta time: {0}s ({1}ms)", ts.getSeconds(), ts.getMilliseconds());
+
+		// Update
+		cameraController.onUpdate(ts);
 		
+		// Render
 		Makeshift::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Makeshift::RenderCommand::Clear();
 
-		if (Makeshift::Input::isKeyPressed(MK_KEY_A)) {
-			cameraPos.x -= cameraSpeed * ts;
-		}
-		if (Makeshift::Input::isKeyPressed(MK_KEY_D)) {
-			cameraPos.x += cameraSpeed * ts;
-		}
-		if (Makeshift::Input::isKeyPressed(MK_KEY_W)) {
-			cameraPos.y += cameraSpeed * ts;
-		}
-		if (Makeshift::Input::isKeyPressed(MK_KEY_S)) {
-			cameraPos.y -= cameraSpeed * ts;
-		}
-		if (Makeshift::Input::isKeyPressed(MK_KEY_LEFT)) {
-			cameraRotation += cameraRotationSpeed * ts;
-		}
-		if (Makeshift::Input::isKeyPressed(MK_KEY_RIGHT)) {
-			cameraRotation -= cameraRotationSpeed * ts;
-		}
-
-		camera.setRotation(cameraRotation);
-		camera.setPosition(cameraPos);
-
-		Makeshift::Renderer::BeginScene(camera);
+		Makeshift::Renderer::BeginScene(cameraController.getCamera());
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
@@ -197,7 +179,7 @@ public:
 		Makeshift::Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 		// Render Triangle
-		// Makeshift::Renderer::Submit(shader, vertexArray);
+		// Makeshift::Renderer::Submit(triangleShader, vertexArray);
 
 		Makeshift::Renderer::EndScene();
 
@@ -210,10 +192,12 @@ public:
 		ImGui::End();
 	}
 
-	void onEvent(Makeshift::Event& event) override {
+	void onEvent(Makeshift::Event& e) override {
 		
-		Makeshift::EventDispatcher dispatcher(event);
+		Makeshift::EventDispatcher dispatcher(e);
 		dispatcher.dispatch<Makeshift::KeyPressedEvent>(MK_BIND_EVENT_FN(ExampleLayer::onKeyPressedEvent));
+
+		cameraController.onEvent(e);
 
 	}
 
@@ -237,12 +221,7 @@ private:
 	Makeshift::Ref<Makeshift::Texture2D> texture;
 	Makeshift::Ref<Makeshift::Texture2D> makeshiftTexture;
 
-	Makeshift::OrthographicCamera camera;
-	glm::vec3 cameraPos;
-	float cameraSpeed = 2.0f;
-
-	float cameraRotation = 0.0f;
-	float cameraRotationSpeed = 90.0f;
+	Makeshift::OrthographicCameraController cameraController;
 
 	glm::vec3 squareColor = { 0.2f, 0.3f, 0.8f };
 
