@@ -7,7 +7,7 @@ namespace Makeshift {
 
 	}
 
-	VulkanShader::VulkanShader(const std::string& vertexSrc, const std::string& fragmentSrc) {
+	VulkanShader::VulkanShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) : m_Name(name) {
 
 	}
 

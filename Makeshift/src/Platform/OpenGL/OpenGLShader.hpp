@@ -13,11 +13,13 @@ namespace Makeshift {
 	class OpenGLShader : public Shader {
 	public:
 		OpenGLShader(const std::string& filePath);
-		OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc);
+		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		virtual ~OpenGLShader();
 
 		virtual void bind() const override;
 		virtual void unbind() const override;
+
+		virtual const std::string& getName() const override { return m_Name; };
 
 		void uploadUniformFloat(const std::string& name, float value);
 		void uploadUniformVec2(const std::string& name, const glm::vec2& vector);
@@ -39,6 +41,7 @@ namespace Makeshift {
 		GLint getUniformLocation(const std::string& name);
 	private:
 		uint32_t rendererId;
+		std::string m_Name;
 
 		std::unordered_map<std::string, GLint> uniformLocationCache{};
 	};

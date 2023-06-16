@@ -98,7 +98,7 @@ public:
 			}
 		)";
 
-		shader.reset(Makeshift::Shader::Create(vertexSrc, fragmentSrc));
+		triangleShader = Makeshift::Shader::Create("VertPosColor", vertexSrc, fragmentSrc);
 
 		
 
@@ -132,9 +132,9 @@ public:
 			}
 		)";
 
-		flatColorShader.reset(Makeshift::Shader::Create(flatColorVertexSrc, flatColorFragmentSrc));
+		flatColorShader = Makeshift::Shader::Create("FlatColor", flatColorVertexSrc, flatColorFragmentSrc);
 
-		textureShader.reset(Makeshift::Shader::Create("assets/shaders/texture.glsl"));
+		auto textureShader = shaderLibrary.load("assets/shaders/texture.glsl");
 
 		texture = Makeshift::Texture2D::Create("assets/textures/checkerboard.png");
 		makeshiftTexture = Makeshift::Texture2D::Create("assets/textures/makeshift.png");
@@ -188,6 +188,8 @@ public:
 			}
 		}
 
+		auto textureShader = shaderLibrary.get("texture");
+
 		// Render Textured Quad
 		texture->bind();
 		Makeshift::Renderer::Submit(textureShader, squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
@@ -224,7 +226,9 @@ public:
 	}
 
 private:
-	Makeshift::Ref<Makeshift::Shader> shader, textureShader;
+	Makeshift::ShaderLibrary shaderLibrary;
+
+	Makeshift::Ref<Makeshift::Shader> triangleShader;
 	Makeshift::Ref<Makeshift::VertexArray> vertexArray;
 
 	Makeshift::Ref<Makeshift::Shader> flatColorShader;
