@@ -50,7 +50,7 @@ namespace Makeshift {
 
 	std::string OpenGLShader::readFile(const std::string& filePath) {
 		std::string result;
-		std::ifstream in(filePath, std::ios::in, std::ios::binary);
+		std::ifstream in(filePath, std::ios::in | std::ios::binary);
 		if (in) {
 			in.seekg(0, std::ios::end);
 			result.resize(in.tellg());
@@ -92,8 +92,10 @@ namespace Makeshift {
 	void OpenGLShader::compile(const std::unordered_map<GLenum, std::string>& shaderSources) {
 
 		GLuint program = glCreateProgram();
-		std::vector<GLenum> glShaderIDs(shaderSources.size());
+		MK_CORE_ASSERT(shaderSources.size() <= 2, "Too many shader sources! (2 max)");
+		std::array<GLenum, 2> glShaderIDs;
 
+		int glShaderIndex = 0;
 		for (auto& kv : shaderSources) {
 			GLenum type = kv.first;
 			const std::string& source = kv.second;
@@ -126,7 +128,7 @@ namespace Makeshift {
 			}
 
 			glAttachShader(program, shader);
-			glShaderIDs.push_back(shader);
+			glShaderIDs[glShaderIndex++] = shader;
 		}
 
 		// Link our program
