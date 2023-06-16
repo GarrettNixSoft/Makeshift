@@ -15,6 +15,10 @@ namespace Makeshift {
 		RenderCommand::Init();
 	}
 
+	void Renderer::OnWindowResize(uint32_t width, uint32_t height) {
+		RenderCommand::SetViewport(0, 0, width, height);
+	}
+
 	void Renderer::BeginScene(OrthographicCamera& camera) {
 		sceneData->viewProjectionMatrix = camera.getViewProjectionMatrix();
 	}

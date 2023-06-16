@@ -26,20 +26,22 @@ namespace Makeshift {
 		void pushLayer(Layer* layer);
 		void pushOverlay(Layer* overlay);
 
-		inline Window& getWindow() { return *window; }
-		inline static Application& Get() { return *instance; }
+		inline Window& getWindow() { return *m_Window; }
+		inline static Application& Get() { return *s_Instance; }
 	private:
 		bool onWindowClose(WindowCloseEvent& e);
+		bool onWindowResize(WindowResizeEvent& e);
 	private:
-		std::unique_ptr<Window> window;
-		ImGuiLayer* imGuiLayer;
-		bool running = true;
+		std::unique_ptr<Window> m_Window;
+		ImGuiLayer* m_ImGuiLayer;
+		bool m_Running = true;
+		bool m_Minimized = false;
 
-		LayerStack layerStack;
+		LayerStack m_LayerStack;
 
-		float lastFrameTime = 0.0f;
+		float m_LastFrameTime = 0.0f;
 	private:
-		static Application* instance;
+		static Application* s_Instance;
 
 	};
 

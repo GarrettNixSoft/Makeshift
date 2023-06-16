@@ -7,20 +7,20 @@
 
 namespace Makeshift {
 
-	Application* Application::instance = nullptr;
+	Application* Application::s_Instance = nullptr;
 
 	Application::Application() {
-		MK_CORE_ASSERT(!instance, "Application already exists!");
-		instance = this;
+		MK_CORE_ASSERT(!s_Instance, "Application already exists!");
+		s_Instance = this;
 
-		window = std::unique_ptr<Window>(Window::create());
-		window->setEventCallback(MK_BIND_EVENT_FN(Application::onEvent));
+		m_Window = std::unique_ptr<Window>(Window::create());
+		m_Window->setEventCallback(MK_BIND_EVENT_FN(Application::onEvent));
 		//window->setVsync(false);
 
 		Renderer::Init();
 
-		imGuiLayer = new ImGuiLayer();
-		pushOverlay(imGuiLayer);
+		m_ImGuiLayer = new ImGuiLayer();
+		pushOverlay(m_ImGuiLayer);
 	}
 
 	Application::~Application() {
@@ -28,12 +28,12 @@ namespace Makeshift {
 	}
 
 	void Application::pushLayer(Layer* layer) {
-		layerStack.pushLayer(layer);
+		m_LayerStack.pushLayer(layer);
 		layer->onAttach();
 	}
 
 	void Application::pushOverlay(Layer* overlay) {
-		layerStack.pushOverlay(overlay);
+		m_LayerStack.pushOverlay(overlay);
 		overlay->onAttach();
 	}
 
@@ -41,8 +41,9 @@ namespace Makeshift {
 
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<WindowCloseEvent>(MK_BIND_EVENT_FN(Application::onWindowClose));
+		dispatcher.dispatch<WindowResizeEvent>(MK_BIND_EVENT_FN(Application::onWindowResize));
 
-		for (auto it = layerStack.end(); it != layerStack.begin(); ) {
+		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); ) {
 			(*--it)->onEvent(e);
 			if (e.handled) {
 				break;
@@ -52,31 +53,49 @@ namespace Makeshift {
 
 	void Application::run() {
 
-		while (running) {
+		while (m_Running) {
 			
 			float time = (float) glfwGetTime(); // future: Platform::GetTime
-			Timestep timestep = time - lastFrameTime;
-			lastFrameTime = time;
+			Timestep timestep = time - m_LastFrameTime;
+			m_LastFrameTime = time;
 
-			for (Layer* layer : layerStack) {
-				layer->onUpdate(timestep);
+			// Only update the layer stack when not minimized
+			if (!m_Minimized) {
+				for (Layer* layer : m_LayerStack) {
+					layer->onUpdate(timestep);
+				}
 			}
 
-			imGuiLayer->begin();
-			for (Layer* layer : layerStack) {
+			// ImGui might be external to the window, so ignore minimized state for it
+			m_ImGuiLayer->begin();
+			for (Layer* layer : m_LayerStack) {
 				layer->onImGuiRender();
 			}
-			imGuiLayer->end();
+			m_ImGuiLayer->end();
 
-			window->onUpdate();
+			m_Window->onUpdate();
 		}
 
 	}
 
 	bool Application::onWindowClose(WindowCloseEvent& e) {
 
-		running = false;
+		m_Running = false;
 		return true;
+
+	}
+
+	bool Application::onWindowResize(WindowResizeEvent& e) {
+
+		if (e.getWidth() == 0 || e.getHeight() == 0) {
+			m_Minimized = true;
+			return false;
+		}
+
+		m_Minimized = false;
+		Renderer::OnWindowResize(e.getWidth(), e.getHeight());
+
+		return false;
 
 	}
 

@@ -19,6 +19,9 @@ namespace Makeshift {
 
 		OrthographicCamera& getCamera() { return m_Camera; }
 		const OrthographicCamera& getCamera() const { return m_Camera; }
+
+		float getZoomLevel() const { return m_ZoomLevel; }
+		void setZoomLevel(float level) { m_ZoomLevel = level; }
 	private:
 		bool onMouseScrolled(MouseScrolledEvent& e);
 		bool onWindowResized(WindowResizeEvent& e);
