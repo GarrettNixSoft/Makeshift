@@ -1,8 +1,8 @@
 #include "mkpch.hpp"
 #include "OrthographicCameraController.hpp"
 
-#include "Makeshift/Input.hpp"
-#include "Makeshift/Keycodes.hpp"
+#include "Makeshift/Core/Input.hpp"
+#include "Makeshift/Core/Keycodes.hpp"
 
 namespace Makeshift {
 

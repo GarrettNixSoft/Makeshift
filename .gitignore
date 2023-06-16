@@ -375,3 +375,4 @@ FodyWeavers.xsd
 /Sandbox/imgui.ini
 /Makeshift/vendor/vma/bin/
 /Makeshift/vendor/vma/bin-int/
+/Makeshift/vendor/Glad/bin-int/Release-windows-x86_64/Glad

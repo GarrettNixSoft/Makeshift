@@ -5,7 +5,7 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
-#include "Makeshift/Application.hpp"
+#include "Makeshift/Core/Application.hpp"
 
 // TEMPORARY
 #include <GLFW/glfw3.h>

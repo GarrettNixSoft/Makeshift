@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Makeshift/Core.hpp"
+#include "Makeshift/Core/Core.hpp"
 #include "Makeshift/Core/Timestep.hpp"
 #include "Makeshift/Events/Event.hpp"
 

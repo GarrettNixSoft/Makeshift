@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Makeshift/Layer.hpp"
+#include "Makeshift/Core/Layer.hpp"
 #include "Makeshift/Events/KeyEvent.hpp"
 #include "Makeshift/Events/MouseEvent.hpp"
 #include "Makeshift/Events/ApplicationEvent.hpp"

@@ -3,7 +3,7 @@
 
 #include <GLFW/glfw3.h>
 
-#include "Makeshift/Application.hpp"
+#include "Makeshift/Core/Application.hpp"
 
 namespace Makeshift {
 

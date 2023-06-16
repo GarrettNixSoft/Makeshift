@@ -1,7 +1,7 @@
 #pragma once
 // ================ INCLUDES ================
 // -------- Engine --------
-#include "Makeshift/Core.hpp"
+#include "Makeshift/Core/Core.hpp"
 #include "Layer.hpp"
 // -------- Library --------
 #include <vector>

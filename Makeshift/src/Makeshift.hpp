@@ -2,15 +2,15 @@
 
 // For use by Makeshift applications
 
-#include "Makeshift/Application.hpp"
-#include "Makeshift/Layer.hpp"
-#include "Makeshift/Logger.hpp"
+#include "Makeshift/Core/Application.hpp"
+#include "Makeshift/Core/Layer.hpp"
+#include "Makeshift/Core/Logger.hpp"
 
 #include "Makeshift/Core/Timestep.hpp"
 
-#include "Makeshift/Input.hpp"
-#include "Makeshift/Keycodes.hpp"
-#include "Makeshift/MouseButtonCodes.hpp"
+#include "Makeshift/Core/Input.hpp"
+#include "Makeshift/Core/Keycodes.hpp"
+#include "Makeshift/Core/MouseButtonCodes.hpp"
 
 #include "Makeshift/ImGui/ImGuiLayer.hpp"
 
@@ -24,9 +24,9 @@
 #include "Makeshift/Renderer/Texture.hpp"
 #include "Makeshift/Renderer/VertexArray.hpp"
 
-#include "Makeshift/OrthographicCameraController.hpp"
+#include "Makeshift/Renderer/OrthographicCameraController.hpp"
 // --------------------------------------------------
 
 // ---------------- Entry Point ---------------------
-#include "Makeshift/EntryPoint.hpp"
+#include "Makeshift/Core/EntryPoint.hpp"
 // --------------------------------------------------

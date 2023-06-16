@@ -2,7 +2,7 @@
 
 #include "mkpch.hpp"
 
-#include "Makeshift/Core.hpp"
+#include "Makeshift/Core/Core.hpp"
 #include "Makeshift/Events/Event.hpp"
 
 namespace Makeshift {

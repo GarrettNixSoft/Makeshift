@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Makeshift/Core.hpp"
+#include "Makeshift/Core/Core.hpp"
 
 namespace Makeshift {
 

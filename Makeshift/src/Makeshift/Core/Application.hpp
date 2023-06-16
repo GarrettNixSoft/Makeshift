@@ -2,9 +2,9 @@
 
 #include "Core.hpp"
 
-#include "Window.hpp"
-#include "Makeshift/LayerStack.hpp"
-#include "Events/Event.hpp"
+#include "Makeshift/Core/Window.hpp"
+#include "Makeshift/Core/LayerStack.hpp"
+#include "Makeshift/Events/Event.hpp"
 #include "Makeshift/Events/ApplicationEvent.hpp"
 
 #include "Makeshift/Core/Timestep.hpp"

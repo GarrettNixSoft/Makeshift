@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Makeshift/Window.hpp"
+#include "Makeshift/Core/Window.hpp"
 #include "Makeshift/Renderer/GraphicsContext.hpp"
 
 #include <GLFW/glfw3.h>

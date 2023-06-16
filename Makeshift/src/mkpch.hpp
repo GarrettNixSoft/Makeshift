@@ -16,7 +16,7 @@
 #include <optional>
 #include <set>
 
-#include "Makeshift/Logger.hpp"
+#include "Makeshift/Core/Logger.hpp"
 
 
 #ifdef MK_PLATFORM_WINDOWS

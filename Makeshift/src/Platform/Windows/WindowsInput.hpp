@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Makeshift/Input.hpp"
+#include "Makeshift/Core/Input.hpp"
 
 namespace Makeshift {
 
