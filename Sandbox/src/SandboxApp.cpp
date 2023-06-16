@@ -71,8 +71,8 @@ public:
 			layout(location = 0) in vec3 position;
 			layout(location = 1) in vec4 color;
 
-			uniform mat4 viewProjection;
-			uniform mat4 transform;
+			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
 			out vec3 fragPos;
 			out vec4 vertColor;
@@ -80,7 +80,7 @@ public:
 			void main(void) {
 				fragPos = position;
 				vertColor = color;
-				gl_Position = viewProjection * transform * vec4(position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform * vec4(position, 1.0);
 			}
 		)";
 
@@ -100,19 +100,21 @@ public:
 
 		shader.reset(Makeshift::Shader::Create(vertexSrc, fragmentSrc));
 
+		
+
 		std::string flatColorVertexSrc = R"(
 			#version 330 core
 			
 			layout(location = 0) in vec3 position;
 
-			uniform mat4 viewProjection;
-			uniform mat4 transform;
+			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
 			out vec3 fragPos;
 
 			void main(void) {
 				fragPos = position;
-				gl_Position = viewProjection * transform * vec4(position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform * vec4(position, 1.0);
 			}
 		)";
 
@@ -132,39 +134,7 @@ public:
 
 		flatColorShader.reset(Makeshift::Shader::Create(flatColorVertexSrc, flatColorFragmentSrc));
 
-		std::string textureVertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 position;
-			layout(location = 1) in vec2 texCoord;
-
-			uniform mat4 viewProjection;
-			uniform mat4 transform;
-
-			out vec2 fragTexCoord;
-
-			void main(void) {
-				fragTexCoord = texCoord;
-				gl_Position = viewProjection * transform * vec4(position, 1.0);
-				
-			}
-		)";
-
-		std::string textureFragmentSrc = R"(
-			#version 330 core
-
-			in vec2 fragTexCoord;
-
-			layout(location = 0) out vec4 outColor;
-
-			uniform sampler2D u_Texture;
-
-			void main(void) {
-				outColor = texture(u_Texture, fragTexCoord);
-			}
-		)";
-
-		textureShader.reset(Makeshift::Shader::Create(textureVertexSrc, textureFragmentSrc));
+		textureShader.reset(Makeshift::Shader::Create("assets/shaders/texture.glsl"));
 
 		texture = Makeshift::Texture2D::Create("assets/textures/checkerboard.png");
 		makeshiftTexture = Makeshift::Texture2D::Create("assets/textures/makeshift.png");

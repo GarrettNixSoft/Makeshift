@@ -1,14 +1,18 @@
 #pragma once
 
 #include "Makeshift/Renderer/Shader.hpp"
+
 #include <glm/glm.hpp>
 
-#include <glad/glad.h>
+// TODO: Remove, this is bad :)
+typedef unsigned int GLenum;
+typedef int GLint;
 
 namespace Makeshift {
 
 	class OpenGLShader : public Shader {
 	public:
+		OpenGLShader(const std::string& filePath);
 		OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc);
 		virtual ~OpenGLShader();
 
@@ -27,20 +31,12 @@ namespace Makeshift {
 
 		void uploadUniformMat3(const std::string& name, const glm::mat3& matrix);
 		void uploadUniformMat4(const std::string& name, const glm::mat4& matrix);
-
 	private:
-		inline GLint getUniformLocation(const std::string& name) {
-			GLint location;
-			if (uniformLocationCache.find(name) != uniformLocationCache.end()) {
-				location = uniformLocationCache[name];
-			}
-			else {
-				location = glGetUniformLocation(rendererId, name.c_str());
-				uniformLocationCache.emplace(name, location);
-				//MK_CORE_TRACE("Cached location for uniform: {0}", name);
-			}
-			return location;
-		}
+		std::string readFile(const std::string& filePath);
+		std::unordered_map<GLenum, std::string> preprocess(const std::string& source);
+		void compile(const std::unordered_map<GLenum, std::string>& shaderSources);
+	private:
+		GLint getUniformLocation(const std::string& name);
 	private:
 		uint32_t rendererId;
 

@@ -4,10 +4,13 @@
 
 #include <glm/glm.hpp>
 
+#include <string>
+
 namespace Makeshift {
 
 	class VulkanShader : public Shader {
 	public:
+		VulkanShader(const std::string& filePath);
 		VulkanShader(const std::string& vertexSrc, const std::string& fragmentSrc);
 		virtual ~VulkanShader();
 
