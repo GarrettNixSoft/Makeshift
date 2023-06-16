@@ -20,6 +20,7 @@
 
 // ---------------- Renderer ----------------------------------
 #include "Makeshift/Renderer/Renderer.hpp"
+#include "Makeshift/Renderer/Renderer2D.hpp"
 #include "Makeshift/Renderer/RenderCommand.hpp"
 #include "Makeshift/Renderer/RendererAPI.hpp"
 

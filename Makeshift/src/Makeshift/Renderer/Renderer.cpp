@@ -1,6 +1,8 @@
 #include "mkpch.hpp"
 #include "Renderer.hpp"
 
+#include "Renderer2D.hpp"
+
 #include "RenderCommand.hpp"
 #include "OrthographicCamera.hpp"
 #include "Shader.hpp"
@@ -9,10 +11,11 @@
 
 namespace Makeshift {
 
-	Renderer::SceneData* Renderer::sceneData = new Renderer::SceneData;
+	Scope<Renderer::SceneData> Renderer::sceneData = CreateScope<Renderer::SceneData>();
 
 	void Renderer::Init() {
 		RenderCommand::Init();
+		Renderer2D::Init();
 	}
 
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height) {
