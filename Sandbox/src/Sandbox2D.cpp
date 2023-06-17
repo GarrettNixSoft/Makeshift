@@ -12,7 +12,7 @@ Sandbox2D::Sandbox2D() : Layer("Sandbox2D"), cameraController(1920.0f / 1080.0f)
 
 void Sandbox2D::onAttach() {
 
-	
+	texture = Makeshift::Texture2D::Create("assets/textures/checkerboard.png");
 
 }
 
@@ -33,6 +33,7 @@ void Sandbox2D::onUpdate(Makeshift::Timestep ts) {
 
 	Makeshift::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.9f, 0.1f, 0.1f, 1.0f }, 45.0f);
 	Makeshift::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, { 0.1f, 0.9f, 0.1f, 1.0f });
+	Makeshift::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 10.0f, 10.0f }, texture, 0.0f, 10.0f, { 1.0f, 0.8f, 0.8f, 1.0f });
 
 	Makeshift::Renderer2D::EndScene();
 

@@ -9,10 +9,10 @@ layout(location = 1) in vec2 texCoord;
 uniform mat4 u_ViewProjection;
 uniform mat4 u_Transform;
 
-out vec2 fragTexCoord;
+out vec2 v_TexCoord;
 
 void main(void) {
-	fragTexCoord = texCoord;
+	v_TexCoord = texCoord;
 	gl_Position = u_ViewProjection * u_Transform * vec4(position, 1.0);
 
 }
@@ -22,10 +22,12 @@ void main(void) {
 
 layout(location = 0) out vec4 outColor;
 
-in vec2 fragTexCoord;
+in vec2 v_TexCoord;
 
 uniform sampler2D u_Texture;
+uniform float u_TilingFactor = 1.0;
+uniform vec4 u_TintColor = vec4(1.0);
 
 void main(void) {
-	outColor = texture(u_Texture, fragTexCoord);
+	outColor = texture(u_Texture, v_TexCoord * u_TilingFactor) * u_TintColor;
 }

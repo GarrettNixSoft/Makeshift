@@ -21,6 +21,8 @@ private:
 	Makeshift::Ref<Makeshift::VertexArray> squareVA;
 	Makeshift::Ref<Makeshift::Shader> flatColorShader;
 
+	Makeshift::Ref<Makeshift::Texture2D> texture;
+
 	glm::vec4 squareColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 
 };
