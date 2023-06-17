@@ -13,8 +13,8 @@ namespace Makeshift {
 	struct Renderer2DStorage {
 
 		Ref<VertexArray> quadVertexArray;
-		Ref<Shader> flatColorShader;
 		Ref<Shader> textureShader;
+		Ref<Texture2D> whiteTexture;
 
 	};
 
@@ -48,12 +48,13 @@ namespace Makeshift {
 
 		Ref<IndexBuffer> squareIB;
 		squareIB.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
-
 		s_Data->quadVertexArray->setIndexBuffer(squareIB);
 
-		s_Data->flatColorShader = Shader::Create("assets/shaders/flatColor.glsl");
+		s_Data->whiteTexture = Texture2D::Create(1, 1);
+		uint32_t whiteTextureData = 0xffffffff;
+		s_Data->whiteTexture->setData(&whiteTextureData, sizeof(uint32_t));
+
 		s_Data->textureShader = Shader::Create("assets/shaders/texture.glsl");
-		
 		s_Data->textureShader->bind();
 		s_Data->textureShader->setInt("u_Texture", 0);
 
@@ -64,9 +65,6 @@ namespace Makeshift {
 	}
 
 	void Renderer2D::BeginScene(const OrthographicCamera& camera) {
-
-		s_Data->flatColorShader->bind();
-		s_Data->flatColorShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
 
 		s_Data->textureShader->bind();
 		s_Data->textureShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
@@ -85,11 +83,13 @@ namespace Makeshift {
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation) {
 
-		s_Data->flatColorShader->bind();
-		s_Data->flatColorShader->setVec4("u_Color", color);
+		//s_Data->textureShader->bind();
+
+		s_Data->textureShader->setVec4("u_Color", color);
+		s_Data->whiteTexture->bind();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f }) * glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f });
-		s_Data->flatColorShader->setMat4("u_Transform", transform);
+		s_Data->textureShader->setMat4("u_Transform", transform);
 
 		s_Data->quadVertexArray->bind();
 		RenderCommand::DrawIndexed(s_Data->quadVertexArray);
@@ -97,23 +97,23 @@ namespace Makeshift {
 
 	}
 	
-	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D> texture, float rotation, float tiling, const glm::vec4& tintColor) {
+	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D> texture, const glm::vec4& color, float rotation, float tiling) {
 
-		DrawQuad({ position.x, position.y, 0.0f }, size, texture, rotation, tiling);
+		DrawQuad({ position.x, position.y, 0.0f }, size, texture, {1.0f,1.0f,1.0f,1.0f}, rotation, tiling);
 
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D> texture, float rotation, float tiling, const glm::vec4& tintColor) {
+	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D> texture, const glm::vec4 & color, float rotation, float tiling) {
 
-		s_Data->textureShader->bind();
+		//s_Data->textureShader->bind();
+
+		texture->bind();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f }) * glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f });
 		s_Data->textureShader->setMat4("u_Transform", transform);
 
 		s_Data->textureShader->setFloat("u_TilingFactor", tiling);
-		s_Data->textureShader->setVec4("u_TintColor", tintColor);
-
-		texture->bind();
+		s_Data->textureShader->setVec4("u_Color", color);
 
 		s_Data->quadVertexArray->bind();
 		RenderCommand::DrawIndexed(s_Data->quadVertexArray);
