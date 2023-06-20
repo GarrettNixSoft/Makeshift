@@ -18,6 +18,8 @@
 
 #include "Makeshift/Core/Logger.hpp"
 
+#include "Makeshift/Debug/Instrumentor.hpp"
+
 
 #ifdef MK_PLATFORM_WINDOWS
 	#include <Windows.h>

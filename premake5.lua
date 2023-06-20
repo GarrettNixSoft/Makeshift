@@ -79,8 +79,6 @@ project "Makeshift"
 		systemversion "latest"
 
 		defines {
-			"MK_PLATFORM_WINDOWS",
-			"MK_BUILD_DLL",
 			"GLFW_INCLUDE_NONE"
 		}
 		

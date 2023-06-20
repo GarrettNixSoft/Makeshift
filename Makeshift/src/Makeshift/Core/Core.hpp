@@ -2,7 +2,35 @@
 
 #include <memory>
 
-#ifdef MK_PLATFORM_WINDOWS
+#ifdef _WIN32
+	#ifdef _WIN64
+		#define MK_PLATFORM_WINDOWS
+	#else
+		#error "x86 builds are not supported!"
+	#endif
+#elif defined (__APPLE__) || defined (__MACH__)
+	#include <TargetConditionals.h>
+	#if TARGET_IPHONE_SIMULATOR == 1
+		#error "iOS simulator is not supported!"
+	#elif TARGET_OS_IPHONE == 1
+		#define MK_PLATFORM_IOS
+		#error "iOS is not supported!"
+	#elif TARGET_OS_MAC == 1
+		#define MK_PLATFORM_MACOS
+		#error "MacOS is not supported!
+	#else
+		#error "Unknown Apple platform!"
+	#endif
+#elif defined (__ANDROID__)
+	#define MK_PLATFORM_ANDROID
+	#error "Android is not supported!"
+#elif defined (__linux__)
+	#define MK_PLATFORM_LINUX
+	#error "Linux is not supported!"
+#else
+	#error "Unknown platform!"
+#endif
+
 #if MK_DYNAMIC_LINK
 	#ifdef MK_BUILD_DLL
 		#define MK_API __declspec(dllexport)
@@ -11,9 +39,6 @@
 	#endif
 #else
 	#define MK_API
-#endif
-#else
-	#error Makeshift currently only supports Windows!
 #endif
 
 #ifdef MK_DEBUG
