@@ -14,7 +14,7 @@ namespace Makeshift {
 
 		virtual void onAttach() override;
 		virtual void onDetach() override;
-		virtual void onImGuiRender() override;
+		virtual void onImGuiRender() {}
 
 		void begin();
 		void end();

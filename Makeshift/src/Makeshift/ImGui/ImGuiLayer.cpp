@@ -80,9 +80,9 @@ namespace Makeshift {
 		}
 	}
 
-	void ImGuiLayer::onImGuiRender() {
+	/*void ImGuiLayer::onImGuiRender() {
 		static bool show = true;
 		ImGui::ShowDemoWindow(&show);
-	}
+	}*/
 
 }
