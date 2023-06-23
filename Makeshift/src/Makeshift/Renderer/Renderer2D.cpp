@@ -218,7 +218,7 @@ namespace Makeshift {
 		s_Data->whiteTexture->bind();
 
 		s_Data->triangleVertexArray->bind();
-		RenderCommand::DrawIndexed(s_Data->quadVertexArray);
+		RenderCommand::DrawIndexed(s_Data->triangleVertexArray);
 
 
 	}
