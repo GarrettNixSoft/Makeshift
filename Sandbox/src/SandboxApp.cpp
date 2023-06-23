@@ -26,7 +26,7 @@ public:
 		};
 
 		Makeshift::Ref<Makeshift::VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(Makeshift::VertexBuffer::Create(vertices, sizeof(vertices)));
+		vertexBuffer == Makeshift::VertexBuffer::Create(vertices, sizeof(vertices));
 
 		Makeshift::BufferLayout layout = {
 			{ Makeshift::ShaderDataType::Vec3, "position" },
@@ -41,7 +41,7 @@ public:
 		};
 
 		Makeshift::Ref<Makeshift::IndexBuffer> indexBuffer;
-		indexBuffer.reset(Makeshift::IndexBuffer::Create(indices, 3));
+		indexBuffer = Makeshift::IndexBuffer::Create(indices, 3);
 		vertexArray->setIndexBuffer(indexBuffer);
 
 		float squareVertices[5 * 4] = {
@@ -54,7 +54,7 @@ public:
 		squareVA = Makeshift::VertexArray::Create();
 
 		Makeshift::Ref<Makeshift::VertexBuffer> squareVB;
-		squareVB.reset(Makeshift::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+		squareVB = Makeshift::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
 
 		squareVB->setLayout({
 			{ Makeshift::ShaderDataType::Vec3, "position" },
@@ -67,7 +67,7 @@ public:
 		};
 
 		Makeshift::Ref<Makeshift::IndexBuffer> squareIB;
-		squareIB.reset(Makeshift::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+		squareIB = Makeshift::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
 
 		squareVA->setIndexBuffer(squareIB);
 

@@ -10,100 +10,148 @@
 
 namespace Makeshift {
 
-	struct Renderer2DStorage {
+	struct QuadVertex {
+		glm::vec3 position;
+		glm::vec4 color;
+		glm::vec2 texCoord;
+		// TODO texture ID (etc?)
+	};
+
+	struct TriangleVertex {
+		glm::vec3 position;
+		glm::vec2 texCoord;
+	};
+
+	struct Renderer2DData {
+
+		const uint32_t MAX_QUADS = 10000;
+		const uint32_t MAX_VERTICES = MAX_QUADS * 4;
+		const uint32_t MAX_INDICES = MAX_QUADS * 6;
+
+		const uint32_t MAX_TRIANGLES = 10000;
+		const uint32_t MAX_TRI_VERTICES = MAX_TRIANGLES * 3;
+		const uint32_t MAX_TRI_INDICES = MAX_TRIANGLES * 3;
 
 		Ref<VertexArray> quadVertexArray;
+		Ref<VertexBuffer> quadVertexBuffer;
+
 		Ref<VertexArray> triangleVertexArray;
 
 		Ref<Shader> textureShader;
+
 		Ref<Texture2D> whiteTexture;
+
+		uint32_t quadIndexCount = 0;
+		uint32_t triangleIndexCount = 0;
+
+		QuadVertex* quadVertexBufferBase = nullptr;
+		QuadVertex* quadVertexBufferPtr = nullptr;
+
+		TriangleVertex* triangleVertexBufferBase = nullptr;
+		TriangleVertex* triangleVertexBufferPtr = nullptr;
 
 	};
 
-	static Renderer2DStorage* s_Data;
+	static Renderer2DData s_Data;
 
 	void Renderer2D::Init() {
 		MK_PROFILE_FUNCTION();
 
-		s_Data = new Renderer2DStorage();
+		// ================================ QUADS ================================
+		s_Data.quadVertexArray = VertexArray::Create();
 
-		s_Data->quadVertexArray = VertexArray::Create();
+		s_Data.quadVertexBuffer = VertexBuffer::Create(s_Data.MAX_VERTICES * sizeof(QuadVertex));
 
-		float squareVertices[5 * 4] = {
-			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
-		};
-
-		Ref<VertexBuffer> squareVB;
-		squareVB.reset(VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
-
-		squareVB->setLayout({
+		s_Data.quadVertexBuffer->setLayout({
 			{ ShaderDataType::Vec3, "position" },
+			{ ShaderDataType::Vec4, "color" },
 			{ ShaderDataType::Vec2, "texCoord" }
 		});
-		s_Data->quadVertexArray->addVertexBuffer(squareVB);
+		s_Data.quadVertexArray->addVertexBuffer(s_Data.quadVertexBuffer);
 
-		unsigned int squareIndices[6] = {
-			0, 1, 2, 2, 3, 0
-		};
+		s_Data.quadVertexBufferBase = new QuadVertex[s_Data.MAX_VERTICES];
 
-		Ref<IndexBuffer> squareIB;
-		squareIB.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
-		s_Data->quadVertexArray->setIndexBuffer(squareIB);
+		uint32_t* quadIndices = new uint32_t[s_Data.MAX_INDICES];
 
-		s_Data->triangleVertexArray = VertexArray::Create();
+		uint32_t offset = 0;
+		for (uint32_t i = 0; i < s_Data.MAX_INDICES; i += 6) {
+			quadIndices[i + 0] = offset + 0;
+			quadIndices[i + 1] = offset + 1;
+			quadIndices[i + 2] = offset + 2;
 
-		float triangleVertices[5 * 3] = {
-			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-			0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-			0.0f, 0.5f, 0.0f, 0.0f, 1.0f
-		};
+			quadIndices[i + 3] = offset + 2;
+			quadIndices[i + 4] = offset + 3;
+			quadIndices[i + 5] = offset + 0;
 
-		Ref<VertexBuffer> triangleVB;
-		triangleVB.reset(VertexBuffer::Create(triangleVertices, sizeof(triangleVertices)));
+			offset += 4;
+		}
+
+		Ref<IndexBuffer> quadIB = IndexBuffer::Create(quadIndices, s_Data.MAX_INDICES);
+		s_Data.quadVertexArray->setIndexBuffer(quadIB);
+		delete[] quadIndices;
+		// ================================ QUADS ================================
+
+		// ================================ TRIANGLES ================================
+		s_Data.triangleVertexArray = VertexArray::Create();
+
+		Ref<VertexBuffer> triangleVB = VertexBuffer::Create(s_Data.MAX_TRIANGLES * sizeof(TriangleVertex));
 
 		triangleVB->setLayout({
 			{ ShaderDataType::Vec3, "position" },
+			{ ShaderDataType::Vec4, "color" },
 			{ ShaderDataType::Vec2, "texCoord" }
 		});
-		s_Data->triangleVertexArray->addVertexBuffer(triangleVB);
+		s_Data.triangleVertexArray->addVertexBuffer(triangleVB);
 
-		unsigned int triangleIndices[3] = {
-			0, 1, 2
-		};
+		uint32_t* triangleIndices = new uint32_t[s_Data.MAX_TRI_INDICES];
+		Ref<IndexBuffer> triangleIB = IndexBuffer::Create(triangleIndices, s_Data.MAX_TRI_INDICES);
+		s_Data.triangleVertexArray->setIndexBuffer(triangleIB);
+		delete[] triangleIndices;
+		// ================================ TRIANGLES ================================
 
-		Ref<IndexBuffer> triangleIB;
-		triangleIB.reset(IndexBuffer::Create(triangleIndices, sizeof(triangleIndices) / sizeof(uint32_t)));
-		s_Data->triangleVertexArray->setIndexBuffer(triangleIB);
-
-		s_Data->whiteTexture = Texture2D::Create(1, 1);
+		// ================================ TEXTURES ================================
+		s_Data.whiteTexture = Texture2D::Create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
-		s_Data->whiteTexture->setData(&whiteTextureData, sizeof(uint32_t));
+		s_Data.whiteTexture->setData(&whiteTextureData, sizeof(uint32_t));
+		// ================================ TEXTURES ================================
 
-		s_Data->textureShader = Shader::Create("assets/shaders/texture.glsl");
-		s_Data->textureShader->bind();
-		s_Data->textureShader->setInt("u_Texture", 0);
+		// ================================ SHADERS ================================
+		s_Data.textureShader = Shader::Create("assets/shaders/texture.glsl");
+		s_Data.textureShader->bind();
+		s_Data.textureShader->setInt("u_Texture", 0);
+		// ================================ SHADERS ================================
 
 	}
 
 	void Renderer2D::Shutdown() {
 		MK_PROFILE_FUNCTION();
 
-		delete s_Data;
 	}
 
 	void Renderer2D::BeginScene(const OrthographicCamera& camera) {
 		MK_PROFILE_FUNCTION();
 
-		s_Data->textureShader->bind();
-		s_Data->textureShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
+		s_Data.textureShader->bind();
+		s_Data.textureShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
+
+		// reset to base of the vertex buffer array
+		s_Data.quadIndexCount = 0;
+		s_Data.quadVertexBufferPtr = s_Data.quadVertexBufferBase;
 
 	}
 
 	void Renderer2D::EndScene() {
 		MK_PROFILE_FUNCTION();
+
+		uint32_t dataSize = (uint8_t*) s_Data.quadVertexBufferPtr - (uint8_t*) s_Data.quadVertexBufferBase;
+		s_Data.quadVertexBuffer->setData(s_Data.quadVertexBufferBase, dataSize);
+
+		Flush();
+	}
+
+	void Renderer2D::Flush() {
+
+		RenderCommand::DrawIndexed(s_Data.quadVertexArray, s_Data.quadIndexCount);
 
 	}
 
@@ -116,41 +164,87 @@ namespace Makeshift {
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
 		MK_PROFILE_FUNCTION();
 
-		//s_Data->textureShader->bind();
+		// BOTTOM LEFT
+		s_Data.quadVertexBufferPtr->position = position;
+		s_Data.quadVertexBufferPtr->color = color;
+		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 0.0f };
+		s_Data.quadVertexBufferPtr++;
 
-		s_Data->textureShader->setVec4("u_Color", color);
-		s_Data->whiteTexture->bind();
+		// BOTTOM RIGHT
+		s_Data.quadVertexBufferPtr->position = { position.x + size.x, position.y, 0.0f };
+		s_Data.quadVertexBufferPtr->color = color;
+		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 0.0f };
+		s_Data.quadVertexBufferPtr++;
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-		s_Data->textureShader->setMat4("u_Transform", transform);
+		// TOP RIGHT
+		s_Data.quadVertexBufferPtr->position = { position.x + size.x, position.y + size.y, 0.0f };
+		s_Data.quadVertexBufferPtr->color = color;
+		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 1.0f };
+		s_Data.quadVertexBufferPtr++;
 
-		s_Data->quadVertexArray->bind();
-		RenderCommand::DrawIndexed(s_Data->quadVertexArray);
+		// TOP LEFT
+		s_Data.quadVertexBufferPtr->position = { position.x, position.y + size.y, 0.0f };
+		s_Data.quadVertexBufferPtr->color = color;
+		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 1.0f };
+		s_Data.quadVertexBufferPtr++;
+
+		s_Data.quadIndexCount += 6;
+
+		//s_Data.whiteTexture->bind();
+
+		//glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		//s_Data.textureShader->setMat4("u_Transform", transform);
+
+		s_Data.quadVertexArray->bind();
+		//RenderCommand::DrawIndexed(s_Data.quadVertexArray);
 
 
 	}
 	
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D> texture, const glm::vec4& tintColor, float tiling) {
 
-		DrawQuad({ position.x, position.y, 0.0f }, size, texture, {1.0f,1.0f,1.0f,1.0f}, tiling);
+		DrawQuad({ position.x, position.y, 0.0f }, size, texture, { 1.0f,1.0f,1.0f,1.0f }, tiling);
 
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D> texture, const glm::vec4 & tintColor, float tiling) {
 		MK_PROFILE_FUNCTION();
 
-		//s_Data->textureShader->bind();
+		// BOTTOM LEFT
+		s_Data.quadVertexBufferPtr->position = position;
+		s_Data.quadVertexBufferPtr->color = tintColor;
+		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 0.0f };
+		s_Data.quadVertexBufferPtr++;
 
-		texture->bind();
+		// BOTTOM RIGHT
+		s_Data.quadVertexBufferPtr->position = { position.x + size.x, position.y, 0.0f };
+		s_Data.quadVertexBufferPtr->color = tintColor;
+		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 0.0f };
+		s_Data.quadVertexBufferPtr++;
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-		s_Data->textureShader->setMat4("u_Transform", transform);
+		// TOP RIGHT
+		s_Data.quadVertexBufferPtr->position = { position.x + size.x, position.y + size.y, 0.0f };
+		s_Data.quadVertexBufferPtr->color = tintColor;
+		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 1.0f };
+		s_Data.quadVertexBufferPtr++;
 
-		s_Data->textureShader->setFloat("u_TilingFactor", tiling);
-		s_Data->textureShader->setVec4("u_Color", tintColor);
+		// TOP LEFT
+		s_Data.quadVertexBufferPtr->position = { position.x, position.y + size.y, 0.0f };
+		s_Data.quadVertexBufferPtr->color = tintColor;
+		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 1.0f };
+		s_Data.quadVertexBufferPtr++;
 
-		s_Data->quadVertexArray->bind();
-		RenderCommand::DrawIndexed(s_Data->quadVertexArray);
+		s_Data.quadIndexCount += 6;
+
+		//texture->bind();
+
+		//glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		//s_Data.textureShader->setMat4("u_Transform", transform);
+
+		//s_Data.textureShader->setFloat("u_TilingFactor", tiling);
+
+		//s_Data.quadVertexArray->bind();
+		//RenderCommand::DrawIndexed(s_Data.quadVertexArray);
 
 	}
 
@@ -166,13 +260,13 @@ namespace Makeshift {
 			* glm::rotate(glm::mat4(1.0f), rotation, { 0.0f, 0.0f, 1.0f })
 			* glm::scale(glm::mat4(1.0f),
 				{ size.x, size.y, 1.0f });
-		s_Data->textureShader->setMat4("u_Transform", transform);
+		s_Data.textureShader->setMat4("u_Transform", transform);
 
-		s_Data->textureShader->setVec4("u_Color", color);
-		s_Data->whiteTexture->bind();
+		s_Data.textureShader->setVec4("u_Color", color);
+		s_Data.whiteTexture->bind();
 
-		s_Data->quadVertexArray->bind();
-		RenderCommand::DrawIndexed(s_Data->quadVertexArray);
+		s_Data.quadVertexArray->bind();
+		RenderCommand::DrawIndexed(s_Data.quadVertexArray);
 
 	}
 
@@ -190,13 +284,13 @@ namespace Makeshift {
 			* glm::rotate(glm::mat4(1.0f), rotation, { 0.0f, 0.0f, 1.0f })
 			* glm::scale(glm::mat4(1.0f),
 				{ size.x, size.y, 1.0f });
-		s_Data->textureShader->setMat4("u_Transform", transform);
+		s_Data.textureShader->setMat4("u_Transform", transform);
 
-		s_Data->textureShader->setFloat("u_TilingFactor", tiling);
-		s_Data->textureShader->setVec4("u_Color", tintColor);
+		s_Data.textureShader->setFloat("u_TilingFactor", tiling);
+		s_Data.textureShader->setVec4("u_Color", tintColor);
 
-		s_Data->quadVertexArray->bind();
-		RenderCommand::DrawIndexed(s_Data->quadVertexArray);
+		s_Data.quadVertexArray->bind();
+		RenderCommand::DrawIndexed(s_Data.quadVertexArray);
 
 	}
 
@@ -212,13 +306,13 @@ namespace Makeshift {
 			* glm::rotate(glm::mat4(1.0f), rotation, { 0.0f, 0.0f, 1.0f })
 			* glm::scale(glm::mat4(1.0f),
 				{ size.x, size.y, 1.0f });
-		s_Data->textureShader->setMat4("u_Transform", transform);
+		s_Data.textureShader->setMat4("u_Transform", transform);
 
-		s_Data->textureShader->setVec4("u_Color", color);
-		s_Data->whiteTexture->bind();
+		s_Data.textureShader->setVec4("u_Color", color);
+		s_Data.whiteTexture->bind();
 
-		s_Data->triangleVertexArray->bind();
-		RenderCommand::DrawIndexed(s_Data->triangleVertexArray);
+		s_Data.triangleVertexArray->bind();
+		RenderCommand::DrawIndexed(s_Data.triangleVertexArray);
 
 
 	}
