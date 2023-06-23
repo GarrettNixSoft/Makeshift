@@ -13,6 +13,8 @@ namespace Makeshift {
 	struct Renderer2DStorage {
 
 		Ref<VertexArray> quadVertexArray;
+		Ref<VertexArray> triangleVertexArray;
+
 		Ref<Shader> textureShader;
 		Ref<Texture2D> whiteTexture;
 
@@ -21,6 +23,7 @@ namespace Makeshift {
 	static Renderer2DStorage* s_Data;
 
 	void Renderer2D::Init() {
+		MK_PROFILE_FUNCTION();
 
 		s_Data = new Renderer2DStorage();
 
@@ -49,6 +52,31 @@ namespace Makeshift {
 		Ref<IndexBuffer> squareIB;
 		squareIB.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
 		s_Data->quadVertexArray->setIndexBuffer(squareIB);
+
+		s_Data->triangleVertexArray = VertexArray::Create();
+
+		float triangleVertices[5 * 3] = {
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			0.0f, 0.5f, 0.0f, 0.0f, 1.0f
+		};
+
+		Ref<VertexBuffer> triangleVB;
+		triangleVB.reset(VertexBuffer::Create(triangleVertices, sizeof(triangleVertices)));
+
+		triangleVB->setLayout({
+			{ ShaderDataType::Vec3, "position" },
+			{ ShaderDataType::Vec2, "texCoord" }
+		});
+		s_Data->triangleVertexArray->addVertexBuffer(triangleVB);
+
+		unsigned int triangleIndices[3] = {
+			0, 1, 2
+		};
+
+		Ref<IndexBuffer> triangleIB;
+		triangleIB.reset(IndexBuffer::Create(triangleIndices, sizeof(triangleIndices) / sizeof(uint32_t)));
+		s_Data->triangleVertexArray->setIndexBuffer(triangleIB);
 
 		s_Data->whiteTexture = Texture2D::Create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
@@ -79,9 +107,9 @@ namespace Makeshift {
 
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation) {
+	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color) {
 
-		DrawQuad({ position.x, position.y, 0.0f }, size, color, rotation);
+		DrawQuad({ position.x, position.y, 0.0f }, size, color);
 
 	}
 
@@ -169,6 +197,29 @@ namespace Makeshift {
 
 		s_Data->quadVertexArray->bind();
 		RenderCommand::DrawIndexed(s_Data->quadVertexArray);
+
+	}
+
+	void Renderer2D::DrawTriangle(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation) {
+
+		DrawTriangle({ position.x, position.y, 0.0f }, size, color, rotation);
+
+	}
+
+	void Renderer2D::DrawTriangle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation) {
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::rotate(glm::mat4(1.0f), rotation, { 0.0f, 0.0f, 1.0f })
+			* glm::scale(glm::mat4(1.0f),
+				{ size.x, size.y, 1.0f });
+		s_Data->textureShader->setMat4("u_Transform", transform);
+
+		s_Data->textureShader->setVec4("u_Color", color);
+		s_Data->whiteTexture->bind();
+
+		s_Data->triangleVertexArray->bind();
+		RenderCommand::DrawIndexed(s_Data->quadVertexArray);
+
 
 	}
 

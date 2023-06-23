@@ -22,8 +22,12 @@ namespace Makeshift {
 			s_RendererAPI->Clear();
 		}
 
-		 inline static void DrawIndexed(const Ref<VertexArray>& vertexArray) {
+		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray) {
 			s_RendererAPI->DrawIndexed(vertexArray);
+		}
+
+		inline static void DrawDirect(const Ref<VertexArray>& vertexArray, int count) {
+			s_RendererAPI->DrawDirect(vertexArray, count);
 		}
 
 	private:

@@ -6,6 +6,8 @@
 namespace Makeshift {
 
 	void OpenGLRendererAPI::Init() {
+		MK_PROFILE_FUNCTION();
+
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -26,6 +28,11 @@ namespace Makeshift {
 
 	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray) {
 		glDrawElements(GL_TRIANGLES, vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	void OpenGLRendererAPI::DrawDirect(const Ref<VertexArray>& vertexArray, int count) {
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 

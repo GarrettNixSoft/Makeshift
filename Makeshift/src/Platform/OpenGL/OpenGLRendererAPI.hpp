@@ -13,6 +13,7 @@ namespace Makeshift {
 		virtual void Clear() override;
 
 		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray) override;
+		virtual void DrawDirect(const Ref<VertexArray>& vertexArray, int count) override;
 	};
 
 }

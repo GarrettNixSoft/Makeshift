@@ -16,7 +16,6 @@ void Sandbox2D::onAttach() {
 	MK_PROFILE_FUNCTION();
 
 	texture = Makeshift::Texture2D::Create("assets/textures/checkerboard.png");
-
 }
 
 void Sandbox2D::onDetach() {
@@ -30,10 +29,7 @@ void Sandbox2D::onUpdate(Makeshift::Timestep ts) {
 	MK_PROFILE_FUNCTION();
 
 	// Update
-	{
-		MK_PROFILE_SCOPE("CameraController::onUpdate");
-		cameraController.onUpdate(ts);
-	}
+	cameraController.onUpdate(ts);
 
 	// Render
 	{
@@ -50,13 +46,14 @@ void Sandbox2D::onUpdate(Makeshift::Timestep ts) {
 		Makeshift::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, { 0.1f, 0.9f, 0.1f, 1.0f });
 		Makeshift::Renderer2D::DrawRotatedQuad({ 0.0f, 0.0f, -0.1f }, { 10.0f, 10.0f }, glm::radians(45.0f), texture, { 1.0f, 0.8f, 0.8f, 1.0f }, 10.0f);
 
+		Makeshift::Renderer2D::DrawTriangle({ 1.0f, 1.0f }, { 0.6f, 0.6f }, { 0.1f, 0.3f, 0.9f, 1.0f });
+
 		Makeshift::Renderer2D::EndScene();
 	}
 
 }
 
 void Sandbox2D::onImGuiRender() {
-
 	MK_PROFILE_FUNCTION();
 
 	ImGui::Begin("Settings");
