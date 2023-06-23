@@ -56,6 +56,8 @@ namespace Makeshift {
 		std::array<Ref<Texture2D>, MAX_TEXTURE_SLOTS> textureSlots;
 		uint32_t textureSlotIndex = 1; // 0 = white texture
 
+		glm::vec4 quadVertexPositions[4];
+
 	};
 
 	static Renderer2DData s_Data;
@@ -137,6 +139,11 @@ namespace Makeshift {
 		s_Data.textureShader->setIntArray("u_Textures", samplers, s_Data.MAX_TEXTURE_SLOTS);
 		// ================================ SHADERS ================================
 
+		s_Data.quadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.quadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.quadVertexPositions[2] = { 0.5f, 0.5f, 0.0f, 1.0f };
+		s_Data.quadVertexPositions[3] = { -0.5f, 0.5f, 0.0f, 1.0f };
+
 	}
 
 	void Renderer2D::Shutdown() {
@@ -187,38 +194,41 @@ namespace Makeshift {
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
 		MK_PROFILE_FUNCTION();
 
-		const float texIndex = 0.0f; // white texture
+		const float textureIndex = 0.0f; // white texture
 		const float tilingFactor = 1.0f;
 
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
 		// BOTTOM LEFT
-		s_Data.quadVertexBufferPtr->position = position;
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[0];
 		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 0.0f };
-		s_Data.quadVertexBufferPtr->texIndex = texIndex;
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
 		s_Data.quadVertexBufferPtr->tilingFactor = tilingFactor;
 		s_Data.quadVertexBufferPtr++;
 
 		// BOTTOM RIGHT
-		s_Data.quadVertexBufferPtr->position = { position.x + size.x, position.y, 0.0f };
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[1];
 		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 0.0f };
-		s_Data.quadVertexBufferPtr->texIndex = texIndex;
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
 		s_Data.quadVertexBufferPtr->tilingFactor = tilingFactor;
 		s_Data.quadVertexBufferPtr++;
 
 		// TOP RIGHT
-		s_Data.quadVertexBufferPtr->position = { position.x + size.x, position.y + size.y, 0.0f };
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[2];
 		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 1.0f };
-		s_Data.quadVertexBufferPtr->texIndex = texIndex;
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
 		s_Data.quadVertexBufferPtr->tilingFactor = tilingFactor;
 		s_Data.quadVertexBufferPtr++;
 
 		// TOP LEFT
-		s_Data.quadVertexBufferPtr->position = { position.x, position.y + size.y, 0.0f };
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[3];
 		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 1.0f };
-		s_Data.quadVertexBufferPtr->texIndex = texIndex;
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
 		s_Data.quadVertexBufferPtr->tilingFactor = tilingFactor;
 		s_Data.quadVertexBufferPtr++;
 
@@ -261,8 +271,11 @@ namespace Makeshift {
 			s_Data.textureSlotIndex++;
 		}
 
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
 		// BOTTOM LEFT
-		s_Data.quadVertexBufferPtr->position = position;
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[0];
 		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 0.0f };
 		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
@@ -270,7 +283,7 @@ namespace Makeshift {
 		s_Data.quadVertexBufferPtr++;
 
 		// BOTTOM RIGHT
-		s_Data.quadVertexBufferPtr->position = { position.x + size.x, position.y, 0.0f };
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[1];
 		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 0.0f };
 		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
@@ -278,7 +291,7 @@ namespace Makeshift {
 		s_Data.quadVertexBufferPtr++;
 
 		// TOP RIGHT
-		s_Data.quadVertexBufferPtr->position = { position.x + size.x, position.y + size.y, 0.0f };
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[2];
 		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 1.0f };
 		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
@@ -286,7 +299,7 @@ namespace Makeshift {
 		s_Data.quadVertexBufferPtr++;
 
 		// TOP LEFT
-		s_Data.quadVertexBufferPtr->position = { position.x, position.y + size.y, 0.0f };
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[3];
 		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 1.0f };
 		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
@@ -294,16 +307,6 @@ namespace Makeshift {
 		s_Data.quadVertexBufferPtr++;
 
 		s_Data.quadIndexCount += 6;
-
-		//texture->bind();
-
-		//glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-		//s_Data.textureShader->setMat4("u_Transform", transform);
-
-		//s_Data.textureShader->setFloat("u_TilingFactor", tiling);
-
-		//s_Data.quadVertexArray->bind();
-		//RenderCommand::DrawIndexed(s_Data.quadVertexArray);
 
 	}
 
@@ -314,18 +317,48 @@ namespace Makeshift {
 	}
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const glm::vec4& color) {
+		MK_PROFILE_FUNCTION();
+
+		const float textureIndex = 0.0f; // white texture
+		const float tilingFactor = 1.0f;
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-			* glm::rotate(glm::mat4(1.0f), rotation, { 0.0f, 0.0f, 1.0f })
-			* glm::scale(glm::mat4(1.0f),
-				{ size.x, size.y, 1.0f });
-		s_Data.textureShader->setMat4("u_Transform", transform);
+			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f })
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		s_Data.textureShader->setVec4("u_Color", color);
-		s_Data.whiteTexture->bind();
+		// BOTTOM LEFT
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[0];
+		s_Data.quadVertexBufferPtr->color = color;
+		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 0.0f };
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tilingFactor;
+		s_Data.quadVertexBufferPtr++;
 
-		s_Data.quadVertexArray->bind();
-		RenderCommand::DrawIndexed(s_Data.quadVertexArray);
+		// BOTTOM RIGHT
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[1];
+		s_Data.quadVertexBufferPtr->color = color;
+		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 0.0f };
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tilingFactor;
+		s_Data.quadVertexBufferPtr++;
+
+		// TOP RIGHT
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[2];
+		s_Data.quadVertexBufferPtr->color = color;
+		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 1.0f };
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tilingFactor;
+		s_Data.quadVertexBufferPtr++;
+
+		// TOP LEFT
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[3];
+		s_Data.quadVertexBufferPtr->color = color;
+		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 1.0f };
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tilingFactor;
+		s_Data.quadVertexBufferPtr++;
+
+		s_Data.quadIndexCount += 6;
 
 	}
 
@@ -336,20 +369,62 @@ namespace Makeshift {
 	}
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D> texture, const glm::vec4& tintColor, float tiling) {
+		MK_PROFILE_FUNCTION();
 
-		texture->bind();
+		constexpr glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+		float textureIndex = 0.0f;
+
+		for (uint32_t i = 1; i < s_Data.textureSlotIndex; i++) {
+			if (*s_Data.textureSlots[i].get() == *texture.get()) {
+				textureIndex = (float)i;
+				break;
+			}
+		}
+
+		if (textureIndex == 0.0f) {
+			textureIndex = (float)s_Data.textureSlotIndex;
+			s_Data.textureSlots[s_Data.textureSlotIndex] = texture;
+			s_Data.textureSlotIndex++;
+		}
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-			* glm::rotate(glm::mat4(1.0f), rotation, { 0.0f, 0.0f, 1.0f })
-			* glm::scale(glm::mat4(1.0f),
-				{ size.x, size.y, 1.0f });
-		s_Data.textureShader->setMat4("u_Transform", transform);
+			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f })
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		s_Data.textureShader->setFloat("u_TilingFactor", tiling);
-		s_Data.textureShader->setVec4("u_Color", tintColor);
+		// BOTTOM LEFT
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[0];
+		s_Data.quadVertexBufferPtr->color = color;
+		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 0.0f };
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tiling;
+		s_Data.quadVertexBufferPtr++;
 
-		s_Data.quadVertexArray->bind();
-		RenderCommand::DrawIndexed(s_Data.quadVertexArray);
+		// BOTTOM RIGHT
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[1];
+		s_Data.quadVertexBufferPtr->color = color;
+		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 0.0f };
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tiling;
+		s_Data.quadVertexBufferPtr++;
+
+		// TOP RIGHT
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[2];
+		s_Data.quadVertexBufferPtr->color = color;
+		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 1.0f };
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tiling;
+		s_Data.quadVertexBufferPtr++;
+
+		// TOP LEFT
+		s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[3];
+		s_Data.quadVertexBufferPtr->color = color;
+		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 1.0f };
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tiling;
+		s_Data.quadVertexBufferPtr++;
+
+		s_Data.quadIndexCount += 6;
 
 	}
 
@@ -360,6 +435,7 @@ namespace Makeshift {
 	}
 
 	void Renderer2D::DrawTriangle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation) {
+		MK_PROFILE_FUNCTION();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
 			* glm::rotate(glm::mat4(1.0f), rotation, { 0.0f, 0.0f, 1.0f })
