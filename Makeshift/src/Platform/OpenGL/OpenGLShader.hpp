@@ -23,6 +23,8 @@ namespace Makeshift {
 		virtual void setInt(const std::string& name, int value) override;
 		virtual void setBool(const std::string& name, bool value) override;
 
+		virtual void setIntArray(const std::string& name, int* values, uint32_t count) override;
+
 		virtual void setVec2(const std::string& name, const glm::vec2& value) override;
 		virtual void setVec3(const std::string& name, const glm::vec3& value) override;
 		virtual void setVec4(const std::string& name, const glm::vec4& value) override;
@@ -41,6 +43,8 @@ namespace Makeshift {
 		void uploadUniformVec2i(const std::string& name, const glm::ivec2& vector);
 		void uploadUniformVec3i(const std::string& name, const glm::ivec4& vector);
 		void uploadUniformVec4i(const std::string& name, const glm::ivec4& vector);
+
+		void uploadUniformIntArray(const std::string& name, int* values, uint32_t count);
 
 		void uploadUniformMat3(const std::string& name, const glm::mat3& matrix);
 		void uploadUniformMat4(const std::string& name, const glm::mat4& matrix);

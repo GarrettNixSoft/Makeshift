@@ -14,7 +14,8 @@ namespace Makeshift {
 		glm::vec3 position;
 		glm::vec4 color;
 		glm::vec2 texCoord;
-		// TODO texture ID (etc?)
+		float texIndex;
+		float tilingFactor;
 	};
 
 	struct TriangleVertex {
@@ -32,6 +33,8 @@ namespace Makeshift {
 		const uint32_t MAX_TRI_VERTICES = MAX_TRIANGLES * 3;
 		const uint32_t MAX_TRI_INDICES = MAX_TRIANGLES * 3;
 
+		static const uint32_t MAX_TEXTURE_SLOTS = 32; // TODO RenderCapabilities
+
 		Ref<VertexArray> quadVertexArray;
 		Ref<VertexBuffer> quadVertexBuffer;
 
@@ -39,7 +42,7 @@ namespace Makeshift {
 
 		Ref<Shader> textureShader;
 
-		Ref<Texture2D> whiteTexture;
+		Ref<Texture2D> whiteTexture; // slot 0
 
 		uint32_t quadIndexCount = 0;
 		uint32_t triangleIndexCount = 0;
@@ -49,6 +52,9 @@ namespace Makeshift {
 
 		TriangleVertex* triangleVertexBufferBase = nullptr;
 		TriangleVertex* triangleVertexBufferPtr = nullptr;
+
+		std::array<Ref<Texture2D>, MAX_TEXTURE_SLOTS> textureSlots;
+		uint32_t textureSlotIndex = 1; // 0 = white texture
 
 	};
 
@@ -65,7 +71,9 @@ namespace Makeshift {
 		s_Data.quadVertexBuffer->setLayout({
 			{ ShaderDataType::Vec3, "position" },
 			{ ShaderDataType::Vec4, "color" },
-			{ ShaderDataType::Vec2, "texCoord" }
+			{ ShaderDataType::Vec2, "texCoord" },
+			{ ShaderDataType::Float, "texIndex" },
+			{ ShaderDataType::Float, "tilingFactor" }
 		});
 		s_Data.quadVertexArray->addVertexBuffer(s_Data.quadVertexBuffer);
 
@@ -113,12 +121,20 @@ namespace Makeshift {
 		s_Data.whiteTexture = Texture2D::Create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
 		s_Data.whiteTexture->setData(&whiteTextureData, sizeof(uint32_t));
+
+		int32_t samplers[s_Data.MAX_TEXTURE_SLOTS];
+		for (uint32_t i = 0; i < s_Data.MAX_TEXTURE_SLOTS; i++) {
+			samplers[i] = i;
+		}
+
+		// set all texture slots to 0
+		s_Data.textureSlots[0] = s_Data.whiteTexture;
 		// ================================ TEXTURES ================================
 
 		// ================================ SHADERS ================================
 		s_Data.textureShader = Shader::Create("assets/shaders/texture.glsl");
 		s_Data.textureShader->bind();
-		s_Data.textureShader->setInt("u_Texture", 0);
+		s_Data.textureShader->setIntArray("u_Textures", samplers, s_Data.MAX_TEXTURE_SLOTS);
 		// ================================ SHADERS ================================
 
 	}
@@ -138,6 +154,8 @@ namespace Makeshift {
 		s_Data.quadIndexCount = 0;
 		s_Data.quadVertexBufferPtr = s_Data.quadVertexBufferBase;
 
+		s_Data.textureSlotIndex = 1;
+
 	}
 
 	void Renderer2D::EndScene() {
@@ -150,6 +168,11 @@ namespace Makeshift {
 	}
 
 	void Renderer2D::Flush() {
+
+		// Bind textures
+		for (uint32_t i = 0; i < s_Data.textureSlotIndex; i++) {
+			s_Data.textureSlots[i]->bind(i);
+		}
 
 		RenderCommand::DrawIndexed(s_Data.quadVertexArray, s_Data.quadIndexCount);
 
@@ -164,28 +187,39 @@ namespace Makeshift {
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
 		MK_PROFILE_FUNCTION();
 
+		const float texIndex = 0.0f; // white texture
+		const float tilingFactor = 1.0f;
+
 		// BOTTOM LEFT
 		s_Data.quadVertexBufferPtr->position = position;
 		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 0.0f };
+		s_Data.quadVertexBufferPtr->texIndex = texIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tilingFactor;
 		s_Data.quadVertexBufferPtr++;
 
 		// BOTTOM RIGHT
 		s_Data.quadVertexBufferPtr->position = { position.x + size.x, position.y, 0.0f };
 		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 0.0f };
+		s_Data.quadVertexBufferPtr->texIndex = texIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tilingFactor;
 		s_Data.quadVertexBufferPtr++;
 
 		// TOP RIGHT
 		s_Data.quadVertexBufferPtr->position = { position.x + size.x, position.y + size.y, 0.0f };
 		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 1.0f };
+		s_Data.quadVertexBufferPtr->texIndex = texIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tilingFactor;
 		s_Data.quadVertexBufferPtr++;
 
 		// TOP LEFT
 		s_Data.quadVertexBufferPtr->position = { position.x, position.y + size.y, 0.0f };
 		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 1.0f };
+		s_Data.quadVertexBufferPtr->texIndex = texIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tilingFactor;
 		s_Data.quadVertexBufferPtr++;
 
 		s_Data.quadIndexCount += 6;
@@ -210,28 +244,53 @@ namespace Makeshift {
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D> texture, const glm::vec4 & tintColor, float tiling) {
 		MK_PROFILE_FUNCTION();
 
+		constexpr glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+		float textureIndex = 0.0f;
+
+		for (uint32_t i = 1; i < s_Data.textureSlotIndex; i++) {
+			if (*s_Data.textureSlots[i].get() == *texture.get()) {
+				textureIndex = (float)i;
+				break;
+			}
+		}
+
+		if (textureIndex == 0.0f) {
+			textureIndex = (float)s_Data.textureSlotIndex;
+			s_Data.textureSlots[s_Data.textureSlotIndex] = texture;
+			s_Data.textureSlotIndex++;
+		}
+
 		// BOTTOM LEFT
 		s_Data.quadVertexBufferPtr->position = position;
-		s_Data.quadVertexBufferPtr->color = tintColor;
+		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 0.0f };
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tiling;
 		s_Data.quadVertexBufferPtr++;
 
 		// BOTTOM RIGHT
 		s_Data.quadVertexBufferPtr->position = { position.x + size.x, position.y, 0.0f };
-		s_Data.quadVertexBufferPtr->color = tintColor;
+		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 0.0f };
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tiling;
 		s_Data.quadVertexBufferPtr++;
 
 		// TOP RIGHT
 		s_Data.quadVertexBufferPtr->position = { position.x + size.x, position.y + size.y, 0.0f };
-		s_Data.quadVertexBufferPtr->color = tintColor;
+		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 1.0f, 1.0f };
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tiling;
 		s_Data.quadVertexBufferPtr++;
 
 		// TOP LEFT
 		s_Data.quadVertexBufferPtr->position = { position.x, position.y + size.y, 0.0f };
-		s_Data.quadVertexBufferPtr->color = tintColor;
+		s_Data.quadVertexBufferPtr->color = color;
 		s_Data.quadVertexBufferPtr->texCoord = { 0.0f, 1.0f };
+		s_Data.quadVertexBufferPtr->texIndex = textureIndex;
+		s_Data.quadVertexBufferPtr->tilingFactor = tiling;
 		s_Data.quadVertexBufferPtr++;
 
 		s_Data.quadIndexCount += 6;

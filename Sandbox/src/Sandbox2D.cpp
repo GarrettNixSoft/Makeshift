@@ -45,7 +45,8 @@ void Sandbox2D::onUpdate(Makeshift::Timestep ts) {
 		//Makeshift::Renderer2D::DrawRotatedQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, glm::radians(45.0f), { 0.9f, 0.1f, 0.1f, 1.0f });
 		Makeshift::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, squareColor);
 		Makeshift::Renderer2D::DrawQuad({ -0.75f, 0.25f }, { 0.5f, 0.5f }, { 0.9f, 0.2f, 0.2f, 1.0f });
-		//Makeshift::Renderer2D::DrawRotatedQuad({ 0.0f, 0.0f, -0.1f }, { 10.0f, 10.0f }, glm::radians(45.0f), texture, { 1.0f, 0.8f, 0.8f, 1.0f }, 10.0f);
+		Makeshift::Renderer2D::DrawQuad({ -5.0f, -5.0f, -0.1f }, { 10.0f, 10.0f }, texture, { 1.0f, 0.8f, 0.8f, 1.0f }, 10.0f);
+		Makeshift::Renderer2D::DrawQuad({ -0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f }, texture, { 1.0f, 0.8f, 0.8f, 1.0f }, 20.0f);
 
 		//Makeshift::Renderer2D::DrawTriangle({ 1.0f, 1.0f }, { 0.6f, 0.6f }, { 0.1f, 0.3f, 0.9f, 1.0f });
 
@@ -58,7 +59,7 @@ void Sandbox2D::onImGuiRender() {
 	MK_PROFILE_FUNCTION();
 
 	ImGui::Begin("Settings");
-	ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
+	ImGui::ColorEdit4("Quad Color", glm::value_ptr(squareColor));
 
 	profileResults.clear();
 

@@ -212,6 +212,12 @@ namespace Makeshift {
 		uploadUniformBool(name, value);
 	}
 
+	void OpenGLShader::setIntArray(const std::string& name, int* values, uint32_t count) {
+		MK_PROFILE_FUNCTION();
+
+		uploadUniformIntArray(name, values, count);
+	}
+
 	void OpenGLShader::setVec2(const std::string& name, const glm::vec2& value) {
 		MK_PROFILE_FUNCTION();
 
@@ -283,6 +289,11 @@ namespace Makeshift {
 	void OpenGLShader::uploadUniformVec4i(const std::string& name, const glm::ivec4& vector) {
 		GLint location = getUniformLocation(name);
 		glUniform4i(location, vector.x, vector.y, vector.z, vector.w);
+	}
+
+	void OpenGLShader::uploadUniformIntArray(const std::string& name, int* values, uint32_t count) {
+		GLint location = getUniformLocation(name);
+		glUniform1iv(location, count, values);
 	}
 
 	void OpenGLShader::uploadUniformMat3(const std::string& name, const glm::mat3& matrix) {

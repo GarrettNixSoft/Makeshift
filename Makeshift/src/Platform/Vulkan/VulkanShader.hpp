@@ -23,6 +23,8 @@ namespace Makeshift {
 		virtual void setInt(const std::string& name, int value) override;
 		virtual void setBool(const std::string& name, bool value) override;
 
+		virtual void setIntArray(const std::string& name, int* values, uint32_t count);
+
 		virtual void setVec2(const std::string& name, const glm::vec2& value) override;
 		virtual void setVec3(const std::string& name, const glm::vec3& value) override;
 		virtual void setVec4(const std::string& name, const glm::vec4& value) override;

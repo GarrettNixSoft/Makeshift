@@ -35,6 +35,10 @@ namespace Makeshift {
 		
 	}
 
+	void VulkanShader::setIntArray(const std::string& name, int* values, uint32_t count) {
+
+	}
+
 	void VulkanShader::setVec2(const std::string& name, const glm::vec2& value) {
 		
 	}
