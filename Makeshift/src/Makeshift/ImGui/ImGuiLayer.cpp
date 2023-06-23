@@ -22,6 +22,8 @@ namespace Makeshift {
 	}
 
 	void ImGuiLayer::onAttach() {
+		MK_PROFILE_FUNCTION();
+
 		// Set up ImGui's context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -54,18 +56,24 @@ namespace Makeshift {
 	}
 
 	void ImGuiLayer::onDetach() {
+		MK_PROFILE_FUNCTION();
+
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
 	}
 
 	void ImGuiLayer::begin() {
+		MK_PROFILE_FUNCTION();
+
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 	}
 
 	void ImGuiLayer::end() {
+		MK_PROFILE_FUNCTION();
+
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::Get();
 		io.DisplaySize = ImVec2((float)app.getWindow().getWidth(), (float)app.getWindow().getHeight());

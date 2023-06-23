@@ -26,22 +26,32 @@ namespace Makeshift {
 	}
 
 	OpenGLVertexArray::OpenGLVertexArray() {
+		MK_PROFILE_FUNCTION();
+
 		glCreateVertexArrays(1, &rendererId);
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray() {
+		MK_PROFILE_FUNCTION();
+
 		glDeleteVertexArrays(1, &rendererId);
 	}
 
 	void OpenGLVertexArray::bind() const {
+		MK_PROFILE_FUNCTION();
+
 		glBindVertexArray(rendererId);
 	}
 
 	void OpenGLVertexArray::unbind() const {
+		MK_PROFILE_FUNCTION();
+
 		glBindVertexArray(0);
 	}
 
 	void OpenGLVertexArray::addVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) {
+		MK_PROFILE_FUNCTION();
+
 		MK_CORE_ASSERT(vertexBuffer->getLayout().getElements().size(), "Vertex buffer has no layout!");
 
 		glBindVertexArray(rendererId);
@@ -67,6 +77,8 @@ namespace Makeshift {
 	}
 
 	void OpenGLVertexArray::setIndexBuffer(const Ref<IndexBuffer>& indexBuffer) {
+		MK_PROFILE_FUNCTION();
+
 		glBindVertexArray(rendererId);
 		indexBuffer->bind();
 

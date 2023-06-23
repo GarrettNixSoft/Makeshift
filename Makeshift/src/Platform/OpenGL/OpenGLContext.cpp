@@ -11,6 +11,8 @@ namespace Makeshift {
 	}
 
 	void OpenGLContext::init() {
+		MK_PROFILE_FUNCTION();
+
 		glfwMakeContextCurrent(windowHandle);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		MK_CORE_ASSERT(status, "Failed to initialize Glad!");
@@ -32,6 +34,8 @@ namespace Makeshift {
 	}
 
 	void OpenGLContext::swapBuffers() {
+		MK_PROFILE_FUNCTION();
+
 		glfwSwapBuffers(windowHandle);
 	}
 

@@ -18,8 +18,8 @@ namespace Makeshift {
 		MK_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
 	}
 
-	Window* Window::create(const WindowProperties& properties) {
-		return new WindowsWindow(properties);
+	Scope<Window> Window::create(const WindowProperties& properties) {
+		return CreateScope<WindowsWindow>(properties);
 	}
 
 	WindowsWindow::WindowsWindow(const WindowProperties& properties) {
@@ -27,10 +27,14 @@ namespace Makeshift {
 	}
 
 	WindowsWindow::~WindowsWindow() {
+		MK_PROFILE_FUNCTION();
 
+		shutdown();
 	}
 
 	void WindowsWindow::init(const WindowProperties& properties) {
+		MK_PROFILE_FUNCTION();
+
 		data.title = properties.title;
 		data.width = properties.width;
 		data.height = properties.height;
@@ -38,6 +42,7 @@ namespace Makeshift {
 		MK_CORE_INFO("Creating window {0}, size: {1} x {2}", properties.title, properties.width, properties.height);
 
 		if (!GLFWinitialized) {
+			MK_PROFILE_SCOPE("glfwInit");
 
 			int success = glfwInit();
 			MK_CORE_ASSERT(success, "Could not initialize GLFW!");
@@ -58,19 +63,15 @@ namespace Makeshift {
 				MK_CORE_INFO("Using Vulkan!");
 		}
 
-		window = glfwCreateWindow((int)properties.width, (int)properties.height, data.title.c_str(), nullptr, nullptr);
-		glfwSetWindowUserPointer(window, &data);
-
-		switch (Renderer::GetAPI()) {
-			case RendererAPI::API::None:		MK_CORE_ASSERT(false, "RendererAPI None is currently not supported"); return;
-			case RendererAPI::API::OpenGL:
-				context = new OpenGLContext(window);
-				break;
-			case RendererAPI::API::Vulkan:
-				context = new VulkanContext(window);
+		{
+			MK_PROFILE_SCOPE("glfwCreateWindow");
+			window = glfwCreateWindow((int)properties.width, (int)properties.height, data.title.c_str(), nullptr, nullptr);
 		}
 
+		context = GraphicsContext::Create(window);
 		context->init();
+
+		glfwSetWindowUserPointer(window, &data);
 		setVsync(true);
 
 		// Set GLFW callbacks for events
@@ -152,15 +153,21 @@ namespace Makeshift {
 	}
 
 	void WindowsWindow::shutdown() {
+		MK_PROFILE_FUNCTION();
+
 		glfwDestroyWindow(window);
 	}
 
 	void WindowsWindow::onUpdate() {
+		MK_PROFILE_FUNCTION();
+
 		glfwPollEvents();
 		context->swapBuffers();
 	}
 
 	void WindowsWindow::setVsync(bool enabled) {
+		MK_PROFILE_FUNCTION();
+
 		if (enabled) {
 			glfwSwapInterval(1);
 		}

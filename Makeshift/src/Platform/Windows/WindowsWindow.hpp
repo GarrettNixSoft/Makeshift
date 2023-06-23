@@ -28,7 +28,7 @@ namespace Makeshift {
 		virtual void shutdown();
 	private:
 		GLFWwindow* window;
-		GraphicsContext* context;
+		Scope<GraphicsContext> context;
 
 		struct WindowData {
 			std::string title;

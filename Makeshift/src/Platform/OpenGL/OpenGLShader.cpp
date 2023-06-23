@@ -32,6 +32,8 @@ namespace Makeshift {
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& filePath) {
+		MK_PROFILE_FUNCTION();
+
 		std::string source = readFile(filePath);
 		auto shaderSources = preprocess(source);
 		compile(shaderSources);
@@ -45,6 +47,8 @@ namespace Makeshift {
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) : m_Name(name) {
+		MK_PROFILE_FUNCTION();
+
 		std::unordered_map<GLenum, std::string> sources;
 		sources[GL_VERTEX_SHADER] = vertexSrc;
 		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
@@ -52,10 +56,14 @@ namespace Makeshift {
 	}
 
 	OpenGLShader::~OpenGLShader() {
+		MK_PROFILE_FUNCTION();
+
 		glDeleteProgram(rendererId);
 	}
 
 	std::string OpenGLShader::readFile(const std::string& filePath) {
+		MK_PROFILE_FUNCTION();
+
 		std::string result;
 		std::ifstream in(filePath, std::ios::in | std::ios::binary);
 		if (in) {
@@ -73,6 +81,7 @@ namespace Makeshift {
 	}
 
 	std::unordered_map<GLenum, std::string> OpenGLShader::preprocess(const std::string& source) {
+		MK_PROFILE_FUNCTION();
 
 		std::unordered_map<GLenum, std::string> shaderSources;
 
@@ -97,6 +106,7 @@ namespace Makeshift {
 	}
 
 	void OpenGLShader::compile(const std::unordered_map<GLenum, std::string>& shaderSources) {
+		MK_PROFILE_FUNCTION();
 
 		GLuint program = glCreateProgram();
 		MK_CORE_ASSERT(shaderSources.size() <= 2, "Too many shader sources! (2 max)");
@@ -173,46 +183,68 @@ namespace Makeshift {
 	}
 
 	void OpenGLShader::bind() const {
+		MK_PROFILE_FUNCTION();
+
 		glUseProgram(rendererId);
 	}
 
 	void OpenGLShader::unbind() const {
+		MK_PROFILE_FUNCTION();
+
 		glUseProgram(0);
 	}
 
 	void OpenGLShader::setFloat(const std::string& name, float value) {
+		MK_PROFILE_FUNCTION();
+
 		uploadUniformFloat(name, value);
 	}
 
 	void OpenGLShader::setInt(const std::string& name, int value) {
+		MK_PROFILE_FUNCTION();
+
 		uploadUniformInt(name, value);
 	}
 
 	void OpenGLShader::setBool(const std::string& name, bool value) {
+		MK_PROFILE_FUNCTION();
+
 		uploadUniformBool(name, value);
 	}
 
 	void OpenGLShader::setVec2(const std::string& name, const glm::vec2& value) {
+		MK_PROFILE_FUNCTION();
+
 		uploadUniformVec2(name, value);
 	}
 
 	void OpenGLShader::setVec3(const std::string& name, const glm::vec3& value) {
+		MK_PROFILE_FUNCTION();
+
 		uploadUniformVec3(name, value);
 	}
 
 	void OpenGLShader::setVec4(const std::string& name, const glm::vec4& value) {
+		MK_PROFILE_FUNCTION();
+
 		uploadUniformVec4(name, value);
 	}
 
 	void OpenGLShader::setMat3(const std::string& name, const glm::mat3& value) {
+		MK_PROFILE_FUNCTION();
+
 		uploadUniformMat3(name, value);
 	}
 
 	void OpenGLShader::setMat4(const std::string& name, const glm::mat4& value) {
+		MK_PROFILE_FUNCTION();
+
 		uploadUniformMat4(name, value);
 	}
 
 	void OpenGLShader::uploadUniformFloat(const std::string& name, float value) {
+		MK_PROFILE_FUNCTION();
+
 		GLint location = getUniformLocation(name);
 		glUniform1f(location, value);
 	}

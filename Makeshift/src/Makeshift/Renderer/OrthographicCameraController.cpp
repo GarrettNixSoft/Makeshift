@@ -12,6 +12,7 @@ namespace Makeshift {
 	}
 
 	void OrthographicCameraController::onUpdate(Timestep ts) {
+		MK_PROFILE_FUNCTION();
 
 		if (Input::isKeyPressed(MK_KEY_A)) {
 			m_CameraPosition.x -= m_CameraTranslationSpeed * ts;
@@ -42,6 +43,7 @@ namespace Makeshift {
 	}
 
 	void OrthographicCameraController::onEvent(Event& e) {
+		MK_PROFILE_FUNCTION();
 
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<MouseScrolledEvent>(MK_BIND_EVENT_FN(OrthographicCameraController::onMouseScrolled));
@@ -50,6 +52,8 @@ namespace Makeshift {
 	}
 
 	bool OrthographicCameraController::onMouseScrolled(MouseScrolledEvent& e) {
+		MK_PROFILE_FUNCTION();
+
 		m_ZoomLevel -= e.getYOffset() * 0.25f;
 		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
 		m_Camera.setProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
@@ -57,6 +61,8 @@ namespace Makeshift {
 	}
 
 	bool OrthographicCameraController::onWindowResized(WindowResizeEvent& e) {
+		MK_PROFILE_FUNCTION();
+
 		m_AspectRatio = (float) e.getWidth() / (float) e.getHeight();
 		m_Camera.setProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 		return false;

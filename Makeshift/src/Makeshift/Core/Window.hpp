@@ -34,7 +34,7 @@ namespace Makeshift {
 
 		virtual void* getNativeWindow() const = 0;
 
-		static Window* create(const WindowProperties& properties = WindowProperties());
+		static Scope<Window> create(const WindowProperties& properties = WindowProperties());
 	};
 
 }

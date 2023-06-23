@@ -10,6 +10,8 @@ namespace Makeshift {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application() {
+		MK_PROFILE_FUNCTION();
+
 		MK_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
@@ -24,20 +26,27 @@ namespace Makeshift {
 	}
 
 	Application::~Application() {
+		MK_PROFILE_FUNCTION();
 
+		Renderer::Shutdown();
 	}
 
 	void Application::pushLayer(Layer* layer) {
+		MK_PROFILE_FUNCTION();
+
 		m_LayerStack.pushLayer(layer);
 		layer->onAttach();
 	}
 
 	void Application::pushOverlay(Layer* overlay) {
+		MK_PROFILE_FUNCTION();
+
 		m_LayerStack.pushOverlay(overlay);
 		overlay->onAttach();
 	}
 
 	void Application::onEvent(Event& e) {
+		MK_PROFILE_FUNCTION();
 
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<WindowCloseEvent>(MK_BIND_EVENT_FN(Application::onWindowClose));
@@ -52,8 +61,10 @@ namespace Makeshift {
 	}
 
 	void Application::run() {
+		MK_PROFILE_FUNCTION();
 
 		while (m_Running) {
+			MK_PROFILE_SCOPE("Game Loop");
 			
 			float time = (float) glfwGetTime(); // future: Platform::GetTime
 			Timestep timestep = time - m_LastFrameTime;
@@ -61,17 +72,25 @@ namespace Makeshift {
 
 			// Only update the layer stack when not minimized
 			if (!m_Minimized) {
-				for (Layer* layer : m_LayerStack) {
-					layer->onUpdate(timestep);
+				{
+					MK_PROFILE_SCOPE("LayerStack Updates");
+
+					for (Layer* layer : m_LayerStack) {
+						layer->onUpdate(timestep);
+					}
 				}
 			}
 
 			// ImGui might be external to the window, so ignore minimized state for it
-			m_ImGuiLayer->begin();
-			for (Layer* layer : m_LayerStack) {
-				layer->onImGuiRender();
+			{
+				MK_PROFILE_SCOPE("LayerStack ImGuiRender");
+
+				m_ImGuiLayer->begin();
+				for (Layer* layer : m_LayerStack) {
+					layer->onImGuiRender();
+				}
+				m_ImGuiLayer->end();
 			}
-			m_ImGuiLayer->end();
 
 			m_Window->onUpdate();
 		}
@@ -86,6 +105,7 @@ namespace Makeshift {
 	}
 
 	bool Application::onWindowResize(WindowResizeEvent& e) {
+		MK_PROFILE_FUNCTION();
 
 		if (e.getWidth() == 0 || e.getHeight() == 0) {
 			m_Minimized = true;

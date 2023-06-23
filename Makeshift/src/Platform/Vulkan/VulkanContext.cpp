@@ -21,6 +21,8 @@ namespace Makeshift {
 	}
 
 	void VulkanContext::init() {
+		MK_PROFILE_FUNCTION();
+
 		instance = VulkanInit::createInstance();
 		debugMessenger = VulkanInit::createDebugMessenger(instance);
 		surface = VulkanInit::createSurface(instance, windowHandle);
@@ -30,10 +32,13 @@ namespace Makeshift {
 	}
 
 	void VulkanContext::swapBuffers() {
+		MK_PROFILE_FUNCTION();
 
 	}
 
 	void VulkanContext::cleanup() {
+		MK_PROFILE_FUNCTION();
+
 		for (auto imageView : swapChainImageViews) {
 			vkDestroyImageView(device, imageView, nullptr);
 		}

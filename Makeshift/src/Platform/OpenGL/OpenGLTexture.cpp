@@ -8,6 +8,7 @@
 namespace Makeshift {
 
 	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height) : m_Width(width), m_Height(height) {
+		MK_PROFILE_FUNCTION();
 		
 		m_InternalFormat = GL_RGBA8;
 		m_DataFormat = GL_RGBA;
@@ -24,10 +25,16 @@ namespace Makeshift {
 	}
 
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& filePath) : path(filePath) {
+		MK_PROFILE_FUNCTION();
 
 		int w, h, channels;
 		stbi_set_flip_vertically_on_load(1);
-		stbi_uc* data = stbi_load(path.c_str(), &w, &h, &channels, 0);
+		stbi_uc* data = nullptr;
+
+		{
+			MK_PROFILE_SCOPE("stbi_load --- OpenGLTexture2D::OpenGLTexture2D(const std::string&)");
+			data = stbi_load(path.c_str(), &w, &h, &channels, 0);
+		}
 		MK_CORE_ASSERT(data, "Failed to load image!");
 
 		m_Width = w;
@@ -64,10 +71,13 @@ namespace Makeshift {
 	}
 
 	OpenGLTexture2D::~OpenGLTexture2D() {
+		MK_PROFILE_FUNCTION();
+
 		glDeleteTextures(1, &rendererId);
 	}
 
 	void OpenGLTexture2D::setData(void* data, uint32_t size) {
+		MK_PROFILE_FUNCTION();
 
 		uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;
 
@@ -77,6 +87,8 @@ namespace Makeshift {
 	}
 
 	void OpenGLTexture2D::bind(uint32_t slot) const {
+		MK_PROFILE_FUNCTION();
+
 		glBindTextureUnit(slot, rendererId);
 	}
 
