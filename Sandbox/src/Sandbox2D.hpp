@@ -11,7 +11,7 @@ public:
 	virtual void onDetach() override;
 
 	void onUpdate(Makeshift::Timestep ts) override;
-	virtual void onImGuiRender() override;
+	virtual void onImGuiRender(Makeshift::Timestep ts) override;
 	virtual void onEvent(Makeshift::Event& e) override;
 
 private:

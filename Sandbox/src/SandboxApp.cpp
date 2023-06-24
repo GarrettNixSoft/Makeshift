@@ -191,7 +191,7 @@ public:
 
 	}
 
-	void onImGuiRender() override {
+	void onImGuiRender(Makeshift::Timestep ts) override {
 		ImGui::Begin("Settings");
 		ImGui::ColorEdit3("Square Color", glm::value_ptr(squareColor));
 		ImGui::SliderFloat("Square Spacing", &squareSpacing, 0.01f, 0.1f);

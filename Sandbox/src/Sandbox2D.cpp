@@ -70,7 +70,7 @@ void Sandbox2D::onUpdate(Makeshift::Timestep ts) {
 
 }
 
-void Sandbox2D::onImGuiRender() {
+void Sandbox2D::onImGuiRender(Makeshift::Timestep ts) {
 	MK_PROFILE_FUNCTION();
 
 	ImGui::Begin("Settings");
@@ -83,8 +83,10 @@ void Sandbox2D::onImGuiRender() {
 	ImGui::Begin("Stats");
 
 	auto stats = Makeshift::Renderer2D::GetStats();
+	int fps = (int)(1000.0f / ts.getMilliseconds());
 
 	ImGui::Text("-- Renderer2D --");
+	ImGui::Text("Frame Time: %.3fms (%d fps)", ts.getMilliseconds(), fps);
 	ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 	ImGui::Text("Quads: %d", stats.QuadCount);
 	ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());

@@ -87,7 +87,7 @@ namespace Makeshift {
 
 				m_ImGuiLayer->begin();
 				for (Layer* layer : m_LayerStack) {
-					layer->onImGuiRender();
+					layer->onImGuiRender(timestep);
 				}
 				m_ImGuiLayer->end();
 			}
