@@ -7,7 +7,7 @@
 namespace Makeshift {
 
 	OrthographicCameraController::OrthographicCameraController(float aspectRatio, bool rotationAllowed)
-		: m_AspectRatio(aspectRatio), m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel), m_RotationAllowed(rotationAllowed) {
+		: m_AspectRatio(aspectRatio), m_Bounds({ -m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel }), m_Camera(m_Bounds.left, m_Bounds.right, m_Bounds.bottom, m_Bounds.top), m_RotationAllowed(rotationAllowed) {
 
 	}
 
@@ -56,7 +56,8 @@ namespace Makeshift {
 
 		m_ZoomLevel -= e.getYOffset() * 0.25f;
 		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
-		m_Camera.setProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+		m_Bounds = { -m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel };
+		m_Camera.setProjection(m_Bounds.left, m_Bounds.right, m_Bounds.bottom, m_Bounds.top);
 		return false;
 	}
 
@@ -64,7 +65,8 @@ namespace Makeshift {
 		MK_PROFILE_FUNCTION();
 
 		m_AspectRatio = (float) e.getWidth() / (float) e.getHeight();
-		m_Camera.setProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+		m_Bounds = { -m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel };
+		m_Camera.setProjection(m_Bounds.left, m_Bounds.right, m_Bounds.bottom, m_Bounds.top);
 		return false;
 	}
 

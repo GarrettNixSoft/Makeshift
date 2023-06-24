@@ -10,6 +10,14 @@
 
 namespace Makeshift {
 
+	struct OrthographicCameraBounds {
+		float left, right;
+		float top, bottom;
+
+		float getWidth() { return right - left; }
+		float getHeight() { return top - bottom; }
+	};
+
 	class OrthographicCameraController {
 	public:
 		OrthographicCameraController(float aspectRatio, bool rotationAllowed = false);
@@ -22,12 +30,15 @@ namespace Makeshift {
 
 		float getZoomLevel() const { return m_ZoomLevel; }
 		void setZoomLevel(float level) { m_ZoomLevel = level; }
+
+		const OrthographicCameraBounds& getBounds() const { return m_Bounds; }
 	private:
 		bool onMouseScrolled(MouseScrolledEvent& e);
 		bool onWindowResized(WindowResizeEvent& e);
 	private:
 		float m_AspectRatio;
 		float m_ZoomLevel = 1.0f;
+		OrthographicCameraBounds m_Bounds;
 		OrthographicCamera m_Camera;
 
 		bool m_RotationAllowed;
