@@ -12,7 +12,7 @@ namespace Makeshift {
 
 	struct OrthographicCameraBounds {
 		float left, right;
-		float top, bottom;
+		float bottom, top;
 
 		float getWidth() { return right - left; }
 		float getHeight() { return top - bottom; }
