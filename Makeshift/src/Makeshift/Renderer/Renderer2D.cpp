@@ -25,13 +25,13 @@ namespace Makeshift {
 
 	struct Renderer2DData {
 
-		const uint32_t MAX_QUADS = 10000;
-		const uint32_t MAX_VERTICES = MAX_QUADS * 4;
-		const uint32_t MAX_INDICES = MAX_QUADS * 6;
+		static const uint32_t MAX_QUADS = 20000;
+		static const uint32_t MAX_VERTICES = MAX_QUADS * 4;
+		static const uint32_t MAX_INDICES = MAX_QUADS * 6;
 
-		const uint32_t MAX_TRIANGLES = 10000;
-		const uint32_t MAX_TRI_VERTICES = MAX_TRIANGLES * 3;
-		const uint32_t MAX_TRI_INDICES = MAX_TRIANGLES * 3;
+		static const uint32_t MAX_TRIANGLES = 10000;
+		static const uint32_t MAX_TRI_VERTICES = MAX_TRIANGLES * 3;
+		static const uint32_t MAX_TRI_INDICES = MAX_TRIANGLES * 3;
 
 		static const uint32_t MAX_TEXTURE_SLOTS = 32; // TODO RenderCapabilities
 
@@ -57,6 +57,8 @@ namespace Makeshift {
 		uint32_t textureSlotIndex = 1; // 0 = white texture
 
 		glm::vec4 quadVertexPositions[4];
+
+		Renderer2D::Statistics stats;
 
 	};
 
@@ -110,7 +112,7 @@ namespace Makeshift {
 			{ ShaderDataType::Vec3, "position" },
 			{ ShaderDataType::Vec4, "color" },
 			{ ShaderDataType::Vec2, "texCoord" }
-		});
+			});
 		s_Data.triangleVertexArray->addVertexBuffer(triangleVB);
 
 		uint32_t* triangleIndices = new uint32_t[s_Data.MAX_TRI_INDICES];
@@ -144,6 +146,8 @@ namespace Makeshift {
 		s_Data.quadVertexPositions[2] = { 0.5f, 0.5f, 0.0f, 1.0f };
 		s_Data.quadVertexPositions[3] = { -0.5f, 0.5f, 0.0f, 1.0f };
 
+		s_Data.quadVertexArray->bind();
+
 	}
 
 	void Renderer2D::Shutdown() {
@@ -168,13 +172,14 @@ namespace Makeshift {
 	void Renderer2D::EndScene() {
 		MK_PROFILE_FUNCTION();
 
-		uint32_t dataSize = (uint8_t*) s_Data.quadVertexBufferPtr - (uint8_t*) s_Data.quadVertexBufferBase;
+		uint32_t dataSize = (uint8_t*)s_Data.quadVertexBufferPtr - (uint8_t*)s_Data.quadVertexBufferBase;
 		s_Data.quadVertexBuffer->setData(s_Data.quadVertexBufferBase, dataSize);
 
 		Flush();
 	}
 
 	void Renderer2D::Flush() {
+		MK_PROFILE_FUNCTION();
 
 		// Bind textures
 		for (uint32_t i = 0; i < s_Data.textureSlotIndex; i++) {
@@ -182,7 +187,20 @@ namespace Makeshift {
 		}
 
 		RenderCommand::DrawIndexed(s_Data.quadVertexArray, s_Data.quadIndexCount);
+		s_Data.stats.DrawCalls++;
 
+	}
+
+	void Renderer2D::FlushAndReset() {
+		MK_PROFILE_FUNCTION();
+
+		EndScene();
+
+		// reset to base of the vertex buffer array
+		s_Data.quadIndexCount = 0;
+		s_Data.quadVertexBufferPtr = s_Data.quadVertexBufferBase;
+
+		s_Data.textureSlotIndex = 1;
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color) {
@@ -193,6 +211,10 @@ namespace Makeshift {
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
 		MK_PROFILE_FUNCTION();
+
+		if (s_Data.quadIndexCount >= Renderer2DData::MAX_INDICES) {
+			FlushAndReset();
+		}
 
 		const float textureIndex = 0.0f; // white texture
 		const float tilingFactor = 1.0f;
@@ -234,14 +256,7 @@ namespace Makeshift {
 
 		s_Data.quadIndexCount += 6;
 
-		//s_Data.whiteTexture->bind();
-
-		//glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-		//s_Data.textureShader->setMat4("u_Transform", transform);
-
-		s_Data.quadVertexArray->bind();
-		//RenderCommand::DrawIndexed(s_Data.quadVertexArray);
-
+		s_Data.stats.QuadCount++;
 
 	}
 	
@@ -254,6 +269,10 @@ namespace Makeshift {
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D> texture, const glm::vec4 & tintColor, float tiling) {
 		MK_PROFILE_FUNCTION();
 
+		if (s_Data.quadIndexCount >= Renderer2DData::MAX_INDICES) {
+			FlushAndReset();
+		}
+
 		constexpr glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 		float textureIndex = 0.0f;
@@ -308,6 +327,8 @@ namespace Makeshift {
 
 		s_Data.quadIndexCount += 6;
 
+		s_Data.stats.QuadCount++;
+
 	}
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color) {
@@ -318,6 +339,10 @@ namespace Makeshift {
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const glm::vec4& color) {
 		MK_PROFILE_FUNCTION();
+
+		if (s_Data.quadIndexCount >= Renderer2DData::MAX_INDICES) {
+			FlushAndReset();
+		}
 
 		const float textureIndex = 0.0f; // white texture
 		const float tilingFactor = 1.0f;
@@ -360,6 +385,8 @@ namespace Makeshift {
 
 		s_Data.quadIndexCount += 6;
 
+		s_Data.stats.QuadCount++;
+
 	}
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Ref<Texture2D> texture, const glm::vec4& tintColor, float tiling) {
@@ -370,6 +397,10 @@ namespace Makeshift {
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D> texture, const glm::vec4& tintColor, float tiling) {
 		MK_PROFILE_FUNCTION();
+
+		if (s_Data.quadIndexCount >= Renderer2DData::MAX_INDICES) {
+			FlushAndReset();
+		}
 
 		constexpr glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
@@ -425,6 +456,8 @@ namespace Makeshift {
 		s_Data.quadVertexBufferPtr++;
 
 		s_Data.quadIndexCount += 6;
+
+		s_Data.stats.QuadCount++;
 
 	}
 
@@ -450,6 +483,14 @@ namespace Makeshift {
 		RenderCommand::DrawIndexed(s_Data.triangleVertexArray);
 
 
+	}
+
+	void Renderer2D::ResetStats() {
+		memset(&s_Data.stats, 0, sizeof(Statistics));
+	}
+
+	Renderer2D::Statistics Renderer2D::GetStats() {
+		return s_Data.stats;
 	}
 
 

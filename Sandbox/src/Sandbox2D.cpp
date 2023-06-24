@@ -32,6 +32,7 @@ void Sandbox2D::onUpdate(Makeshift::Timestep ts) {
 	cameraController.onUpdate(ts);
 
 	// Render
+	Makeshift::Renderer2D::ResetStats();
 	{
 		MK_PROFILE_SCOPE("Renderer Prep");
 		Makeshift::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
@@ -48,10 +49,21 @@ void Sandbox2D::onUpdate(Makeshift::Timestep ts) {
 		Makeshift::Renderer2D::DrawRotatedQuad({ 1.0f, 0.0f }, { 0.8f, 0.8f }, -45.0f, { 0.9f, 0.1f, 0.1f, 1.0f });
 		Makeshift::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.9f, 0.2f, 0.2f, 1.0f });
 		Makeshift::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, squareColor);
-		Makeshift::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 10.0f, 10.0f }, texture, { 1.0f, 0.8f, 0.8f, 1.0f }, 10.0f);
+		Makeshift::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 20.0f }, texture, { 1.0f, 0.8f, 0.8f, 1.0f }, 10.0f);
 		Makeshift::Renderer2D::DrawRotatedQuad({ -2.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, rotation, texture, { 1.0f, 0.8f, 0.8f, 1.0f }, 20.0f);
 
 		//Makeshift::Renderer2D::DrawTriangle({ 1.0f, 1.0f }, { 0.6f, 0.6f }, { 0.1f, 0.3f, 0.9f, 1.0f });
+
+		Makeshift::Renderer2D::EndScene();
+
+		Makeshift::Renderer2D::BeginScene(cameraController.getCamera());
+
+		for (float y = -5.0f; y < 5.0f; y += 0.5f) {
+			for (float x = -5.0f; x < 5.0f; x += 0.5f) {
+				glm::vec4 color = { (x + 5.0f) / 10.0f, (y + 5.0f) / 10.0f, 0.2f, 0.7f };
+				Makeshift::Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
+			}
+		}
 
 		Makeshift::Renderer2D::EndScene();
 	}
@@ -65,6 +77,18 @@ void Sandbox2D::onImGuiRender() {
 	ImGui::ColorEdit4("Quad Color", glm::value_ptr(squareColor));
 
 	profileResults.clear();
+
+	ImGui::End();
+
+	ImGui::Begin("Stats");
+
+	auto stats = Makeshift::Renderer2D::GetStats();
+
+	ImGui::Text("-- Renderer2D --");
+	ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+	ImGui::Text("Quads: %d", stats.QuadCount);
+	ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+	ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 
 	ImGui::End();
 }
