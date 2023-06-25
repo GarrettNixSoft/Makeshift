@@ -1,7 +1,8 @@
 #pragma once
 
-#include "OrthographicCamera.hpp"
-#include "Texture.hpp"
+#include "Makeshift/Renderer/OrthographicCamera.hpp"
+#include "Makeshift/Renderer/Texture.hpp"
+#include "Makeshift/Renderer/SubTexture2D.hpp"
 
 #include <glm/glm.hpp>
 
@@ -22,12 +23,16 @@ namespace Makeshift {
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D> texture, const glm::vec4& tintColor = glm::vec4(1.0f), float tiling = 1.0f);
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D> texture, const glm::vec4& tintColor = glm::vec4(1.0f), float tiling = 1.0f);
+		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<SubTexture2D> subtexture, const glm::vec4& tintColor = glm::vec4(1.0f), float tiling = 1.0f);
+		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture2D> subtexture, const glm::vec4& tintColor = glm::vec4(1.0f), float tiling = 1.0f);
 
 		// Rotation should be specified in radians
 		static void DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color);
 		static void DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const glm::vec4& color);
 		static void DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Ref<Texture2D> texture, const glm::vec4& tintColor = glm::vec4(1.0f), float tiling = 1.0f);
 		static void DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D> texture, const glm::vec4& tintColor = glm::vec4(1.0f), float tiling = 1.0f);
+		static void DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Ref<SubTexture2D> subtexture, const glm::vec4& tintColor = glm::vec4(1.0f), float tiling = 1.0f);
+		static void DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<SubTexture2D> subtexture, const glm::vec4& tintColor = glm::vec4(1.0f), float tiling = 1.0f);
 
 		static void DrawTriangle(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation = 0.0f);
 		static void DrawTriangle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation = 0.0f);

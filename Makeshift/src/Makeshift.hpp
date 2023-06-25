@@ -27,6 +27,7 @@
 #include "Makeshift/Renderer/Buffer.hpp"
 #include "Makeshift/Renderer/Shader.hpp"
 #include "Makeshift/Renderer/Texture.hpp"
+#include "Makeshift/Renderer/SubTexture2D.hpp"
 #include "Makeshift/Renderer/VertexArray.hpp"
 
 #include "Makeshift/Renderer/OrthographicCameraController.hpp"

@@ -16,6 +16,11 @@ void Sandbox2D::onAttach() {
 	MK_PROFILE_FUNCTION();
 
 	texture = Makeshift::Texture2D::Create("assets/textures/checkerboard.png");
+	spriteSheet = Makeshift::Texture2D::Create("assets/game/textures/RPGpack_sheet_2X.png");
+
+	stairsTexture = Makeshift::SubTexture2D::CreateFromCoords(spriteSheet, { 7, 6 }, { 128.0f, 128.0f });
+	barrelTexture = Makeshift::SubTexture2D::CreateFromCoords(spriteSheet, { 8, 2 }, { 128.0f, 128.0f });
+	treeTexture = Makeshift::SubTexture2D::CreateFromCoords(spriteSheet, { 2, 1 }, { 128.0f, 128.0f }, { 1, 2 });
 }
 
 void Sandbox2D::onDetach() {
@@ -39,6 +44,7 @@ void Sandbox2D::onUpdate(Makeshift::Timestep ts) {
 		Makeshift::RenderCommand::Clear();
 	}
 
+#if 0
 	{
 		static float rotation = 0.0f;
 		rotation += ts * 90.0f;
@@ -67,6 +73,15 @@ void Sandbox2D::onUpdate(Makeshift::Timestep ts) {
 
 		Makeshift::Renderer2D::EndScene();
 	}
+#endif
+
+		Makeshift::Renderer2D::BeginScene(cameraController.getCamera());
+
+		Makeshift::Renderer2D::DrawQuad({ 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f}, stairsTexture);
+		Makeshift::Renderer2D::DrawQuad({ 1.0f, 0.0f, 0.0f }, {1.0f, 1.0f}, barrelTexture);
+		Makeshift::Renderer2D::DrawQuad({ -1.0f, 0.0f, 0.0f }, {1.0f, 2.0f}, treeTexture);
+
+		Makeshift::Renderer2D::EndScene();
 
 }
 

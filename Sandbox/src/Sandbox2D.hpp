@@ -22,6 +22,10 @@ private:
 	Makeshift::Ref<Makeshift::Shader> flatColorShader;
 
 	Makeshift::Ref<Makeshift::Texture2D> texture;
+	Makeshift::Ref<Makeshift::Texture2D> spriteSheet;
+	Makeshift::Ref<Makeshift::SubTexture2D> stairsTexture;
+	Makeshift::Ref<Makeshift::SubTexture2D> barrelTexture;
+	Makeshift::Ref<Makeshift::SubTexture2D> treeTexture;
 
 	struct ProfileResult {
 		const char* name;
