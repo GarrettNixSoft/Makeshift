@@ -20,6 +20,7 @@ private:
 	// TEMPORARY
 	Makeshift::Ref<Makeshift::VertexArray> squareVA;
 	Makeshift::Ref<Makeshift::Shader> flatColorShader;
+	Makeshift::Ref<Makeshift::Framebuffer> framebuffer;
 
 	Makeshift::Ref<Makeshift::Texture2D> texture;
 	Makeshift::Ref<Makeshift::Texture2D> spriteSheet;
