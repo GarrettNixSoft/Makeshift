@@ -36,4 +36,7 @@ private:
 
 	glm::vec4 squareColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 
+	uint32_t m_MapWidth, m_MapHeight;
+	std::unordered_map<char, Makeshift::Ref<Makeshift::SubTexture2D>> s_TextureMap;
+
 };

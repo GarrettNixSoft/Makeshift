@@ -4,9 +4,28 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Platform/OpenGL/OpenGLShader.hpp"
-
 #include <chrono>
+
+static const uint32_t s_MapWidth = 24;
+
+static const char* s_MapTiles =
+"WWWWWWWWWWWWWWWWWWWWWWWW"
+"WWWWWWWDDDDDDDWWWWWWWWWW"
+"WWWWWDDDDDDDDDDDDWWWWWWW"
+"WWWWDDDDDDDDDDDDDDDDWWWW"
+"WWWDDDDWWWDDDDDDDCDDDWWW"
+"WWDDDDDWWWDDDDDDDDDDDDWW"
+"WDDDDDDDDDDDDDDDDDDDDDWW"
+"WWDDDDDDDDDDDDDDDDDDDDWW"
+"WWWDDDDDDDDDDDDDDDDDDDWW"
+"WWWWDDDDDDDDDDDDDDDDDDWW"
+"WWWWWDDDDDDDDDDDDDDDDWWW"
+"WWWWWWWDDDDDDDDDDDDDWWWW"
+"WWWWWWWWWDDDDDDDDDWWWWWW"
+"WWWWWWWWWWWWWWWWWWWWWWWW"
+;
+
+
 
 Sandbox2D::Sandbox2D() : Layer("Sandbox2D"), cameraController(1920.0f / 1080.0f) {
 
@@ -21,6 +40,14 @@ void Sandbox2D::onAttach() {
 	stairsTexture = Makeshift::SubTexture2D::CreateFromCoords(spriteSheet, { 7, 6 }, { 128.0f, 128.0f });
 	barrelTexture = Makeshift::SubTexture2D::CreateFromCoords(spriteSheet, { 8, 2 }, { 128.0f, 128.0f });
 	treeTexture = Makeshift::SubTexture2D::CreateFromCoords(spriteSheet, { 2, 1 }, { 128.0f, 128.0f }, { 1, 2 });
+
+	m_MapWidth = s_MapWidth;
+	m_MapHeight = strlen(s_MapTiles) / s_MapWidth;
+
+	s_TextureMap['W'] = Makeshift::SubTexture2D::CreateFromCoords(spriteSheet, { 11, 11 }, {128.0f, 128.0f});
+	s_TextureMap['D'] = Makeshift::SubTexture2D::CreateFromCoords(spriteSheet, { 6, 11 }, {128.0f, 128.0f});
+
+	cameraController.setZoomLevel(5.0f);
 }
 
 void Sandbox2D::onDetach() {
@@ -77,9 +104,25 @@ void Sandbox2D::onUpdate(Makeshift::Timestep ts) {
 
 		Makeshift::Renderer2D::BeginScene(cameraController.getCamera());
 
-		Makeshift::Renderer2D::DrawQuad({ 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f}, stairsTexture);
-		Makeshift::Renderer2D::DrawQuad({ 1.0f, 0.0f, 0.0f }, {1.0f, 1.0f}, barrelTexture);
-		Makeshift::Renderer2D::DrawQuad({ -1.0f, 0.0f, 0.0f }, {1.0f, 2.0f}, treeTexture);
+		for (uint32_t y = 0; y < m_MapHeight; y++) {
+			for (uint32_t x = 0; x < m_MapWidth; x++) {
+
+				char tileType = s_MapTiles[y * m_MapWidth + x];
+				Makeshift::Ref<Makeshift::SubTexture2D> texture;
+
+				if (s_TextureMap.find(tileType) != s_TextureMap.end())
+					texture = s_TextureMap[tileType];
+				else
+					texture = barrelTexture;
+
+				Makeshift::Renderer2D::DrawQuad({ x - m_MapWidth / 2.0f, m_MapHeight - y - m_MapHeight / 2.0f, 0.5f }, { 1.0f, 1.0f }, texture);
+
+			}
+		}
+
+		//Makeshift::Renderer2D::DrawQuad({ 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f}, stairsTexture);
+		//Makeshift::Renderer2D::DrawQuad({ 1.0f, 0.0f, 0.0f }, {1.0f, 1.0f}, barrelTexture);
+		//Makeshift::Renderer2D::DrawQuad({ -1.0f, 0.0f, 0.0f }, {1.0f, 2.0f}, treeTexture);
 
 		Makeshift::Renderer2D::EndScene();
 
