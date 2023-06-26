@@ -45,6 +45,10 @@ namespace Makeshift {
 		overlay->onAttach();
 	}
 
+	void Application::Close() {
+		m_Running = false;
+	}
+
 	void Application::onEvent(Event& e) {
 		MK_PROFILE_FUNCTION();
 

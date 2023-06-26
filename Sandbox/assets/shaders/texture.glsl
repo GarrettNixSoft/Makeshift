@@ -38,7 +38,7 @@ in float v_TilingFactor;
 uniform sampler2D u_Textures[32];
 
 void main(void) {
-	// TODO: tiling factor in vertex buffer
 	outColor = texture(u_Textures[int(v_TexIndex)], v_TexCoord * v_TilingFactor) * v_Color;
+	// TODO: use a switch case for GPU compatibility
 
 }
