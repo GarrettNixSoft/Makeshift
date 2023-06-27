@@ -1,5 +1,5 @@
 #include "mkpch.hpp"
-#include "WindowsInput.hpp"
+#include "Makeshift/Core/Input.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -7,45 +7,43 @@
 
 namespace Makeshift {
 
-	Input* Input::instance = new WindowsInput();
-
-	bool WindowsInput::isKeyPressedImpl(int keycode) {
+	bool Input::isKeyPressed(int keycode) {
 		auto window = static_cast<GLFWwindow*>(Application::Get().getWindow().getNativeWindow());
 		auto state = glfwGetKey(window, keycode);
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
-	bool WindowsInput::isMouseButtonPressedImpl(int button) {
+	bool Input::isMouseButtonPressed(int button) {
 		auto window = static_cast<GLFWwindow*>(Application::Get().getWindow().getNativeWindow());
 		auto state = glfwGetMouseButton(window, button);
 		return state == GLFW_PRESS;
 	}
 
 
-	std::pair<float, float> WindowsInput::getMousePositionImpl() {
+	std::pair<float, float> Input::getMousePosition() {
 		auto window = static_cast<GLFWwindow*>(Application::Get().getWindow().getNativeWindow());
 		double x, y;
 		glfwGetCursorPos(window, &x, &y);
 		return { (float)x, (float)y };
 	}
 
-	float WindowsInput::getMouseXImpl() {
-		auto [x, y] = getMousePositionImpl();
+	float Input::getMouseX() {
+		auto [x, y] = getMousePosition();
 		return x;
 	}
 
-	float WindowsInput::getMouseYImpl() {
-		auto [x, y] = getMousePositionImpl();
+	float Input::getMouseY() {
+		auto [x, y] = getMousePosition();
 		return y;
 	}
 
-	float WindowsInput::getMouseScrollXImpl() {
+	float Input::getMouseScrollX() {
 		auto window = static_cast<GLFWwindow*>(Application::Get().getWindow().getNativeWindow());
 		// TODO
 		return 0;
 	}
 
-	float WindowsInput::getMouseScrollYImpl() {
+	float Input::getMouseScrollY() {
 		auto window = static_cast<GLFWwindow*>(Application::Get().getWindow().getNativeWindow());
 		// TODO
 		return 0;
