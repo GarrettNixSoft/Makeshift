@@ -42,6 +42,8 @@ namespace Makeshift {
 		uint32_t m_MapWidth, m_MapHeight;
 		std::unordered_map<char, Ref<SubTexture2D>> s_TextureMap;
 
+		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
+
 	};
 
 }

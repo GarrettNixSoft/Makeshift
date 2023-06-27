@@ -51,6 +51,11 @@ namespace Makeshift {
 
 	}
 
+	void OrthographicCameraController::onResize(float width, float height) {
+		m_AspectRatio = width / height;
+		calculateView();
+	}
+
 	void OrthographicCameraController::calculateView() {
 		MK_PROFILE_FUNCTION();
 
@@ -70,8 +75,7 @@ namespace Makeshift {
 	bool OrthographicCameraController::onWindowResized(WindowResizeEvent& e) {
 		MK_PROFILE_FUNCTION();
 
-		m_AspectRatio = (float) e.getWidth() / (float) e.getHeight();
-		calculateView();
+		onResize((float) e.getWidth(), (float) e.getHeight());
 		return false;
 	}
 
