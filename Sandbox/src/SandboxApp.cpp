@@ -208,7 +208,7 @@ public:
 	}
 
 	bool onKeyPressedEvent(Makeshift::KeyPressedEvent& event) {
-		if (event.getKeyCode() == MK_KEY_ESCAPE) {
+		if (event.getKeyCode() == static_cast<int16_t>(Makeshift::Key::Escape)) {
 			MK_INFO("This should close the window");
 		}
 
