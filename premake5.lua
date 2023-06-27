@@ -184,3 +184,7 @@ project "Makeshift-Workshop"
 		defines "MK_DIST"
 		runtime "Release"
 		optimize "on"
+
+	filter "files:assets/shaders/*"
+		buildcommands '"C:/VulkanSDK/1.3.246.1/Bin/glslc.exe" -V -o "%{file.directory}/bin/%{file.name}.spv" "%{file.relpath}"'
+		buildoutputs "%{file.directory}/bin/%{file.name}.spv"
