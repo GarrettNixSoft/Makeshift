@@ -9,10 +9,12 @@ namespace Makeshift {
 
 	struct WindowProperties {
 		std::string title;
-		unsigned int width;
-		unsigned int height;
+		uint32_t width;
+		uint32_t height;
 
-		WindowProperties(const std::string& title = "Makeshift Engine", unsigned int width = 1920, unsigned int height = 1080)
+		WindowProperties(const std::string& title = "Makeshift Engine",
+						 uint32_t width = 1920,
+						 uint32_t height = 1080)
 			: title(title), width(width), height(height) {}
 	};
 
@@ -24,8 +26,8 @@ namespace Makeshift {
 
 		virtual void onUpdate() = 0;
 
-		virtual unsigned int getWidth() const = 0;
-		virtual unsigned int getHeight() const = 0;
+		virtual uint32_t getWidth() const = 0;
+		virtual uint32_t getHeight() const = 0;
 
 		// Window attributes
 		virtual void setEventCallback(const EventCallbackFn& callback) = 0;

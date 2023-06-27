@@ -1,7 +1,7 @@
 workspace "Makeshift"
 	architecture "x64"
 
-	startproject "Sandbox"
+	startproject "Makeshift-Workshop"
 
 	configurations {
 		"Debug",
@@ -116,8 +116,7 @@ project "Sandbox"
 		"Makeshift/vendor/spdlog/include",
 		"Makeshift/src",
 		"Makeshift/vendor",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.Glad}"
+		"%{IncludeDir.glm}"
 	}
 
 	links {
@@ -127,9 +126,49 @@ project "Sandbox"
 	filter "system:windows"
 		systemversion "latest"
 
-		defines {
-			"MK_PLATFORM_WINDOWS"
-		}
+	filter "configurations:Debug"
+		defines "MK_DEBUG"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		defines "MK_RELEASE"
+		runtime "Release"
+		optimize "on"
+
+	filter "configurations:Dist"
+		defines "MK_DIST"
+		runtime "Release"
+		optimize "on"
+
+project "Makeshift-Workshop"
+	location "Makeshift-Workshop"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files {
+		"%{prj.name}/src/**.hpp",
+		"%{prj.name}/src/**.cpp"
+	}
+
+	includedirs {
+		"Makeshift/vendor/spdlog/include",
+		"Makeshift/src",
+		"Makeshift/vendor",
+		"%{IncludeDir.glm}"
+	}
+
+	links {
+		"Makeshift"
+	}
+
+	filter "system:windows"
+		systemversion "latest"
 
 	filter "configurations:Debug"
 		defines "MK_DEBUG"

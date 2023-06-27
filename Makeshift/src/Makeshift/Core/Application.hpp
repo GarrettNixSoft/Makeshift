@@ -16,7 +16,7 @@ namespace Makeshift {
 	class Application {
 
 	public:
-		Application();
+		Application(const std::string& name = "Makeshift App");
 		virtual ~Application();
 
 		void run();
