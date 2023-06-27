@@ -27,9 +27,12 @@ namespace Makeshift {
 		void pushOverlay(Layer* overlay);
 
 		inline Window& getWindow() { return *m_Window; }
-		inline static Application& Get() { return *s_Instance; }
 
 		void Close();
+
+		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
+
+		inline static Application& Get() { return *s_Instance; }
 	private:
 		bool onWindowClose(WindowCloseEvent& e);
 		bool onWindowResize(WindowResizeEvent& e);

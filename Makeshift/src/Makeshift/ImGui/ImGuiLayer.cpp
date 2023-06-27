@@ -63,6 +63,14 @@ namespace Makeshift {
 		ImGui::DestroyContext();
 	}
 
+	void ImGuiLayer::onEvent(Event& e) {
+		if (m_BlockEvents) {
+			ImGuiIO& io = ImGui::GetIO();
+			e.handled |= e.isInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+			e.handled |= e.isInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+		}
+	}
+
 	void ImGuiLayer::begin() {
 		MK_PROFILE_FUNCTION();
 

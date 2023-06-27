@@ -14,11 +14,16 @@ namespace Makeshift {
 
 		virtual void onAttach() override;
 		virtual void onDetach() override;
+		virtual void onEvent(Event& e) override;
+
 		virtual void onImGuiRender(Timestep ts) {}
 
 		void begin();
 		void end();
+
+		void blockEvents(bool block) { m_BlockEvents = block; }
 	private:
+		bool m_BlockEvents = true;
 		float lastTime = 0.0f;
 	};
 
