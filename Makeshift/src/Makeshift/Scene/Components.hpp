@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Makeshift/Renderer/Camera.hpp"
+
 #include <glm/glm.hpp>
 
 namespace Makeshift {
@@ -37,6 +39,15 @@ namespace Makeshift {
 
 	};
 
+	struct CameraComponent {
 
+		Makeshift::Camera camera;
+		bool primary = true; // TODO move to Scene
+
+		CameraComponent() = default;
+		CameraComponent(const CameraComponent&) = default;
+		CameraComponent(const glm::mat4& projection) : camera( projection ) {}
+
+	};
 
 }

@@ -62,6 +62,13 @@ namespace Makeshift {
 
 		m_SquareEntity = m_ActiveScene->createEntity("Square");
 		m_SquareEntity.addComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+
+		m_CameraEntity = m_ActiveScene->createEntity("Camera Entity");
+		m_CameraEntity.addComponent<CameraComponent>(glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f));
+
+		m_SecondCamera = m_ActiveScene->createEntity("Clip Space Camera");
+		auto& cc = m_SecondCamera.addComponent<CameraComponent>(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f));
+		cc.primary = false;
 		
 	}
 
@@ -89,77 +96,12 @@ namespace Makeshift {
 			RenderCommand::Clear();
 		}
 
-		#if 0
-		{
-			static float rotation = 0.0f;
-			rotation += ts * 90.0f;
-
-			MK_PROFILE_SCOPE("Render Scene");
-			Renderer2D::BeginScene(cameraController.getCamera());
-
-			Renderer2D::DrawRotatedQuad({ 1.0f, 0.0f }, { 0.8f, 0.8f }, glm::radians(-45.0f), { 0.9f, 0.1f, 0.1f, 1.0f });
-			Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.9f, 0.2f, 0.2f, 1.0f });
-			Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, squareColor);
-			Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 20.0f }, texture, { 1.0f, 0.8f, 0.8f, 1.0f }, 10.0f);
-			Renderer2D::DrawRotatedQuad({ -2.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, glm::radians(rotation), texture, { 1.0f, 0.8f, 0.8f, 1.0f }, 20.0f);
-
-			//Renderer2D::DrawTriangle({ 1.0f, 1.0f }, { 0.6f, 0.6f }, { 0.1f, 0.3f, 0.9f, 1.0f });
-
-			Renderer2D::EndScene();
-
-			Renderer2D::BeginScene(cameraController.getCamera());
-
-			for (float y = -5.0f; y < 5.0f; y += 0.5f) {
-				for (float x = -5.0f; x < 5.0f; x += 0.5f) {
-					glm::vec4 color = { (x + 5.0f) / 10.0f, (y + 5.0f) / 10.0f, 0.2f, 0.7f };
-					Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
-				}
-			}
-
-			Renderer2D::EndScene();
-		}
-		#endif
-
-		//Renderer2D::BeginScene(m_CameraController.getCamera());
-
-		/*
-		for (uint32_t y = 0; y < m_MapHeight; y++) {
-			for (uint32_t x = 0; x < m_MapWidth; x++) {
-
-				char tileType = s_MapTiles[y * m_MapWidth + x];
-				Ref<SubTexture2D> texture;
-
-				if (s_TextureMap.find(tileType) != s_TextureMap.end())
-					texture = s_TextureMap[tileType];
-				else
-					texture = m_BarrelTexture;
-
-				Renderer2D::DrawQuad({ x - m_MapWidth / 2.0f, m_MapHeight - y - m_MapHeight / 2.0f, 0.5f }, { 1.0f, 1.0f }, texture);
-
-			}
-		}
-		*/
-
-		//Renderer2D::DrawQuad({ 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f}, stairsTexture);
-		//Renderer2D::DrawQuad({ 1.0f, 0.0f, 0.0f }, {1.0f, 1.0f}, barrelTexture);
-		//Renderer2D::DrawQuad({ -1.0f, 0.0f, 0.0f }, {1.0f, 2.0f}, treeTexture);
-
-		//Renderer2D::EndScene();
-		//m_Framebuffer->unbind();
-
-		
-
 		{
 			MK_PROFILE_SCOPE("Render Scene (ECS)");
-			Renderer2D::BeginScene(m_CameraController.getCamera());
 
 			// Update scene
 			m_ActiveScene->onUpdate(ts);
 
-			Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 20.0f }, m_Texture, { 1.0f, 0.8f, 0.8f, 1.0f }, 10.0f);
-			Renderer2D::DrawQuad({ 1.0f, 0.0f, 0.0f }, {1.0f, 1.0f}, m_BarrelTexture);
-
-			Renderer2D::EndScene();
 			m_Framebuffer->unbind();
 		}
 
@@ -239,6 +181,16 @@ namespace Makeshift {
 
 			auto& squareColor = m_SquareEntity.getComponent<SpriteRendererComponent>().color;
 			ImGui::ColorEdit4("Quad Color", glm::value_ptr(squareColor));
+		}
+
+		ImGui::Separator();
+		ImGui::Text("Camera(s)");
+
+		ImGui::DragFloat3("Camera Transform", glm::value_ptr(m_CameraEntity.getComponent<TransformComponent>().transform[3]));
+
+		if (ImGui::Checkbox("Show Clip Space", &m_ClipSpaceCamera)) {
+			m_CameraEntity.getComponent<CameraComponent>().primary = !m_ClipSpaceCamera;
+			m_SecondCamera.getComponent<CameraComponent>().primary = m_ClipSpaceCamera;
 		}
 
 		ImGui::End();

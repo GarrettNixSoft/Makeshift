@@ -166,7 +166,21 @@ namespace Makeshift {
 		s_Data.quadVertexBufferPtr = s_Data.quadVertexBufferBase;
 
 		s_Data.textureSlotIndex = 1;
+	}
 
+	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform) {
+		MK_PROFILE_FUNCTION();
+
+		glm::mat4 viewProj = camera.getProjection() * glm::inverse(transform);
+
+		s_Data.textureShader->bind();
+		s_Data.textureShader->setMat4("u_ViewProjection", viewProj);
+
+		// reset to base of the vertex buffer array
+		s_Data.quadIndexCount = 0;
+		s_Data.quadVertexBufferPtr = s_Data.quadVertexBufferBase;
+
+		s_Data.textureSlotIndex = 1;
 	}
 
 	void Renderer2D::EndScene() {

@@ -29,13 +29,39 @@ namespace Makeshift {
 	void Scene::onUpdate(Timestep ts) {
 		MK_PROFILE_FUNCTION();
 
-		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-		for (auto entity : group) {
+		// Render 2D
+		Camera* mainCamera = nullptr;
+		glm::mat4* cameraTransform = nullptr;
+		{
+			auto group = m_Registry.view<TransformComponent, CameraComponent>();
+			for (auto entity : group) {
 
-			auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-			Renderer2D::DrawQuad(transform, sprite.color);
+				auto& [transform, camera] = group.get<TransformComponent, CameraComponent>(entity);
 
+				if (camera.primary) {
+					mainCamera = &camera.camera;
+					cameraTransform = &transform.transform;
+					break;
+				}
+
+			}
 		}
+
+		if (mainCamera) {
+			Renderer2D::BeginScene(mainCamera->getProjection(), *cameraTransform);
+
+			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+			for (auto entity : group) {
+
+				auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+				Renderer2D::DrawQuad(transform, sprite.color);
+
+			}
+
+			Renderer2D::EndScene();
+		}
+
+		
 
 	}
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Makeshift/Renderer/Camera.hpp"
 #include "Makeshift/Renderer/OrthographicCamera.hpp"
 #include "Makeshift/Renderer/Texture.hpp"
 #include "Makeshift/Renderer/SubTexture2D.hpp"
@@ -13,7 +14,8 @@ namespace Makeshift {
 		static void Init();
 		static void Shutdown();
 
-		static void BeginScene(const OrthographicCamera& camera);
+		static void BeginScene(const Camera& camera, const glm::mat4& transform);
+		static void BeginScene(const OrthographicCamera& camera); // TODO remove
 		static void EndScene();
 
 		static void Flush();
