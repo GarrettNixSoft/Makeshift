@@ -59,9 +59,9 @@ namespace Makeshift {
 
 		m_ActiveScene = CreateRef<Scene>();
 
-		m_SquareEntity = m_ActiveScene->createEntity();
-		m_ActiveScene->reg().emplace<TransformComponent>(m_SquareEntity);
-		m_ActiveScene->reg().emplace<SpriteRendererComponent>(m_SquareEntity, glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+
+		m_SquareEntity = m_ActiveScene->createEntity("Square");
+		m_SquareEntity.addComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
 		
 	}
 
@@ -233,8 +233,13 @@ namespace Makeshift {
 		// ================================ SETTINGS ================================
 		ImGui::Begin("Settings");
 
-		auto& squareColor = m_ActiveScene->reg().get<SpriteRendererComponent>(m_SquareEntity).color;
-		ImGui::ColorEdit4("Quad Color", glm::value_ptr(squareColor));
+		if (m_SquareEntity) {
+			//ImGui::Separator();
+			ImGui::Text("%s", m_SquareEntity.getComponent<TagComponent>().tag.c_str());
+
+			auto& squareColor = m_SquareEntity.getComponent<SpriteRendererComponent>().color;
+			ImGui::ColorEdit4("Quad Color", glm::value_ptr(squareColor));
+		}
 
 		ImGui::End();
 		// ================================ SETTINGS ================================

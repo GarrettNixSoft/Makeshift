@@ -6,6 +6,8 @@
 
 #include <glm/glm.hpp>
 
+#include "Entity.hpp"
+
 namespace Makeshift {
 
 	Scene::Scene() {
@@ -16,8 +18,12 @@ namespace Makeshift {
 
 	}
 
-	entt::entity Scene::createEntity() {
-		return m_Registry.create();
+	Entity Scene::createEntity(const std::string& name) {
+		Entity entity = { m_Registry.create(), this };
+		entity.addComponent<TransformComponent>();
+		auto& tag = entity.addComponent<TagComponent>();
+		tag.tag = name.empty() ? "Entity" : name;
+		return entity;
 	}
 
 	void Scene::onUpdate(Timestep ts) {

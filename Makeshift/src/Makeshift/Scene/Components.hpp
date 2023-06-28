@@ -4,6 +4,16 @@
 
 namespace Makeshift {
 
+	struct TagComponent {
+		
+		std::string tag;
+
+		TagComponent() = default;
+		TagComponent(const TagComponent&) = default;
+		TagComponent(const std::string& t) : tag(t) {}
+
+	};
+
 	struct TransformComponent {
 
 		glm::mat4 transform{ 1.0f };
