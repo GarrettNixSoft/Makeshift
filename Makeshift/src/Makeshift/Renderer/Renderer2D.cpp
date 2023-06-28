@@ -212,6 +212,46 @@ namespace Makeshift {
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
 		MK_PROFILE_FUNCTION();
 
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
+		DrawQuad(transform, color);
+	}
+	
+	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D> texture, const glm::vec4& tintColor, float tiling) {
+
+		DrawQuad({ position.x, position.y, 0.0f }, size, texture, { 1.0f,1.0f,1.0f,1.0f }, tiling);
+
+	}
+
+	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D> texture, const glm::vec4 & tintColor, float tiling) {
+		MK_PROFILE_FUNCTION();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
+		DrawQuad(transform, texture, tintColor, tiling);
+	}
+
+	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<SubTexture2D> subtexture, const glm::vec4& tintColor, float tiling) {
+
+		DrawQuad({ position.x, position.y, 0.0f }, size, subtexture, { 1.0f,1.0f,1.0f,1.0f }, tiling);
+
+	}
+
+	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture2D> subtexture, const glm::vec4& tintColor, float tiling) {
+		MK_PROFILE_FUNCTION();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
+		DrawQuad(transform, subtexture, tintColor, tiling);
+	}
+
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
+
+		MK_PROFILE_FUNCTION();
+
 		constexpr size_t quadVertexCount = 4;
 		constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
@@ -221,9 +261,6 @@ namespace Makeshift {
 
 		const float textureIndex = 0.0f; // white texture
 		const float tilingFactor = 1.0f;
-
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
 		for (size_t i = 0; i < quadVertexCount; i++) {
 			s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[i];
@@ -239,14 +276,9 @@ namespace Makeshift {
 		s_Data.stats.QuadCount++;
 
 	}
-	
-	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D> texture, const glm::vec4& tintColor, float tiling) {
 
-		DrawQuad({ position.x, position.y, 0.0f }, size, texture, { 1.0f,1.0f,1.0f,1.0f }, tiling);
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D> texture, const glm::vec4& tintColor, float tiling) {
 
-	}
-
-	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D> texture, const glm::vec4 & tintColor, float tiling) {
 		MK_PROFILE_FUNCTION();
 
 		constexpr size_t quadVertexCount = 4;
@@ -271,9 +303,6 @@ namespace Makeshift {
 			s_Data.textureSlotIndex++;
 		}
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-
 		for (size_t i = 0; i < quadVertexCount; i++) {
 			s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[i];
 			s_Data.quadVertexBufferPtr->color = color;
@@ -289,13 +318,7 @@ namespace Makeshift {
 
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<SubTexture2D> subtexture, const glm::vec4& tintColor, float tiling) {
-
-		DrawQuad({ position.x, position.y, 0.0f }, size, subtexture, { 1.0f,1.0f,1.0f,1.0f }, tiling);
-
-	}
-
-	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture2D> subtexture, const glm::vec4& tintColor, float tiling) {
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D> subtexture, const glm::vec4& tintColor, float tiling) {
 		MK_PROFILE_FUNCTION();
 
 		constexpr size_t quadVertexCount = 4;
@@ -320,9 +343,6 @@ namespace Makeshift {
 			s_Data.textureSlots[s_Data.textureSlotIndex] = texture;
 			s_Data.textureSlotIndex++;
 		}
-
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
 		for (size_t i = 0; i < quadVertexCount; i++) {
 			s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[i];

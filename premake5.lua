@@ -20,6 +20,7 @@ IncludeDir["glm"] = "Makeshift/vendor/glm"
 IncludeDir["Vulkan"] = "C:/VulkanSDK/1.3.246.1/Include"
 IncludeDir["vma"] = "Makeshift/vendor/vma/include"
 IncludeDir["stb_image"] = "Makeshift/vendor/stb_image"
+IncludeDir["entt"] = "Makeshift/vendor/entt/include"
 
 group "Dependencies"
 	include "Makeshift/vendor/GLFW"
@@ -64,7 +65,8 @@ project "Makeshift"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.vma}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.entt}"
 	}
 
 	links {
@@ -116,7 +118,8 @@ project "Sandbox"
 		"Makeshift/vendor/spdlog/include",
 		"Makeshift/src",
 		"Makeshift/vendor",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}"
 	}
 
 	links {
@@ -160,7 +163,8 @@ project "Makeshift-Workshop"
 		"Makeshift/vendor/spdlog/include",
 		"Makeshift/src",
 		"Makeshift/vendor",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}"
 	}
 
 	links {

@@ -56,6 +56,13 @@ namespace Makeshift {
 		s_TextureMap['D'] = SubTexture2D::CreateFromCoords(m_SpriteSheet, { 6, 11 }, { 128.0f, 128.0f });
 
 		m_CameraController.setZoomLevel(5.0f);
+
+		m_ActiveScene = CreateRef<Scene>();
+
+		m_SquareEntity = m_ActiveScene->createEntity();
+		m_ActiveScene->reg().emplace<TransformComponent>(m_SquareEntity);
+		m_ActiveScene->reg().emplace<SpriteRendererComponent>(m_SquareEntity, glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+		
 	}
 
 	void WorkshopLayer::onDetach() {
@@ -113,8 +120,9 @@ namespace Makeshift {
 		}
 		#endif
 
-		Renderer2D::BeginScene(m_CameraController.getCamera());
+		//Renderer2D::BeginScene(m_CameraController.getCamera());
 
+		/*
 		for (uint32_t y = 0; y < m_MapHeight; y++) {
 			for (uint32_t x = 0; x < m_MapWidth; x++) {
 
@@ -130,13 +138,30 @@ namespace Makeshift {
 
 			}
 		}
+		*/
 
 		//Renderer2D::DrawQuad({ 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f}, stairsTexture);
 		//Renderer2D::DrawQuad({ 1.0f, 0.0f, 0.0f }, {1.0f, 1.0f}, barrelTexture);
 		//Renderer2D::DrawQuad({ -1.0f, 0.0f, 0.0f }, {1.0f, 2.0f}, treeTexture);
 
-		Renderer2D::EndScene();
-		m_Framebuffer->unbind();
+		//Renderer2D::EndScene();
+		//m_Framebuffer->unbind();
+
+		
+
+		{
+			MK_PROFILE_SCOPE("Render Scene (ECS)");
+			Renderer2D::BeginScene(m_CameraController.getCamera());
+
+			// Update scene
+			m_ActiveScene->onUpdate(ts);
+
+			Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 20.0f }, m_Texture, { 1.0f, 0.8f, 0.8f, 1.0f }, 10.0f);
+			Renderer2D::DrawQuad({ 1.0f, 0.0f, 0.0f }, {1.0f, 1.0f}, m_BarrelTexture);
+
+			Renderer2D::EndScene();
+			m_Framebuffer->unbind();
+		}
 
 	}
 
@@ -208,7 +233,8 @@ namespace Makeshift {
 		// ================================ SETTINGS ================================
 		ImGui::Begin("Settings");
 
-		ImGui::ColorEdit4("Quad Color", glm::value_ptr(m_SquareColor));
+		auto& squareColor = m_ActiveScene->reg().get<SpriteRendererComponent>(m_SquareEntity).color;
+		ImGui::ColorEdit4("Quad Color", glm::value_ptr(squareColor));
 
 		ImGui::End();
 		// ================================ SETTINGS ================================

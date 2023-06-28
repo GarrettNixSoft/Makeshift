@@ -18,6 +18,11 @@
 #include "Makeshift/ImGui/ImGuiLayer.hpp"
 // ------------------------------------------------------------
 
+// ---------------- Scene -------------------------------------
+#include "Makeshift/Scene/Scene.hpp"
+#include "Makeshift/Scene/Components.hpp"
+// ------------------------------------------------------------
+
 // ---------------- Renderer ----------------------------------
 #include "Makeshift/Renderer/Renderer.hpp"
 #include "Makeshift/Renderer/Renderer2D.hpp"
