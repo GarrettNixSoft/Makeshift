@@ -73,7 +73,8 @@ namespace Makeshift {
 		class CameraController : public ScriptableEntity {
 		public:
 			void onCreate() {
-				
+				auto& transform = getComponent<TransformComponent>().transform;
+				transform[3][0] = rand() % 10 - 5.0f;
 			}
 
 			void onDestroy() {
@@ -97,6 +98,7 @@ namespace Makeshift {
 		};
 
 		m_CameraEntity.addComponent<NativeScriptComponent>().bind<CameraController>();
+		m_SecondCamera.addComponent<NativeScriptComponent>().bind<CameraController>();
 		
 	}
 
@@ -224,7 +226,8 @@ namespace Makeshift {
 		ImGui::Separator();
 		ImGui::Text("Camera(s)");
 
-		ImGui::DragFloat3("Camera Transform", glm::value_ptr(m_CameraEntity.getComponent<TransformComponent>().transform[3]));
+		ImGui::DragFloat3("Camera 1 Transform", glm::value_ptr(m_CameraEntity.getComponent<TransformComponent>().transform[3]));
+		ImGui::DragFloat3("Camera 2 Transform", glm::value_ptr(m_SecondCamera.getComponent<TransformComponent>().transform[3]));
 
 		if (ImGui::Checkbox("Second Camera", &m_ClipSpaceCamera)) {
 			m_CameraEntity.getComponent<CameraComponent>().primary = !m_ClipSpaceCamera;

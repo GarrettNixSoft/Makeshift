@@ -32,15 +32,15 @@ namespace Makeshift {
 		// Update scripts
 		{
 			m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc) {
+
+				// TODO: move to Scen::onScenePlay() or something
 				if (!nsc.instance) {
-					nsc.instantiateFunction();
+					nsc.instance = nsc.instantiateScript();
 					nsc.instance->m_Entity = Entity{ entity, this };
 
-					if (nsc.onCreateFunction)
-						nsc.onCreateFunction(nsc.instance);
+					nsc.instance->onCreate();
 				}
-				if (nsc.onUpdateFunction)
-					nsc.onUpdateFunction(nsc.instance, ts);
+				nsc.instance->onUpdate(ts);
 			});
 		}
 
@@ -51,7 +51,7 @@ namespace Makeshift {
 			auto view = m_Registry.view<TransformComponent, CameraComponent>();
 			for (auto entity : view) {
 
-				auto& [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+				auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
 
 				if (camera.primary) {
 					mainCamera = &camera.camera;
@@ -62,13 +62,14 @@ namespace Makeshift {
 			}
 		}
 
+		// Render things if there's a primary camera present
 		if (mainCamera) {
 			Renderer2D::BeginScene(mainCamera->getProjection(), *cameraTransform);
 
 			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 			for (auto entity : group) {
 
-				auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+				auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 				Renderer2D::DrawQuad(transform, sprite.color);
 
 			}
