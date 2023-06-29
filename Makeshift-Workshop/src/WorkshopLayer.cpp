@@ -59,15 +59,15 @@ namespace Makeshift {
 
 		m_ActiveScene = CreateRef<Scene>();
 
-
+		// Entities
 		m_SquareEntity = m_ActiveScene->createEntity("Square");
 		m_SquareEntity.addComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
 
 		m_CameraEntity = m_ActiveScene->createEntity("Camera Entity");
-		m_CameraEntity.addComponent<CameraComponent>(glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f));
+		m_CameraEntity.addComponent<CameraComponent>();
 
 		m_SecondCamera = m_ActiveScene->createEntity("Clip Space Camera");
-		auto& cc = m_SecondCamera.addComponent<CameraComponent>(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f));
+		auto& cc = m_SecondCamera.addComponent<CameraComponent>();
 		cc.primary = false;
 		
 	}
@@ -81,6 +81,16 @@ namespace Makeshift {
 	void WorkshopLayer::onUpdate(Timestep ts) {
 
 		MK_PROFILE_FUNCTION();
+
+		// Resize
+		if (FramebufferSpecification spec = m_Framebuffer->getSpecification();
+			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
+			(spec.width != m_ViewportSize.x || spec.height != m_ViewportSize.y)) {
+			m_Framebuffer->resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_CameraController.onResize(m_ViewportSize.x, m_ViewportSize.y);
+
+			m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		}
 
 		// Update
 		if (m_ViewportFocused)
@@ -188,9 +198,16 @@ namespace Makeshift {
 
 		ImGui::DragFloat3("Camera Transform", glm::value_ptr(m_CameraEntity.getComponent<TransformComponent>().transform[3]));
 
-		if (ImGui::Checkbox("Show Clip Space", &m_ClipSpaceCamera)) {
+		if (ImGui::Checkbox("Second Camera", &m_ClipSpaceCamera)) {
 			m_CameraEntity.getComponent<CameraComponent>().primary = !m_ClipSpaceCamera;
 			m_SecondCamera.getComponent<CameraComponent>().primary = m_ClipSpaceCamera;
+		}
+		{
+			auto& camera = m_SecondCamera.getComponent<CameraComponent>().camera;
+			float orthoSize = camera.getOrthographicSize();
+			if (ImGui::DragFloat("Clip Space", &orthoSize)) {
+				camera.setOrthographicSize(orthoSize);
+			}
 		}
 
 		ImGui::End();
@@ -225,10 +242,10 @@ namespace Makeshift {
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 
 		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize)) {
-			m_Framebuffer->resize((uint32_t) viewportPanelSize.x, (uint32_t) viewportPanelSize.y);
+			//m_Framebuffer->resize((uint32_t) viewportPanelSize.x, (uint32_t) viewportPanelSize.y);
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
-			m_CameraController.onResize(viewportPanelSize.x, viewportPanelSize.y);
+			//m_CameraController.onResize(viewportPanelSize.x, viewportPanelSize.y);
 		}
 
 		uint32_t textureId = m_Framebuffer->getColorAttachmentRendererId();
