@@ -99,6 +99,8 @@ namespace Makeshift {
 
 		m_CameraEntity.addComponent<NativeScriptComponent>().bind<CameraController>();
 		m_SecondCamera.addComponent<NativeScriptComponent>().bind<CameraController>();
+
+		m_SceneHeirarchyPanel.setContext(m_ActiveScene);
 		
 	}
 
@@ -211,6 +213,10 @@ namespace Makeshift {
 			ImGui::EndMenuBar();
 		}
 		// ================================ DOCK SPACE ================================
+
+		// ================================ SCENE HEIRARCHY PANEL ================================
+		m_SceneHeirarchyPanel.OnImGuiRender();
+		// ================================ SCENE HEIRARCHY PANEL ================================
 
 		// ================================ SETTINGS ================================
 		ImGui::Begin("Settings");
