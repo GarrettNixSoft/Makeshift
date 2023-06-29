@@ -21,6 +21,7 @@
 // ---------------- Scene -------------------------------------
 #include "Makeshift/Scene/Scene.hpp"
 #include "Makeshift/Scene/Entity.hpp"
+#include "Makeshift/Scene/ScriptableEntity.hpp"
 #include "Makeshift/Scene/Components.hpp"
 // ------------------------------------------------------------
 

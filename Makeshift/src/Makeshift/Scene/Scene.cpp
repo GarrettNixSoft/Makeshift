@@ -29,6 +29,21 @@ namespace Makeshift {
 	void Scene::onUpdate(Timestep ts) {
 		MK_PROFILE_FUNCTION();
 
+		// Update scripts
+		{
+			m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc) {
+				if (!nsc.instance) {
+					nsc.instantiateFunction();
+					nsc.instance->m_Entity = Entity{ entity, this };
+
+					if (nsc.onCreateFunction)
+						nsc.onCreateFunction(nsc.instance);
+				}
+				if (nsc.onUpdateFunction)
+					nsc.onUpdateFunction(nsc.instance, ts);
+			});
+		}
+
 		// Render 2D
 		Camera* mainCamera = nullptr;
 		glm::mat4* cameraTransform = nullptr;

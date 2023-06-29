@@ -69,6 +69,34 @@ namespace Makeshift {
 		m_SecondCamera = m_ActiveScene->createEntity("Clip Space Camera");
 		auto& cc = m_SecondCamera.addComponent<CameraComponent>();
 		cc.primary = false;
+
+		class CameraController : public ScriptableEntity {
+		public:
+			void onCreate() {
+				
+			}
+
+			void onDestroy() {
+
+			}
+
+			void onUpdate(Timestep ts) {
+				auto& transform = getComponent<TransformComponent>().transform;
+
+				float speed = 5.0f;
+
+				if (Input::isKeyPressed(KeyCode::A))
+					transform[3][0] -= speed * ts;
+				if (Input::isKeyPressed(KeyCode::D))
+					transform[3][0] += speed * ts;
+				if (Input::isKeyPressed(KeyCode::W))
+					transform[3][1] += speed * ts;
+				if (Input::isKeyPressed(KeyCode::S))
+					transform[3][1] -= speed * ts;
+			}
+		};
+
+		m_CameraEntity.addComponent<NativeScriptComponent>().bind<CameraController>();
 		
 	}
 
