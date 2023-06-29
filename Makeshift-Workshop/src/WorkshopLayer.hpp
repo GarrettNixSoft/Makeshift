@@ -27,7 +27,8 @@ namespace Makeshift {
 		Ref<Framebuffer> m_Framebuffer;
 
 		Ref<Scene> m_ActiveScene;
-		Entity m_SquareEntity;
+		Entity m_GreenSquare;
+		Entity m_RedSquare;
 		Entity m_CameraEntity;
 		Entity m_SecondCamera;
 		

@@ -60,8 +60,11 @@ namespace Makeshift {
 		m_ActiveScene = CreateRef<Scene>();
 
 		// Entities
-		m_SquareEntity = m_ActiveScene->createEntity("Square");
-		m_SquareEntity.addComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+		m_GreenSquare = m_ActiveScene->createEntity("Green Square");
+		m_GreenSquare.addComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+
+		m_RedSquare = m_ActiveScene->createEntity("Red Square");
+		m_RedSquare.addComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
 
 		m_CameraEntity = m_ActiveScene->createEntity("Camera Entity");
 		m_CameraEntity.addComponent<CameraComponent>();
@@ -221,11 +224,11 @@ namespace Makeshift {
 		// ================================ SETTINGS ================================
 		ImGui::Begin("Settings");
 
-		if (m_SquareEntity) {
+		if (m_GreenSquare) {
 			//ImGui::Separator();
-			ImGui::Text("%s", m_SquareEntity.getComponent<TagComponent>().tag.c_str());
+			ImGui::Text("%s", m_GreenSquare.getComponent<TagComponent>().tag.c_str());
 
-			auto& squareColor = m_SquareEntity.getComponent<SpriteRendererComponent>().color;
+			auto& squareColor = m_GreenSquare.getComponent<SpriteRendererComponent>().color;
 			ImGui::ColorEdit4("Quad Color", glm::value_ptr(squareColor));
 		}
 
