@@ -29,7 +29,7 @@ namespace Makeshift {
 }
 
 // Macros for Core Logging
-#define MK_CORE_FATAL(...) ::Makeshift::Logger::getCoreLogger()->fatal(__VA_ARGS__)
+#define MK_CORE_CRITICAL(...) ::Makeshift::Logger::getCoreLogger()->critical(__VA_ARGS__)
 #define MK_CORE_ERROR(...) ::Makeshift::Logger::getCoreLogger()->error(__VA_ARGS__)
 #define MK_CORE_WARN(...)  ::Makeshift::Logger::getCoreLogger()->warn(__VA_ARGS__)
 #define MK_CORE_INFO(...)  ::Makeshift::Logger::getCoreLogger()->info(__VA_ARGS__)
@@ -37,7 +37,7 @@ namespace Makeshift {
 #define MK_CORE_TRACE(...) ::Makeshift::Logger::getCoreLogger()->trace(__VA_ARGS__)
 
 // Macros for Client Logging
-#define MK_FATAL(...) ::Makeshift::Logger::getClientLogger()->fatal(__VA_ARGS__)
+#define MK_CRITICAL(...) ::Makeshift::Logger::getClientLogger()->critical(__VA_ARGS__)
 #define MK_ERROR(...) ::Makeshift::Logger::getClientLogger()->error(__VA_ARGS__)
 #define MK_WARN(...)  ::Makeshift::Logger::getClientLogger()->warn(__VA_ARGS__)
 #define MK_INFO(...)  ::Makeshift::Logger::getClientLogger()->info(__VA_ARGS__)
