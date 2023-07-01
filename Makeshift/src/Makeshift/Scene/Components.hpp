@@ -5,6 +5,7 @@
 #include "ScriptableEntity.hpp"
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Makeshift {
 
@@ -20,14 +21,23 @@ namespace Makeshift {
 
 	struct TransformComponent {
 
-		glm::mat4 transform{ 1.0f };
+		glm::vec3 translation{ 0.0f, 0.0f, 0.0f };
+		glm::vec3 rotation{ 0.0f, 0.0f, 0.0f };
+		glm::vec3 scale{ 1.0f, 1.0f, 1.0f };
 
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent&) = default;
-		TransformComponent(const glm::mat4& tf) : transform(tf) {}
+		TransformComponent(const glm::vec3& tl) : translation(tl) {}
 
-		operator glm::mat4& () { return transform; }
-		operator const glm::mat4& () const { return transform; }
+		glm::mat4 getTransform() const {
+			glm::mat4 rotate = glm::rotate(glm::mat4(1.0f), rotation.x, { 1.0f, 0.0f, 0.0f })
+				* glm::rotate(glm::mat4(1.0f), rotation.y, { 0.0f, 1.0f, 0.0f })
+				* glm::rotate(glm::mat4(1.0f), rotation.z, { 0.0f, 0.0f, 1.0f });
+
+			return glm::translate(glm::mat4(1.0f), translation)
+				* rotate
+				* glm::scale(glm::mat4(1.0f), scale);
+		}
 
 	};
 

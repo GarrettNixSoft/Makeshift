@@ -69,34 +69,34 @@ namespace Makeshift {
 		m_CameraEntity = m_ActiveScene->createEntity("Camera Entity");
 		m_CameraEntity.addComponent<CameraComponent>();
 
-		m_SecondCamera = m_ActiveScene->createEntity("Clip Space Camera");
+		m_SecondCamera = m_ActiveScene->createEntity("Other Camera");
 		auto& cc = m_SecondCamera.addComponent<CameraComponent>();
 		cc.primary = false;
 
 		class CameraController : public ScriptableEntity {
 		public:
-			void onCreate() {
-				auto& transform = getComponent<TransformComponent>().transform;
-				transform[3][0] = rand() % 10 - 5.0f;
+			virtual void onCreate() {
+				auto& translation = getComponent<TransformComponent>().translation;
+				translation.x = rand() % 10 - 5.0f;
 			}
 
-			void onDestroy() {
+			virtual void onDestroy() {
 
 			}
 
-			void onUpdate(Timestep ts) {
-				auto& transform = getComponent<TransformComponent>().transform;
+			virtual void onUpdate(Timestep ts) {
+				auto& translation = getComponent<TransformComponent>().translation;
 
 				float speed = 5.0f;
 
 				if (Input::isKeyPressed(KeyCode::A))
-					transform[3][0] -= speed * ts;
+					translation.x -= speed * ts;
 				if (Input::isKeyPressed(KeyCode::D))
-					transform[3][0] += speed * ts;
+					translation.x += speed * ts;
 				if (Input::isKeyPressed(KeyCode::W))
-					transform[3][1] += speed * ts;
+					translation.y += speed * ts;
 				if (Input::isKeyPressed(KeyCode::S))
-					transform[3][1] -= speed * ts;
+					translation.y -= speed * ts;
 			}
 		};
 
@@ -224,31 +224,7 @@ namespace Makeshift {
 		// ================================ SETTINGS ================================
 		ImGui::Begin("Settings");
 
-		if (m_GreenSquare) {
-			//ImGui::Separator();
-			ImGui::Text("%s", m_GreenSquare.getComponent<TagComponent>().tag.c_str());
-
-			auto& squareColor = m_GreenSquare.getComponent<SpriteRendererComponent>().color;
-			ImGui::ColorEdit4("Quad Color", glm::value_ptr(squareColor));
-		}
-
-		ImGui::Separator();
-		ImGui::Text("Camera(s)");
-
-		ImGui::DragFloat3("Camera 1 Transform", glm::value_ptr(m_CameraEntity.getComponent<TransformComponent>().transform[3]));
-		ImGui::DragFloat3("Camera 2 Transform", glm::value_ptr(m_SecondCamera.getComponent<TransformComponent>().transform[3]));
-
-		if (ImGui::Checkbox("Second Camera", &m_ClipSpaceCamera)) {
-			m_CameraEntity.getComponent<CameraComponent>().primary = !m_ClipSpaceCamera;
-			m_SecondCamera.getComponent<CameraComponent>().primary = m_ClipSpaceCamera;
-		}
-		{
-			auto& camera = m_SecondCamera.getComponent<CameraComponent>().camera;
-			float orthoSize = camera.getOrthographicSize();
-			if (ImGui::DragFloat("Clip Space", &orthoSize)) {
-				camera.setOrthographicSize(orthoSize);
-			}
-		}
+		ImGui::Text("TODO");
 
 		ImGui::End();
 		// ================================ SETTINGS ================================
