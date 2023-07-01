@@ -31,12 +31,45 @@ namespace Makeshift {
 			m_SelectionContext = {};
 		}
 
+		// Right clicking on blank space in the panel
+		if (ImGui::BeginPopupContextWindow(0, 1 | ImGuiPopupFlags_NoOpenOverItems)) {
+
+			if (ImGui::MenuItem("Create Empty Entity")) {
+				m_Context->createEntity("Empty Entity");
+			}
+
+			ImGui::EndPopup();
+
+		}
+
 		ImGui::End();
 
 		ImGui::Begin("Properties");
 
 		if (m_SelectionContext) {
+
 			drawComponents(m_SelectionContext);
+
+			if (ImGui::Button("Add Component")) {
+				ImGui::OpenPopup("AddComponent");
+			}
+
+			if (ImGui::BeginPopup("AddComponent")) {
+
+				if (ImGui::MenuItem("Camera")) {
+					m_SelectionContext.addComponent<CameraComponent>();
+					ImGui::CloseCurrentPopup();
+				}
+
+				if (ImGui::MenuItem("Sprite Renderer")) {
+					m_SelectionContext.addComponent<SpriteRendererComponent>();
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::EndPopup();
+
+			}
+
 		}
 
 		ImGui::End();
@@ -52,6 +85,19 @@ namespace Makeshift {
 			m_SelectionContext = entity;
 			// TODO: selection change callback
 		}
+
+		// use a boolean to defer deletion to the end of this function call
+		bool deleteEntity = false;
+		if (ImGui::BeginPopupContextItem()) {
+
+			if (ImGui::MenuItem("Delete Entity")) {
+				deleteEntity = true;
+			}
+
+			ImGui::EndPopup();
+
+		}
+
 		if (opened) {
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
 			bool opened = ImGui::TreeNodeEx((void*)8675309, flags, tag.c_str());
@@ -61,6 +107,15 @@ namespace Makeshift {
 
 			ImGui::TreePop();
 		}
+
+		// perform possible deferred deletion now that it's safe to do so
+		if (deleteEntity) {
+			m_Context->destroyEntity(entity);
+			// clear selection if we just deleted the selected entity
+			if (m_SelectionContext == entity)
+				m_SelectionContext = {};
+		}
+
 	}
 
 	static void drawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f) {
@@ -119,7 +174,7 @@ namespace Makeshift {
 		ImGui::SameLine();
 		ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
-		ImGui::SameLine();
+		//ImGui::SameLine();
 
 		ImGui::PopStyleVar();
 
@@ -143,9 +198,13 @@ namespace Makeshift {
 			}
 		}
 
+		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;
+
 		if (entity.hasComponent<TransformComponent>()) {
 
-			if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform")) {
+			bool open = ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), treeNodeFlags, "Transform");
+
+			if (open) {
 				auto& tc = entity.getComponent<TransformComponent>();
 				drawVec3Control("Translation", tc.translation);
 				glm::vec3 rotation = glm::degrees(tc.rotation);
@@ -159,7 +218,7 @@ namespace Makeshift {
 
 		if (entity.hasComponent<CameraComponent>()) {
 
-			if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform")) {
+			if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), treeNodeFlags, "Transform")) {
 				auto& cameraComponent = entity.getComponent<CameraComponent>();
 				auto& camera = cameraComponent.camera;
 
@@ -225,12 +284,34 @@ namespace Makeshift {
 
 		if (entity.hasComponent<SpriteRendererComponent>()) {
 
-			if (ImGui::TreeNodeEx((void*)typeid(SpriteRendererComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Sprite Renderer")) {
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
 
+			bool open = ImGui::TreeNodeEx((void*)typeid(SpriteRendererComponent).hash_code(), treeNodeFlags, "Sprite Renderer");
+
+			ImGui::SameLine(ImGui::GetWindowWidth() - 25.0f);
+			if (ImGui::Button("+", ImVec2{ 20, 20 })) {
+				ImGui::OpenPopup("ComponentSettings");
+			}
+
+			ImGui::PopStyleVar();
+
+			// defer removal if requested to the end of this function call
+			bool removeComponent = false;
+			if (ImGui::BeginPopup("ComponentSettings")) {
+				if (ImGui::MenuItem("Remove Component")) {
+					removeComponent = true;
+				}
+				ImGui::EndPopup();
+			}
+
+			if (open) {
 				auto& src = entity.getComponent<SpriteRendererComponent>();
 				ImGui::ColorEdit4("Color", glm::value_ptr(src.color));
 				ImGui::TreePop();
+			}
 
+			if (removeComponent) {
+				entity.removeComponent<SpriteRendererComponent>();
 			}
 
 		}

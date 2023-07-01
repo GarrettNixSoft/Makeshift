@@ -26,6 +26,10 @@ namespace Makeshift {
 		return entity;
 	}
 
+	void Scene::destroyEntity(Entity entity) {
+		m_Registry.destroy(entity);
+	}
+
 	void Scene::onUpdate(Timestep ts) {
 		MK_PROFILE_FUNCTION();
 
@@ -95,6 +99,36 @@ namespace Makeshift {
 			}
 
 		}
+	}
+
+	template<typename T>
+	void Scene::onComponentAdded(Entity entity, T& component) {
+		static_assert(false);
+	}
+
+	template<>
+	void Scene::onComponentAdded<TransformComponent>(Entity entity, TransformComponent& component) {
+		// nothing
+	}
+
+	template<>
+	void Scene::onComponentAdded<CameraComponent>(Entity entity, CameraComponent& component) {
+		component.camera.setViewportSize(m_ViewportWidth, m_ViewportHeight);
+	}
+
+	template<>
+	void Scene::onComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component) {
+		// nothing
+	}
+
+	template<>
+	void Scene::onComponentAdded<TagComponent>(Entity entity, TagComponent& component) {
+		// nothing
+	}
+
+	template<>
+	void Scene::onComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component) {
+		// nothing
 	}
 
 }
