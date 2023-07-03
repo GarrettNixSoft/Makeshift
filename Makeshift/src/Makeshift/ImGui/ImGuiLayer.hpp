@@ -22,6 +22,8 @@ namespace Makeshift {
 		void end();
 
 		void blockEvents(bool block) { m_BlockEvents = block; }
+
+		void setDarkThemeColors();
 	private:
 		bool m_BlockEvents = true;
 		float lastTime = 0.0f;
