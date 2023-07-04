@@ -13,3 +13,6 @@
 [submodule "Makeshift/vendor/vma"]
 	path = Makeshift/vendor/vma
 	url = https://github.com/GarrettNixSoft/VulkanMemoryAllocator
+[submodule "Makeshift/vendor/yaml-cpp"]
+	path = Makeshift/vendor/yaml-cpp
+	url = https://github.com/GarrettNixSoft/yaml-cpp
