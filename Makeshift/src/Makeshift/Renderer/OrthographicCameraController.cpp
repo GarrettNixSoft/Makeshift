@@ -14,23 +14,23 @@ namespace Makeshift {
 	void OrthographicCameraController::onUpdate(Timestep ts) {
 		MK_PROFILE_FUNCTION();
 
-		if (Input::isKeyPressed(MK_KEY_A)) {
+		if (Input::IsKeyPressed(MK_KEY_A)) {
 			m_CameraPosition.x -= m_CameraTranslationSpeed * ts;
 		}
-		if (Input::isKeyPressed(MK_KEY_D)) {
+		if (Input::IsKeyPressed(MK_KEY_D)) {
 			m_CameraPosition.x += m_CameraTranslationSpeed * ts;
 		}
-		if (Input::isKeyPressed(MK_KEY_W)) {
+		if (Input::IsKeyPressed(MK_KEY_W)) {
 			m_CameraPosition.y += m_CameraTranslationSpeed * ts;
 		}
-		if (Input::isKeyPressed(MK_KEY_S)) {
+		if (Input::IsKeyPressed(MK_KEY_S)) {
 			m_CameraPosition.y -= m_CameraTranslationSpeed * ts;
 		}
 		if (m_RotationAllowed) {
-			if (Input::isKeyPressed(MK_KEY_Q)) {
+			if (Input::IsKeyPressed(MK_KEY_Q)) {
 				m_CameraRotation += m_CameraRotationSpeed * ts;
 			}
-			if (Input::isKeyPressed(MK_KEY_E)) {
+			if (Input::IsKeyPressed(MK_KEY_E)) {
 				m_CameraRotation -= m_CameraRotationSpeed * ts;
 			}
 			m_Camera.setRotation(m_CameraRotation);

@@ -7,7 +7,7 @@
 
 namespace Makeshift {
 
-	bool Input::isKeyPressed(KeyCode key) {
+	bool Input::IsKeyPressed(KeyCode key) {
 		auto window = static_cast<GLFWwindow*>(Application::Get().getWindow().getNativeWindow());
 		auto state = glfwGetKey(window, static_cast<int32_t>(key));
 		return state == GLFW_PRESS || state == GLFW_REPEAT;

@@ -17,7 +17,13 @@ namespace Makeshift {
 		void onUpdate(Timestep ts) override;
 		virtual void onImGuiRender(Timestep ts) override;
 		virtual void onEvent(Event& e) override;
+	private:
+		bool onKeyPressed(KeyPressedEvent& e);
 
+		void newScene();
+		void openScene();
+		void saveScene();
+		void saveSceneAs();
 	private:
 		OrthographicCameraController m_CameraController;
 

@@ -385,3 +385,5 @@ FodyWeavers.xsd
 /Makeshift-Workshop/MakeshiftProfile-Startup.json
 /Makeshift-Workshop/Makeshift-Workshop.vcxproj
 /Makeshift-Workshop/Makeshift-Workshop.vcxproj.filters
+/Makeshift-Workshop/assets/scenes/example3D.mkshft
+/Makeshift-Workshop/assets/scenes/saved_scene.mkshft

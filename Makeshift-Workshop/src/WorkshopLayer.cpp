@@ -4,6 +4,8 @@
 
 #include "Makeshift/Scene/SceneSerializer.hpp"
 
+#include "Makeshift/Utils/PlatformUtils.hpp"
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -218,24 +220,25 @@ namespace Makeshift {
 				// Disabling fullscreen would allow the window to be moved to the front of other windows,
 				// which we can't undo at the moment without finer window depth/z control.
 
-				if (ImGui::MenuItem("New...")); // TODO
+				if (ImGui::MenuItem("New...", "Ctrl+N"))
+					newScene();
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Open...")) {
-					
-					SceneSerializer serializer(m_ActiveScene);
-					serializer.deserialize("assets/scenes/example.mkshft");
+				if (ImGui::MenuItem("Open...", "Ctrl+O"))
+					openScene();
+
+				if (ImGui::MenuItem("Open Recent")) {
+					// TODO
 				}
-				if (ImGui::MenuItem("Open Recent"));
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Save")) {
-					SceneSerializer serializer(m_ActiveScene);
-					serializer.serialize("assets/scenes/example.mkshft");
-				}
-				if (ImGui::MenuItem("Save As..."));
+				if (ImGui::MenuItem("Save", "Ctrl+S"))
+					saveScene();
+
+				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+					saveSceneAs();
 
 				ImGui::Separator();
 
@@ -307,6 +310,89 @@ namespace Makeshift {
 
 	void WorkshopLayer::onEvent(Event& e) {
 		m_CameraController.onEvent(e);
+
+		EventDispatcher dispatcher(e);
+		dispatcher.dispatch<KeyPressedEvent>(MK_BIND_EVENT_FN(WorkshopLayer::onKeyPressed));
+	}
+
+	bool WorkshopLayer::onKeyPressed(KeyPressedEvent& e) {
+
+		// Repeatable key actions would go here, above the shortcut checks
+
+		// Shortcuts
+		if (e.getRepeatCount() > 0)
+			return false;
+
+		bool ctrl = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+
+		switch (e.getKeyCode()) {
+
+			case (int)Key::N: {
+				if (ctrl)
+					newScene();
+
+				break;
+			}
+
+			case (int)Key::O: {
+				if (ctrl)
+					openScene();
+
+				break;
+			}
+
+			case (int)Key::S: {
+				if (ctrl && shift)
+					saveSceneAs();
+				else if (ctrl)
+					saveScene();
+
+				break;
+			}
+
+			default:
+				break;
+
+		}
+
+	}
+
+	void WorkshopLayer::newScene() {
+		// Create a new scene to load into (clear)
+		m_ActiveScene = CreateRef<Scene>();
+		m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHeirarchyPanel.setContext(m_ActiveScene);
+	}
+
+	void WorkshopLayer::openScene() {
+		std::string filepath = FileDialogs::OpenFile("Makeshift Scene (*.mkshft)\0*.mkshft\0");
+
+		if (!filepath.empty()) {
+			// Create a new scene to load into (clear)
+			m_ActiveScene = CreateRef<Scene>();
+			m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_SceneHeirarchyPanel.setContext(m_ActiveScene);
+
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.deserialize(filepath);
+		}
+	}
+
+	void WorkshopLayer::saveScene() {
+		// TODO: this is contextual!
+		saveSceneAs();
+	}
+
+	void WorkshopLayer::saveSceneAs() {
+
+		std::string filepath = FileDialogs::SaveFile("Makeshift Scene (*.mkshft)\0*.mkshft\0");
+
+		if (!filepath.empty()) {
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.serialize(filepath);
+		}
+
 	}
 
 }

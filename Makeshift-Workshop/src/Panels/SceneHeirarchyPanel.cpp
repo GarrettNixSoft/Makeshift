@@ -15,6 +15,7 @@ namespace Makeshift {
 
 	void SceneHeirarchyPanel::setContext(const Ref<Scene>& context) {
 		m_Context = context;
+		m_SelectionContext = {};
 	}
 
 	void SceneHeirarchyPanel::OnImGuiRender() {
