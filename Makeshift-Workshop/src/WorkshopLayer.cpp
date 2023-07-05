@@ -2,10 +2,10 @@
 #include "WorkshopLayer.hpp"
 #include "imgui/imgui.h"
 
+#include "Makeshift/Scene/SceneSerializer.hpp"
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include <chrono>
 
 namespace Makeshift {
 
@@ -59,6 +59,7 @@ namespace Makeshift {
 
 		m_ActiveScene = CreateRef<Scene>();
 
+#if 0
 		// Entities
 		m_GreenSquare = m_ActiveScene->createEntity("Green Square");
 		m_GreenSquare.addComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
@@ -102,6 +103,7 @@ namespace Makeshift {
 
 		m_CameraEntity.addComponent<NativeScriptComponent>().bind<CameraController>();
 		m_SecondCamera.addComponent<NativeScriptComponent>().bind<CameraController>();
+#endif
 
 		m_SceneHeirarchyPanel.setContext(m_ActiveScene);
 		
@@ -216,7 +218,29 @@ namespace Makeshift {
 				// Disabling fullscreen would allow the window to be moved to the front of other windows,
 				// which we can't undo at the moment without finer window depth/z control.
 
+				if (ImGui::MenuItem("New...")); // TODO
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Open...")) {
+					
+					SceneSerializer serializer(m_ActiveScene);
+					serializer.deserialize("assets/scenes/example.mkshft");
+				}
+				if (ImGui::MenuItem("Open Recent"));
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Save")) {
+					SceneSerializer serializer(m_ActiveScene);
+					serializer.serialize("assets/scenes/example.mkshft");
+				}
+				if (ImGui::MenuItem("Save As..."));
+
+				ImGui::Separator();
+
 				if (ImGui::MenuItem("Exit")) Application::Get().Close();
+
 				ImGui::EndMenu();
 			}
 

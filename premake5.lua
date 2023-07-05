@@ -21,12 +21,14 @@ IncludeDir["Vulkan"] = "C:/VulkanSDK/1.3.246.1/Include"
 IncludeDir["vma"] = "Makeshift/vendor/vma/include"
 IncludeDir["stb_image"] = "Makeshift/vendor/stb_image"
 IncludeDir["entt"] = "Makeshift/vendor/entt/include"
+IncludeDir["yaml_cpp"] = "Makeshift/vendor/yaml-cpp/include"
 
 group "Dependencies"
 	include "Makeshift/vendor/GLFW"
 	include "Makeshift/vendor/Glad"
 	include "Makeshift/vendor/imgui"
 	include "Makeshift/vendor/vma"
+	include "Makeshift/vendor/yaml-cpp"
 
 group ""
 
@@ -53,7 +55,8 @@ project "Makeshift"
 	}
 	
 	defines {
-		"_CRT_SECURE_NO_WARNINGS"
+		"_CRT_SECURE_NO_WARNINGS",
+		"YAML_CPP_STATIC_DEFINE"
 	}
 
 	includedirs {
@@ -66,13 +69,15 @@ project "Makeshift"
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.vma}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml_cpp}"
 	}
 
 	links {
 		"GLFW",
 		"Glad",
 		"ImGui",
+		"yaml-cpp",
 		"opengl32.lib",
 		"C:/VulkanSDK/1.3.246.1/Lib/vulkan-1.lib"
 	}
