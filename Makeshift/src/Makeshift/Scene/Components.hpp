@@ -4,6 +4,9 @@
 
 #include "ScriptableEntity.hpp"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -30,9 +33,7 @@ namespace Makeshift {
 		TransformComponent(const glm::vec3& tl) : translation(tl) {}
 
 		glm::mat4 getTransform() const {
-			glm::mat4 rotate = glm::rotate(glm::mat4(1.0f), rotation.x, { 1.0f, 0.0f, 0.0f })
-				* glm::rotate(glm::mat4(1.0f), rotation.y, { 0.0f, 1.0f, 0.0f })
-				* glm::rotate(glm::mat4(1.0f), rotation.z, { 0.0f, 0.0f, 1.0f });
+			glm::mat4 rotate = glm::toMat4(glm::quat(rotation));
 
 			return glm::translate(glm::mat4(1.0f), translation)
 				* rotate

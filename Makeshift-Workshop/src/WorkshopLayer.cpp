@@ -6,8 +6,12 @@
 
 #include "Makeshift/Utils/PlatformUtils.hpp"
 
+#include "Makeshift/Math/Math.hpp"
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <ImGuizmo.h>
 
 namespace Makeshift {
 
@@ -287,7 +291,7 @@ namespace Makeshift {
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->blockEvents(!(m_ViewportFocused && m_ViewportHovered));
+		Application::Get().GetImGuiLayer()->blockEvents(!m_ViewportFocused && !m_ViewportHovered);
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 
@@ -300,6 +304,49 @@ namespace Makeshift {
 
 		uint32_t textureId = m_Framebuffer->getColorAttachmentRendererId();
 		ImGui::Image((void*)textureId, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+		// Gizmo stuff
+		Entity selectedEntity = m_SceneHeirarchyPanel.getSelectedEntity();
+		if (selectedEntity && m_GizmoType != -1) {
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+
+			float windowWidth = (float)ImGui::GetWindowWidth();
+			float windowHeight = (float)ImGui::GetWindowHeight();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+			// Fetch camera
+			auto cameraEntity = m_ActiveScene->getPrimaryCameraEntity();
+			const auto& camera = cameraEntity.getComponent<CameraComponent>().camera;
+			const glm::mat4& cameraProjection = camera.getProjection();
+			glm::mat4 cameraView = glm::inverse(cameraEntity.getComponent<TransformComponent>().getTransform());
+
+			// Entity's transform
+			auto& tc = selectedEntity.getComponent<TransformComponent>();
+			glm::mat4 transform = tc.getTransform();
+
+			// Gizmo Snapping
+			bool snap = Input::IsKeyPressed(Key::LeftControl);
+			float snapValue = 0.5f; // Snap to 0.5m for rotate/scale
+			if (m_GizmoType == ImGuizmo::OPERATION::ROTATE) snapValue = 15.0f; // Snap to 15deg when rotating
+
+			float snapValues[3] = { snapValue, snapValue, snapValue };
+
+			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION) m_GizmoType,
+				ImGuizmo::LOCAL, glm::value_ptr(transform), nullptr, snap ? snapValues : nullptr);
+
+			if (ImGuizmo::IsUsing()) {
+
+				glm::vec3 translation, rotation, scale;
+				Math::DecomposeTransform(transform, translation, rotation, scale);
+
+				tc.translation = translation;
+				tc.rotation = rotation; // using a delta supposedly prevents gimbal lock here, but does it really?
+				tc.scale = scale;
+
+			}
+		}
+
 
 		ImGui::End();
 		ImGui::PopStyleVar();
@@ -351,9 +398,27 @@ namespace Makeshift {
 				break;
 			}
 
-			default:
+			// Gizmos
+			case (int)Key::Q: {
+				m_GizmoType = -1;
 				break;
+			}
 
+			case (int)Key::T: {
+				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+				break;
+			}
+
+			case (int)Key::R: {
+				m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+				break;
+			}
+
+			case (int)Key::G: {
+				m_GizmoType = ImGuizmo::OPERATION::SCALE;
+				break;
+			}
+			
 		}
 
 	}

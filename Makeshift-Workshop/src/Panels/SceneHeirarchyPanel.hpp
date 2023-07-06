@@ -15,6 +15,8 @@ namespace Makeshift {
 		void setContext(const Ref<Scene>& context);
 
 		void OnImGuiRender();
+
+		Entity getSelectedEntity() const { return m_SelectionContext; }
 	private:
 		void drawEntityNode(Entity entity);
 		void drawComponents(Entity entity);

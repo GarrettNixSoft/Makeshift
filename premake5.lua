@@ -17,11 +17,13 @@ IncludeDir["GLFW"] = "Makeshift/vendor/GLFW/include"
 IncludeDir["Glad"] = "Makeshift/vendor/Glad/include"
 IncludeDir["ImGui"] = "Makeshift/vendor/imgui"
 IncludeDir["glm"] = "Makeshift/vendor/glm"
-IncludeDir["Vulkan"] = "C:/VulkanSDK/1.3.246.1/Include"
-IncludeDir["vma"] = "Makeshift/vendor/vma/include"
 IncludeDir["stb_image"] = "Makeshift/vendor/stb_image"
 IncludeDir["entt"] = "Makeshift/vendor/entt/include"
 IncludeDir["yaml_cpp"] = "Makeshift/vendor/yaml-cpp/include"
+IncludeDir["ImGuizmo"] = "Makeshift/vendor/imguizmo"
+
+IncludeDir["Vulkan"] = "C:/VulkanSDK/1.3.246.1/Include"
+IncludeDir["vma"] = "Makeshift/vendor/vma/include"
 
 group "Dependencies"
 	include "Makeshift/vendor/GLFW"
@@ -51,11 +53,14 @@ project "Makeshift"
 		"%{prj.name}/vendor/stb_image/**.h",
 		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl"
+		"%{prj.name}/vendor/glm/glm/**.inl",
+		"%{prj.name}/vendor/imguizmo/ImGuizmo.h",
+		"%{prj.name}/vendor/imguizmo/ImGuizmo.cpp"
 	}
 	
 	defines {
 		"_CRT_SECURE_NO_WARNINGS",
+		"GLFW_INCLUDE_NONE",
 		"YAML_CPP_STATIC_DEFINE"
 	}
 
@@ -66,11 +71,13 @@ project "Makeshift"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.Vulkan}",
-		"%{IncludeDir.vma}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.yaml_cpp}"
+		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.ImGuizmo}",
+
+		"%{IncludeDir.Vulkan}",
+		"%{IncludeDir.vma}"
 	}
 
 	links {
@@ -79,14 +86,17 @@ project "Makeshift"
 		"ImGui",
 		"yaml-cpp",
 		"opengl32.lib",
+
 		"C:/VulkanSDK/1.3.246.1/Lib/vulkan-1.lib"
 	}
+
+	filter "files:vendor/imguizmo/**.cpp"
+	flags { "NoPCH" } -- This won't work for whatever reason, must manually set this flag each time the project is regenerated
 
 	filter "system:windows"
 		systemversion "latest"
 
 		defines {
-			"GLFW_INCLUDE_NONE"
 		}
 		
 	filter "configurations:Debug"
@@ -169,7 +179,9 @@ project "Makeshift-Workshop"
 		"Makeshift/src",
 		"Makeshift/vendor",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+
+		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links {

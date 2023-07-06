@@ -16,3 +16,6 @@
 [submodule "Makeshift/vendor/yaml-cpp"]
 	path = Makeshift/vendor/yaml-cpp
 	url = https://github.com/GarrettNixSoft/yaml-cpp
+[submodule "Makeshift/vendor/imguizmo"]
+	path = Makeshift/vendor/imguizmo
+	url = https://github.com/GarrettNixSoft/ImGuizmo
