@@ -27,12 +27,12 @@ namespace Makeshift {
 		return { (float)x, (float)y };
 	}
 
-	float Input::getMouseX() {
+	float Input::GetMouseX() {
 		auto [x, y] = getMousePosition();
 		return x;
 	}
 
-	float Input::getMouseY() {
+	float Input::GetMouseY() {
 		auto [x, y] = getMousePosition();
 		return y;
 	}

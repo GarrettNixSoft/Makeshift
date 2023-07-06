@@ -11,7 +11,7 @@
 
 #include "Makeshift/Core/Input.hpp"
 #include "Makeshift/Core/Keycodes.hpp"
-#include "Makeshift/Core/MouseButtonCodes.hpp"
+#include "Makeshift/Core/MouseCodes.hpp"
 // ------------------------------------------------------------
 
 // ---------------- ImGui -------------------------------------

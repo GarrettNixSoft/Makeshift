@@ -4,6 +4,8 @@
 
 #include "Panels/SceneHeirarchyPanel.hpp"
 
+#include "Makeshift/Renderer/EditorCamera.hpp"
+
 namespace Makeshift {
 
 	class WorkshopLayer : public Layer {
@@ -39,6 +41,8 @@ namespace Makeshift {
 		Entity m_SecondCamera;
 		
 		bool m_ClipSpaceCamera = false;
+
+		EditorCamera m_EditorCamera;
 
 		Ref<Texture2D> m_Texture;
 		Ref<Texture2D> m_SpriteSheet;

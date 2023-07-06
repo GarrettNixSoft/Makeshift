@@ -2,6 +2,8 @@
 
 #include "Makeshift/Core/Timestep.hpp"
 
+#include "Makeshift/Renderer/EditorCamera.hpp"
+
 #include <entt.hpp>
 
 namespace Makeshift {
@@ -16,7 +18,8 @@ namespace Makeshift {
 		Entity createEntity(const std::string& name = std::string());
 		void destroyEntity(Entity entity);
 
-		void onUpdate(Timestep ts);
+		void onUpdateRuntime(Timestep ts);
+		void onUpdateEditor(Timestep ts, EditorCamera& camera);
 		void onViewportResize(uint32_t width, uint32_t height);
 
 		Entity getPrimaryCameraEntity();

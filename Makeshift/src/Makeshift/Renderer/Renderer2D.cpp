@@ -155,17 +155,30 @@ namespace Makeshift {
 
 	}
 
+	static void startBatch() {
+		// reset to base of the vertex buffer array
+		s_Data.quadIndexCount = 0;
+		s_Data.quadVertexBufferPtr = s_Data.quadVertexBufferBase;
+
+		s_Data.textureSlotIndex = 1;
+	}
+
 	void Renderer2D::BeginScene(const OrthographicCamera& camera) {
 		MK_PROFILE_FUNCTION();
 
 		s_Data.textureShader->bind();
 		s_Data.textureShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
 
-		// reset to base of the vertex buffer array
-		s_Data.quadIndexCount = 0;
-		s_Data.quadVertexBufferPtr = s_Data.quadVertexBufferBase;
+		startBatch();
+	}
 
-		s_Data.textureSlotIndex = 1;
+	void Renderer2D::BeginScene(const EditorCamera& camera) {
+		MK_PROFILE_FUNCTION();
+
+		s_Data.textureShader->bind();
+		s_Data.textureShader->setMat4("u_ViewProjection", camera.getViewProjection());
+
+		startBatch();
 	}
 
 	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform) {
@@ -176,11 +189,7 @@ namespace Makeshift {
 		s_Data.textureShader->bind();
 		s_Data.textureShader->setMat4("u_ViewProjection", viewProj);
 
-		// reset to base of the vertex buffer array
-		s_Data.quadIndexCount = 0;
-		s_Data.quadVertexBufferPtr = s_Data.quadVertexBufferBase;
-
-		s_Data.textureSlotIndex = 1;
+		startBatch();
 	}
 
 	void Renderer2D::EndScene() {

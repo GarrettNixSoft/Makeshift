@@ -65,6 +65,8 @@ namespace Makeshift {
 
 		m_ActiveScene = CreateRef<Scene>();
 
+		m_EditorCamera = EditorCamera(30.0f, 16.0f / 9.0f, 0.1, 1000.0f);
+
 #if 0
 		// Entities
 		m_GreenSquare = m_ActiveScene->createEntity("Green Square");
@@ -136,8 +138,10 @@ namespace Makeshift {
 		}
 
 		// Update
-		if (m_ViewportFocused)
+		if (m_ViewportFocused) {
 			m_CameraController.onUpdate(ts);
+			m_EditorCamera.onUpdate(ts);
+		}
 
 		// Render
 		Renderer2D::ResetStats();
@@ -153,7 +157,7 @@ namespace Makeshift {
 			MK_PROFILE_SCOPE("Render Scene (ECS)");
 
 			// Update scene
-			m_ActiveScene->onUpdate(ts);
+			m_ActiveScene->onUpdateEditor(ts, m_EditorCamera);
 
 			m_Framebuffer->unbind();
 		}
@@ -299,6 +303,7 @@ namespace Makeshift {
 			//m_Framebuffer->resize((uint32_t) viewportPanelSize.x, (uint32_t) viewportPanelSize.y);
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
+			m_EditorCamera.setViewportSize(viewportPanelSize.x, viewportPanelSize.y);
 			//m_CameraController.onResize(viewportPanelSize.x, viewportPanelSize.y);
 		}
 
@@ -315,11 +320,9 @@ namespace Makeshift {
 			float windowHeight = (float)ImGui::GetWindowHeight();
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
-			// Fetch camera
-			auto cameraEntity = m_ActiveScene->getPrimaryCameraEntity();
-			const auto& camera = cameraEntity.getComponent<CameraComponent>().camera;
-			const glm::mat4& cameraProjection = camera.getProjection();
-			glm::mat4 cameraView = glm::inverse(cameraEntity.getComponent<TransformComponent>().getTransform());
+			// Use Editor Camera
+			const glm::mat4& cameraProjection = m_EditorCamera.getProjection();
+			glm::mat4 cameraView = m_EditorCamera.getViewMatrix();
 
 			// Entity's transform
 			auto& tc = selectedEntity.getComponent<TransformComponent>();
@@ -357,6 +360,7 @@ namespace Makeshift {
 
 	void WorkshopLayer::onEvent(Event& e) {
 		m_CameraController.onEvent(e);
+		m_EditorCamera.onEvent(e);
 
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<KeyPressedEvent>(MK_BIND_EVENT_FN(WorkshopLayer::onKeyPressed));
@@ -375,21 +379,21 @@ namespace Makeshift {
 
 		switch (e.getKeyCode()) {
 
-			case (int)Key::N: {
+			case Key::N: {
 				if (ctrl)
 					newScene();
 
 				break;
 			}
 
-			case (int)Key::O: {
+			case Key::O: {
 				if (ctrl)
 					openScene();
 
 				break;
 			}
 
-			case (int)Key::S: {
+			case Key::S: {
 				if (ctrl && shift)
 					saveSceneAs();
 				else if (ctrl)
@@ -399,22 +403,22 @@ namespace Makeshift {
 			}
 
 			// Gizmos
-			case (int)Key::Q: {
+			case Key::Q: {
 				m_GizmoType = -1;
 				break;
 			}
 
-			case (int)Key::T: {
+			case Key::T: {
 				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 				break;
 			}
 
-			case (int)Key::R: {
+			case Key::R: {
 				m_GizmoType = ImGuizmo::OPERATION::ROTATE;
 				break;
 			}
 
-			case (int)Key::G: {
+			case Key::G: {
 				m_GizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
 			}

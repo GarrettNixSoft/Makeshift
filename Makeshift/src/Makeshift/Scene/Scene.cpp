@@ -30,7 +30,7 @@ namespace Makeshift {
 		m_Registry.destroy(entity);
 	}
 
-	void Scene::onUpdate(Timestep ts) {
+	void Scene::onUpdateRuntime(Timestep ts) {
 		MK_PROFILE_FUNCTION();
 
 		// Update scripts
@@ -80,6 +80,22 @@ namespace Makeshift {
 
 			Renderer2D::EndScene();
 		}
+
+	}
+
+	void Scene::onUpdateEditor(Timestep ts, EditorCamera& camera) {
+
+		Renderer2D::BeginScene(camera);
+
+		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+		for (auto entity : group) {
+
+			auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+			Renderer2D::DrawQuad(transform.getTransform(), sprite.color);
+
+		}
+
+		Renderer2D::EndScene();
 
 	}
 
