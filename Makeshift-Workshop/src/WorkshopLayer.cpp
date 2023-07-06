@@ -44,24 +44,10 @@ namespace Makeshift {
 		MK_PROFILE_FUNCTION();
 
 		FramebufferSpecification fbSpec;
+		fbSpec.attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
 		fbSpec.width = 1920;
 		fbSpec.height = 1080;
 		m_Framebuffer = Framebuffer::Create(fbSpec);
-
-		m_Texture = Texture2D::Create("assets/textures/checkerboard.png");
-		m_SpriteSheet = Texture2D::Create("assets/game/textures/RPGpack_sheet_2X.png");
-
-		m_StairsTexture = SubTexture2D::CreateFromCoords(m_SpriteSheet, { 7, 6 }, { 128.0f, 128.0f });
-		m_BarrelTexture = SubTexture2D::CreateFromCoords(m_SpriteSheet, { 8, 2 }, { 128.0f, 128.0f });
-		m_TreeTexture = SubTexture2D::CreateFromCoords(m_SpriteSheet, { 2, 1 }, { 128.0f, 128.0f }, { 1, 2 });
-
-		m_MapWidth = s_MapWidth;
-		m_MapHeight = strlen(s_MapTiles) / s_MapWidth;
-
-		s_TextureMap['W'] = SubTexture2D::CreateFromCoords(m_SpriteSheet, { 11, 11 }, { 128.0f, 128.0f });
-		s_TextureMap['D'] = SubTexture2D::CreateFromCoords(m_SpriteSheet, { 6, 11 }, { 128.0f, 128.0f });
-
-		m_CameraController.setZoomLevel(5.0f);
 
 		m_ActiveScene = CreateRef<Scene>();
 
