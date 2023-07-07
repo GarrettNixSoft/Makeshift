@@ -370,7 +370,7 @@ namespace Makeshift {
 			if (ImGui::BeginPopupModal("Confirm New Scene", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 				ImGui::Text("You have unsaved changes.");
 				ImGui::Spacing();
-				ImGui::Text("Discard them an open a new scene anyway?");
+				ImGui::Text("Discard them and open a new scene anyway?");
 				ImGui::Separator();
 				if (ImGui::Button("Yes")) {
 					newScene();
@@ -398,7 +398,7 @@ namespace Makeshift {
 			if (ImGui::BeginPopupModal("Confirm Open Scene", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 				ImGui::Text("You have unsaved changes.");
 				ImGui::Spacing();
-				ImGui::Text("Discard them an open a new scene anyway?");
+				ImGui::Text("Discard them and open a new scene anyway?");
 				ImGui::Separator();
 				if (ImGui::Button("Yes")) {
 					openScene();
@@ -415,6 +415,34 @@ namespace Makeshift {
 			}
 		}
 
+		{
+			if (m_ShowConfirmExitModal)
+				ImGui::OpenPopup("Confirm Exit");
+
+			// Always center this window when appearing
+			ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+			ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+			if (ImGui::BeginPopupModal("Confirm Exit", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+				ImGui::Text("You have unsaved changes.");
+				ImGui::Spacing();
+				ImGui::Text("Discard them and exit anyway?");
+				ImGui::Separator();
+				if (ImGui::Button("Yes")) {
+					Application::Get().Close();
+					ImGui::CloseCurrentPopup();
+					m_ShowConfirmExitModal = false;
+				}
+				ImGui::SameLine();
+				ImGui::SetItemDefaultFocus();
+				if (ImGui::Button("Cancel")) {
+					ImGui::CloseCurrentPopup();
+					m_ShowConfirmExitModal = false;
+				}
+				ImGui::EndPopup();
+			}
+		}
+
 		ImGui::End();
 		// ================================ SETTINGS ================================
 
@@ -426,6 +454,7 @@ namespace Makeshift {
 
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<KeyPressedEvent>(MK_BIND_EVENT_FN(WorkshopLayer::onKeyPressed));
+		dispatcher.dispatch<WindowCloseEvent>(MK_BIND_EVENT_FN(WorkshopLayer::onWindowClosed));
 	}
 
 	bool WorkshopLayer::onKeyPressed(KeyPressedEvent& e) {
@@ -493,6 +522,12 @@ namespace Makeshift {
 			
 		}
 
+	}
+
+	bool WorkshopLayer::onWindowClosed(WindowCloseEvent& e) {
+		if (m_EditorContext->sceneEdited)
+			m_ShowConfirmExitModal = true;
+		return true;
 	}
 
 	void WorkshopLayer::newScene() {

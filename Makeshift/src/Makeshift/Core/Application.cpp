@@ -53,8 +53,8 @@ namespace Makeshift {
 		MK_PROFILE_FUNCTION();
 
 		EventDispatcher dispatcher(e);
-		dispatcher.dispatch<WindowCloseEvent>(MK_BIND_EVENT_FN(Application::onWindowClose));
 		dispatcher.dispatch<WindowResizeEvent>(MK_BIND_EVENT_FN(Application::onWindowResize));
+		//dispatcher.dispatch<WindowCloseEvent>(MK_BIND_EVENT_FN(Application::onWindowClose));
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); ) {
 			(*--it)->onEvent(e);
@@ -62,6 +62,7 @@ namespace Makeshift {
 				break;
 			}
 		}
+
 	}
 
 	void Application::run() {
