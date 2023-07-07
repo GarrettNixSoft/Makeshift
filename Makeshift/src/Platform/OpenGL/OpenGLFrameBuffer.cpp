@@ -78,6 +78,18 @@ namespace Makeshift {
 			return false;
 		}
 
+		static GLenum MakeshiftFramebufferTextureFormatToGL(FramebufferTextureFormat format) {
+			switch (format) {
+				case FramebufferTextureFormat::RGBA8:			return GL_RGBA8;
+				case FramebufferTextureFormat::RGBA16F:			return GL_RGBA16F;
+				case FramebufferTextureFormat::RED_INTEGER:		return GL_RED_INTEGER;
+				case FramebufferTextureFormat::DEPTH24STENCIL8: return GL_DEPTH24_STENCIL8;
+			}
+
+			MK_CORE_ASSERT(false, "Unknown format");
+			return 0;
+		}
+
 	}
 
 	
@@ -192,13 +204,19 @@ namespace Makeshift {
 	}
 
 	int OpenGLFramebuffer::readPixel(uint32_t attachmentIndex, int x, int y) {
-		
 		MK_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "attachmentIndex out ot bounds");
+
 		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
 		int pixelData;
 		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
 		return pixelData;
+	}
 
+	void OpenGLFramebuffer::clearAttachment(uint32_t attachmentIndex, int value) const {
+		MK_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "attachmentIndex out ot bounds");
+
+		auto& spec = m_ColorAttachmentSpecifications[attachmentIndex];
+		glClearTexImage(m_ColorAttachments[1], 0, Utils::MakeshiftFramebufferTextureFormatToGL(spec.textureFormat), GL_INT, &value);
 	}
 
 }
