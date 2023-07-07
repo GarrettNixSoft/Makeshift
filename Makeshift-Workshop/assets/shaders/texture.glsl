@@ -29,7 +29,7 @@ void main(void) {
 #version 330 core
 
 layout(location = 0) out vec4 outColor;
-layout(location = 1) out vec4 color2;
+layout(location = 1) out int color2;
 
 in vec4 v_Color;
 in vec2 v_TexCoord;
@@ -42,5 +42,5 @@ void main(void) {
 	outColor = texture(u_Textures[int(v_TexIndex)], v_TexCoord * v_TilingFactor) * v_Color;
 	// TODO: use a switch case for GPU compatibility
 
-	color2 = vec4(1.0, 0.0, 0.0, 1.0);
+	color2 = 57; // entity ID placeholder
 }

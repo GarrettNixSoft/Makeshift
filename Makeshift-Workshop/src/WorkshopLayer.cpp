@@ -26,7 +26,7 @@ namespace Makeshift {
 		MK_PROFILE_FUNCTION();
 
 		FramebufferSpecification fbSpec;
-		fbSpec.attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+		fbSpec.attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
 		fbSpec.width = 1920;
 		fbSpec.height = 1080;
 		m_Framebuffer = Framebuffer::Create(fbSpec);
@@ -133,6 +133,27 @@ namespace Makeshift {
 			// Update scene
 			m_ActiveScene->onUpdateEditor(ts, m_EditorCamera);
 
+			// fetch the mouse position on the display, and move it into viewport space
+			auto [mx, my] = ImGui::GetMousePos();
+			mx -= m_ViewportBounds[0].x;
+			my -= m_ViewportBounds[0].y;
+			glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+			// flip for OpenGL
+			my = viewportSize.y - my;
+
+			// viewport relative mouse pos
+			int mouseX = (int)mx;
+			int mouseY = (int)my;
+
+			// bounds checking
+			if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
+				if (Input::isMouseButtonPressed(Mouse::ButtonLeft)) {
+					int pixelData = m_Framebuffer->readPixel(1, mouseX, mouseY);
+					MK_CORE_WARN("Pixel = {0}", pixelData);
+				}
+			}
+			
+			// stop rendering to the scene framebuffer
 			m_Framebuffer->unbind();
 		}
 
@@ -274,6 +295,9 @@ namespace Makeshift {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 		ImGui::Begin("Viewport");
 
+		// get the screen pos where ImGui will draw next (automatically accounts for tab bar)
+		auto viewportOffset = ImGui::GetCursorPos();
+
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
 		Application::Get().GetImGuiLayer()->blockEvents(!m_ViewportFocused && !m_ViewportHovered);
@@ -288,8 +312,18 @@ namespace Makeshift {
 			//m_CameraController.onResize(viewportPanelSize.x, viewportPanelSize.y);
 		}
 
+		// Render scene from the framebuffer into this panel as an image
 		uint32_t textureId = m_Framebuffer->getColorAttachmentRendererId();
 		ImGui::Image((void*)textureId, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+		auto windowSize = ImGui::GetWindowSize();
+		ImVec2 minBound = ImGui::GetWindowPos();
+		minBound.x += viewportOffset.x;
+		minBound.y += viewportOffset.y;
+
+		ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y };
+		m_ViewportBounds[0] = { minBound.x, minBound.y };
+		m_ViewportBounds[1] = { maxBound.x, maxBound.y };
 
 		// Gizmo stuff
 		Entity selectedEntity = m_SceneHeirarchyPanel.getSelectedEntity();
