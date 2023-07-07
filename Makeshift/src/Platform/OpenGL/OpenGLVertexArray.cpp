@@ -61,15 +61,59 @@ namespace Makeshift {
 		const auto& layout = vertexBuffer->getLayout();
 		for (const auto& element : layout) {
 
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(
-				index,
-				element.getComponentCount(),
-				ShaderDataTypeToOpenGLBaseType(element.type),
-				element.normalized ? GL_TRUE : GL_FALSE,
-				layout.getStride(),
-				(const void*)element.offset);
-			index++;
+			switch (element.type) {
+				case ShaderDataType::Float:
+				case ShaderDataType::Vec2:
+				case ShaderDataType::Vec3:
+				case ShaderDataType::Vec4: {
+					glEnableVertexAttribArray(index);
+					glVertexAttribPointer(
+						index,
+						element.getComponentCount(),
+						ShaderDataTypeToOpenGLBaseType(element.type),
+						element.normalized ? GL_TRUE : GL_FALSE,
+						layout.getStride(),
+						(const void*)element.offset);
+					index++;
+					break;
+				}
+				case ShaderDataType::Int:
+				case ShaderDataType::Vec2i:
+				case ShaderDataType::Vec3i:
+				case ShaderDataType::Vec4i:
+				case ShaderDataType::Bool: {
+					glEnableVertexAttribArray(index);
+					glVertexAttribIPointer(
+						index,
+						element.getComponentCount(),
+						ShaderDataTypeToOpenGLBaseType(element.type),
+						layout.getStride(),
+						(const void*)element.offset);
+					index++;
+					break;
+					break;
+				}
+				case ShaderDataType::Mat3:
+				case ShaderDataType::Mat4: {
+					uint8_t count = element.getComponentCount();
+					for (uint8_t i = 0; i < count; i++) {
+						glEnableVertexAttribArray(index);
+						glVertexAttribPointer(
+							index,
+							count,
+							ShaderDataTypeToOpenGLBaseType(element.type),
+							element.normalized ? GL_TRUE : GL_FALSE,
+							layout.getStride(),
+							(const void*)(element.offset + sizeof(float) * count * i)
+						);
+						glVertexAttribDivisor(index, 1);
+						index++;
+					}
+					break;
+				}
+			}
+
+			
 
 		}
 

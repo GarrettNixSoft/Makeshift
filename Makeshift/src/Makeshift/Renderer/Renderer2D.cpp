@@ -16,6 +16,8 @@ namespace Makeshift {
 		glm::vec2 texCoord;
 		float texIndex;
 		float tilingFactor;
+		// Workshop-only
+		int entityId = -1;
 	};
 
 	struct TriangleVertex {
@@ -73,11 +75,12 @@ namespace Makeshift {
 		s_Data.quadVertexBuffer = VertexBuffer::Create(s_Data.MAX_VERTICES * sizeof(QuadVertex));
 
 		s_Data.quadVertexBuffer->setLayout({
-			{ ShaderDataType::Vec3, "position" },
-			{ ShaderDataType::Vec4, "color" },
-			{ ShaderDataType::Vec2, "texCoord" },
-			{ ShaderDataType::Float, "texIndex" },
-			{ ShaderDataType::Float, "tilingFactor" }
+			{ ShaderDataType::Vec3,		"position" },
+			{ ShaderDataType::Vec4,		"color" },
+			{ ShaderDataType::Vec2,		"texCoord" },
+			{ ShaderDataType::Float,	"texIndex" },
+			{ ShaderDataType::Float,	"tilingFactor" },
+			{ ShaderDataType::Int,		"entityId" }
 		});
 		s_Data.quadVertexArray->addVertexBuffer(s_Data.quadVertexBuffer);
 
@@ -271,7 +274,7 @@ namespace Makeshift {
 		DrawQuad(transform, subtexture, tintColor, tiling);
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityId) {
 
 		MK_PROFILE_FUNCTION();
 
@@ -291,6 +294,7 @@ namespace Makeshift {
 			s_Data.quadVertexBufferPtr->texCoord = textureCoords[i];
 			s_Data.quadVertexBufferPtr->texIndex = textureIndex;
 			s_Data.quadVertexBufferPtr->tilingFactor = tilingFactor;
+			s_Data.quadVertexBufferPtr->entityId = entityId;
 			s_Data.quadVertexBufferPtr++;
 		}
 
@@ -300,7 +304,7 @@ namespace Makeshift {
 
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D> texture, const glm::vec4& tintColor, float tiling) {
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D> texture, const glm::vec4& tintColor, float tiling, int entityId) {
 
 		MK_PROFILE_FUNCTION();
 
@@ -332,6 +336,7 @@ namespace Makeshift {
 			s_Data.quadVertexBufferPtr->texCoord = textureCoords[i];
 			s_Data.quadVertexBufferPtr->texIndex = textureIndex;
 			s_Data.quadVertexBufferPtr->tilingFactor = tiling;
+			s_Data.quadVertexBufferPtr->entityId = entityId;
 			s_Data.quadVertexBufferPtr++;
 		}
 
@@ -341,7 +346,7 @@ namespace Makeshift {
 
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D> subtexture, const glm::vec4& tintColor, float tiling) {
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D> subtexture, const glm::vec4& tintColor, float tiling, int entityId) {
 		MK_PROFILE_FUNCTION();
 
 		constexpr size_t quadVertexCount = 4;
@@ -373,6 +378,7 @@ namespace Makeshift {
 			s_Data.quadVertexBufferPtr->texCoord = textureCoords[i];
 			s_Data.quadVertexBufferPtr->texIndex = textureIndex;
 			s_Data.quadVertexBufferPtr->tilingFactor = tiling;
+			s_Data.quadVertexBufferPtr->entityId = entityId;
 			s_Data.quadVertexBufferPtr++;
 		}
 
@@ -548,6 +554,14 @@ namespace Makeshift {
 		s_Data.triangleVertexArray->bind();
 		RenderCommand::DrawIndexed(s_Data.triangleVertexArray);
 
+
+	}
+
+	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityId) {
+
+		// TODO: when SpriteRendererComponent supports textures, handle that branching here
+
+		DrawQuad(transform, src.color, entityId);
 
 	}
 

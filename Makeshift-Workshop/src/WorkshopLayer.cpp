@@ -150,11 +150,10 @@ namespace Makeshift {
 
 			// bounds checking
 			if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
-				if (Input::isMouseButtonPressed(Mouse::ButtonLeft)) {
-					int pixelData = m_Framebuffer->readPixel(1, mouseX, mouseY);
-					MK_CORE_WARN("Pixel = {0}", pixelData);
-				}
+				int pixelData = m_Framebuffer->readPixel(1, mouseX, mouseY);
+				m_HoveredEntity = pixelData == -1 ? Entity{} : Entity{ (entt::entity)pixelData, m_ActiveScene.get() };
 			}
+			else m_HoveredEntity = Entity{};
 			
 			// stop rendering to the scene framebuffer
 			m_Framebuffer->unbind();
@@ -278,6 +277,16 @@ namespace Makeshift {
 
 		// ================================ RENDER STATS ================================
 		ImGui::Begin("Stats");
+
+		std::string entityName = "None";
+		if (m_HoveredEntity && m_HoveredEntity.hasComponent<TagComponent>())
+			entityName = m_HoveredEntity.getComponent<TagComponent>().tag;
+
+		ImGui::Text("Hovered Entity: %s", entityName.c_str());
+
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
 
 		auto stats = Renderer2D::GetStats();
 		int fps = (int)(1000.0f / ts.getMilliseconds());

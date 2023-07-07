@@ -46,6 +46,8 @@ namespace Makeshift {
 		Entity m_RedSquare;
 		Entity m_CameraEntity;
 		Entity m_SecondCamera;
+
+		Entity m_HoveredEntity{};
 		
 		bool m_ClipSpaceCamera = false;
 
