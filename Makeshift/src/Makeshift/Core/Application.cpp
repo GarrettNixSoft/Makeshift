@@ -54,7 +54,6 @@ namespace Makeshift {
 
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<WindowResizeEvent>(MK_BIND_EVENT_FN(Application::onWindowResize));
-		//dispatcher.dispatch<WindowCloseEvent>(MK_BIND_EVENT_FN(Application::onWindowClose));
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); ) {
 			(*--it)->onEvent(e);
@@ -62,6 +61,10 @@ namespace Makeshift {
 				break;
 			}
 		}
+
+		// If a close event goes unhandled by any layer, consume it here and close
+		if (e.getEventType() == EventType::WindowClose && !e.handled)
+			Close();
 
 	}
 

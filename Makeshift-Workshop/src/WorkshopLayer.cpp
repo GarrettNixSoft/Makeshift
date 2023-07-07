@@ -525,9 +525,11 @@ namespace Makeshift {
 	}
 
 	bool WorkshopLayer::onWindowClosed(WindowCloseEvent& e) {
-		if (m_EditorContext->sceneEdited)
+		if (m_EditorContext->sceneEdited) {
 			m_ShowConfirmExitModal = true;
-		return true;
+			return true;
+		}
+		else return false;
 	}
 
 	void WorkshopLayer::newScene() {
