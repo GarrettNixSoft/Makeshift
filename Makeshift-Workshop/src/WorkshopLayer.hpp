@@ -6,6 +6,10 @@
 
 #include "Makeshift/Renderer/EditorCamera.hpp"
 
+#include "EditorContext.hpp"
+
+#include <string>
+
 namespace Makeshift {
 
 	class WorkshopLayer : public Layer {
@@ -21,11 +25,14 @@ namespace Makeshift {
 		virtual void onEvent(Event& e) override;
 	private:
 		bool onKeyPressed(KeyPressedEvent& e);
+		bool onWindowClosed(WindowCloseEvent& e);
 
 		void newScene();
 		void openScene();
 		void saveScene();
 		void saveSceneAs();
+
+		void markTitleEditStatus();
 	private:
 		OrthographicCameraController m_CameraController;
 
@@ -44,11 +51,7 @@ namespace Makeshift {
 
 		EditorCamera m_EditorCamera;
 
-		Ref<Texture2D> m_Texture;
-		Ref<Texture2D> m_SpriteSheet;
-		Ref<SubTexture2D> m_StairsTexture;
-		Ref<SubTexture2D> m_BarrelTexture;
-		Ref<SubTexture2D> m_TreeTexture;
+		Ref<EditorContext> m_EditorContext;
 
 		struct ProfileResult {
 			const char* name;
@@ -69,6 +72,11 @@ namespace Makeshift {
 
 		// Panels
 		SceneHeirarchyPanel m_SceneHeirarchyPanel;
+
+		// Modals
+		bool m_ShowConfirmNewModal = false;
+		bool m_ShowConfirmOpenModal = false;
+		bool m_ShowConfirmExitModal = false;
 
 	};
 

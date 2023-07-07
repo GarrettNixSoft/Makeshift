@@ -5,14 +5,16 @@
 #include "Makeshift/Scene/Scene.hpp"
 #include "Makeshift/Scene/Entity.hpp"
 
+#include "../EditorContext.hpp"
+
 namespace Makeshift {
 
 	class SceneHeirarchyPanel {
 	public:
 		SceneHeirarchyPanel() = default;
-		SceneHeirarchyPanel(const Ref<Scene>& scene);
+		SceneHeirarchyPanel(const Ref<Scene>& scene, const Ref<EditorContext>& context);
 
-		void setContext(const Ref<Scene>& context);
+		void setContext(const Ref<Scene>& context, const Ref<EditorContext>& editorContext);
 
 		void OnImGuiRender();
 
@@ -23,6 +25,8 @@ namespace Makeshift {
 	private:
 		Ref<Scene> m_Context;
 		Entity m_SelectionContext;
+
+		Ref<EditorContext> m_EditorContext;
 
 	};
 

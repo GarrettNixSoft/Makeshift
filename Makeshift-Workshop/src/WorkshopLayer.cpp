@@ -13,28 +13,10 @@
 
 #include <ImGuizmo.h>
 
+#include <sstream>
+#include <filesystem>
+
 namespace Makeshift {
-
-	static const uint32_t s_MapWidth = 24;
-
-	static const char* s_MapTiles =
-		"WWWWWWWWWWWWWWWWWWWWWWWW"
-		"WWWWWWWDDDDDDDWWWWWWWWWW"
-		"WWWWWDDDDDDDDDDDDWWWWWWW"
-		"WWWWDDDDDDDDDDDDDDDDWWWW"
-		"WWWDDDDWWWDDDDDDDCDDDWWW"
-		"WWDDDDDWWWDDDDDDDDDDDDWW"
-		"WDDDDDDDDDDDDDDDDDDDDDWW"
-		"WWDDDDDDDDDDDDDDDDDDDDWW"
-		"WWWDDDDDDDDDDDDDDDDDDDWW"
-		"WWWWDDDDDDDDDDDDDDDDDDWW"
-		"WWWWWDDDDDDDDDDDDDDDDWWW"
-		"WWWWWWWDDDDDDDDDDDDDWWWW"
-		"WWWWWWWWWDDDDDDDDDWWWWWW"
-		"WWWWWWWWWWWWWWWWWWWWWWWW"
-		;
-
-
 
 	WorkshopLayer::WorkshopLayer() : Layer("Sandbox2D"), m_CameraController(1920.0f / 1080.0f) {
 
@@ -52,6 +34,7 @@ namespace Makeshift {
 		m_ActiveScene = CreateRef<Scene>();
 
 		m_EditorCamera = EditorCamera(30.0f, 16.0f / 9.0f, 0.1, 1000.0f);
+		m_EditorContext = CreateRef<EditorContext>();
 
 #if 0
 		// Entities
@@ -99,7 +82,12 @@ namespace Makeshift {
 		m_SecondCamera.addComponent<NativeScriptComponent>().bind<CameraController>();
 #endif
 
-		m_SceneHeirarchyPanel.setContext(m_ActiveScene);
+		m_SceneHeirarchyPanel.setContext(m_ActiveScene, m_EditorContext);
+
+		m_EditorContext->editCallback = [=]() { markTitleEditStatus(); };
+		m_EditorContext->saveCallback = [=]() { markTitleEditStatus(); };
+
+		markTitleEditStatus();
 		
 	}
 
@@ -214,13 +202,22 @@ namespace Makeshift {
 				// Disabling fullscreen would allow the window to be moved to the front of other windows,
 				// which we can't undo at the moment without finer window depth/z control.
 
-				if (ImGui::MenuItem("New...", "Ctrl+N"))
-					newScene();
+				if (ImGui::MenuItem("New...", "Ctrl+N")) {
+					if (m_EditorContext->sceneEdited)
+						m_ShowConfirmNewModal = true;
+					else
+						newScene();
+				}
+					
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Open...", "Ctrl+O"))
-					openScene();
+				if (ImGui::MenuItem("Open...", "Ctrl+O")) {
+					if (m_EditorContext->sceneEdited)
+						m_ShowConfirmOpenModal = true;
+					else
+						openScene();
+				}
 
 				if (ImGui::MenuItem("Open Recent")) {
 					// TODO
@@ -236,26 +233,24 @@ namespace Makeshift {
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Exit")) Application::Get().Close();
+				if (ImGui::MenuItem("Exit")) {
+					if (m_EditorContext->sceneEdited)
+						m_ShowConfirmExitModal = true;
+					else
+						Application::Get().Close();
+				}
 
 				ImGui::EndMenu();
 			}
 
 			ImGui::EndMenuBar();
 		}
+		
 		// ================================ DOCK SPACE ================================
 
 		// ================================ SCENE HEIRARCHY PANEL ================================
 		m_SceneHeirarchyPanel.OnImGuiRender();
 		// ================================ SCENE HEIRARCHY PANEL ================================
-
-		// ================================ SETTINGS ================================
-		ImGui::Begin("Settings");
-
-		ImGui::Text("TODO");
-
-		ImGui::End();
-		// ================================ SETTINGS ================================
 
 		// ================================ RENDER STATS ================================
 		ImGui::Begin("Stats");
@@ -333,6 +328,9 @@ namespace Makeshift {
 				tc.rotation = rotation; // using a delta supposedly prevents gimbal lock here, but does it really?
 				tc.scale = scale;
 
+				// flag the scene as having been edited
+				m_EditorContext->flagEdit();
+
 			}
 		}
 
@@ -341,7 +339,85 @@ namespace Makeshift {
 		ImGui::PopStyleVar();
 		// ================================ VIEWPORT ================================
 
+		// End Dockspace
 		ImGui::End();
+
+		// ================================ SETTINGS ================================
+		ImGui::Begin("Settings");
+
+		ImGui::Text("Scene Name");
+
+		char buffer[256];
+		memset(buffer, 0, sizeof(buffer));
+		strcpy_s(buffer, sizeof(buffer), m_ActiveScene->getName().c_str());
+
+		if (ImGui::InputText("##SceneName", buffer, sizeof(buffer))) {
+			m_ActiveScene->setName(std::string(buffer));
+
+			m_EditorContext->flagEdit();
+
+			markTitleEditStatus();
+		}
+
+		{
+			if (m_ShowConfirmNewModal)
+				ImGui::OpenPopup("Confirm New Scene");
+
+			// Always center this window when appearing
+			ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+			ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+			if (ImGui::BeginPopupModal("Confirm New Scene", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+				ImGui::Text("You have unsaved changes.");
+				ImGui::Spacing();
+				ImGui::Text("Discard them an open a new scene anyway?");
+				ImGui::Separator();
+				if (ImGui::Button("Yes")) {
+					newScene();
+					ImGui::CloseCurrentPopup();
+					m_ShowConfirmNewModal = false;
+				}
+				ImGui::SameLine();
+				ImGui::SetItemDefaultFocus();
+				if (ImGui::Button("Cancel")) {
+					ImGui::CloseCurrentPopup();
+					m_ShowConfirmNewModal = false;
+				}
+				ImGui::EndPopup();
+			}
+		}
+
+		{
+			if (m_ShowConfirmOpenModal)
+				ImGui::OpenPopup("Confirm Open Scene");
+
+			// Always center this window when appearing
+			ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+			ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+			if (ImGui::BeginPopupModal("Confirm Open Scene", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+				ImGui::Text("You have unsaved changes.");
+				ImGui::Spacing();
+				ImGui::Text("Discard them an open a new scene anyway?");
+				ImGui::Separator();
+				if (ImGui::Button("Yes")) {
+					openScene();
+					ImGui::CloseCurrentPopup();
+					m_ShowConfirmOpenModal = false;
+				}
+				ImGui::SameLine();
+				ImGui::SetItemDefaultFocus();
+				if (ImGui::Button("Cancel")) {
+					ImGui::CloseCurrentPopup();
+					m_ShowConfirmOpenModal = false;
+				}
+				ImGui::EndPopup();
+			}
+		}
+
+		ImGui::End();
+		// ================================ SETTINGS ================================
+
 	}
 
 	void WorkshopLayer::onEvent(Event& e) {
@@ -367,14 +443,20 @@ namespace Makeshift {
 
 			case Key::N: {
 				if (ctrl)
-					newScene();
+					if (m_EditorContext->sceneEdited)
+						m_ShowConfirmNewModal = true;
+					else
+						newScene();
 
 				break;
 			}
 
 			case Key::O: {
 				if (ctrl)
-					openScene();
+					if (m_EditorContext->sceneEdited)
+						m_ShowConfirmOpenModal = true;
+					else
+						openScene();
 
 				break;
 			}
@@ -414,10 +496,18 @@ namespace Makeshift {
 	}
 
 	void WorkshopLayer::newScene() {
+
 		// Create a new scene to load into (clear)
 		m_ActiveScene = CreateRef<Scene>();
 		m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_SceneHeirarchyPanel.setContext(m_ActiveScene);
+		m_SceneHeirarchyPanel.setContext(m_ActiveScene, m_EditorContext);
+
+		// new scene, remove edit flag
+		m_EditorContext->clearEdit();
+
+		// clear the context filepath
+		m_EditorContext->activeSceneFilePath = std::string();
+		
 	}
 
 	void WorkshopLayer::openScene() {
@@ -427,16 +517,41 @@ namespace Makeshift {
 			// Create a new scene to load into (clear)
 			m_ActiveScene = CreateRef<Scene>();
 			m_ActiveScene->onViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_SceneHeirarchyPanel.setContext(m_ActiveScene);
+			m_SceneHeirarchyPanel.setContext(m_ActiveScene, m_EditorContext);
 
 			SceneSerializer serializer(m_ActiveScene);
 			serializer.deserialize(filepath);
+
+			// hold onto the filepath we just loaded
+			m_EditorContext->activeSceneFilePath = filepath;
+
+			// newly opened scene, remove edit flag
+			m_EditorContext->clearEdit();
 		}
 	}
 
 	void WorkshopLayer::saveScene() {
-		// TODO: this is contextual!
-		saveSceneAs();
+		
+		// If the context contains a filepath for the active scene, save to that scene
+		if (!m_EditorContext->activeSceneFilePath.empty()) {
+
+			// confirm the file exists
+			std::filesystem::path f{ m_EditorContext->activeSceneFilePath };
+			if (std::filesystem::exists(f)) {
+
+				SceneSerializer serializer(m_ActiveScene);
+				serializer.serialize(m_EditorContext->activeSceneFilePath);
+
+				// changes saved, remove edit flag
+				m_EditorContext->clearEdit();
+
+			}
+
+			else saveSceneAs();
+			
+		}
+		else saveSceneAs();
+
 	}
 
 	void WorkshopLayer::saveSceneAs() {
@@ -446,7 +561,23 @@ namespace Makeshift {
 		if (!filepath.empty()) {
 			SceneSerializer serializer(m_ActiveScene);
 			serializer.serialize(filepath);
+
+			// hold onto the filepath we just saved to
+			m_EditorContext->activeSceneFilePath = filepath;
+			
+			// changes saved, remove edit flag
+			m_EditorContext->clearEdit();
 		}
+
+	}
+
+	void WorkshopLayer::markTitleEditStatus() {
+
+		std::stringstream strStream;
+		strStream << "Makeshift Workshop -- " <<  m_ActiveScene->getName();
+		if (m_EditorContext->sceneEdited) strStream << "*";
+
+		Application::Get().getWindow().setTitle(strStream.str());
 
 	}
 

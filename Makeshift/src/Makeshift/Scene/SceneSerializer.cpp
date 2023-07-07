@@ -147,7 +147,7 @@ namespace Makeshift {
 
 		YAML::Emitter out;
 		out << YAML::BeginMap;
-		out << YAML::Key << "Scene" << YAML::Value << "Makeshift Scene";
+		out << YAML::Key << "Scene" << YAML::Value << m_Scene->getName();
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 		m_Scene->m_Registry.each([&](auto entityId) {
 			Entity entity = { entityId, m_Scene.get() };
@@ -185,6 +185,7 @@ namespace Makeshift {
 		// fetch the scene name and log it
 		std::string sceneName = data["Scene"].as<std::string>();
 		MK_CORE_TRACE("Deserializing scene '{0}'", sceneName);
+		m_Scene->setName(sceneName);
 
 		// fetch the entities in the scene, if present
 		auto entities = data["Entities"];

@@ -15,7 +15,7 @@ namespace Makeshift {
 	}
 
 	Scene::~Scene() {
-
+		m_Registry.clear();
 	}
 
 	Entity Scene::createEntity(const std::string& name) {

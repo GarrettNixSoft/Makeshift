@@ -165,6 +165,12 @@ namespace Makeshift {
 		context->swapBuffers();
 	}
 
+	void WindowsWindow::setTitle(const std::string& title) {
+
+		glfwSetWindowTitle(window, title.c_str());
+
+	}
+
 	void WindowsWindow::setVsync(bool enabled) {
 		MK_PROFILE_FUNCTION();
 

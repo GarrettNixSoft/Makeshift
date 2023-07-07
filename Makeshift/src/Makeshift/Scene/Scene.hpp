@@ -22,6 +22,9 @@ namespace Makeshift {
 		void onUpdateEditor(Timestep ts, EditorCamera& camera);
 		void onViewportResize(uint32_t width, uint32_t height);
 
+		const std::string& getName() const { return m_Name; }
+		void setName(const std::string& name) { m_Name = name; }
+
 		Entity getPrimaryCameraEntity();
 	private:
 		template<typename T>
@@ -29,6 +32,8 @@ namespace Makeshift {
 	private:
 		entt::registry m_Registry;
 		uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
+
+		std::string m_Name = "Untitled Scene";
 		
 		friend class Entity;
 		friend class SceneSerializer;

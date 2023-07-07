@@ -1,0 +1,21 @@
+# Makeshift Engine Scene File
+Scene: Test Editing Scene Name
+Entities:
+  - Entity: 1234567890
+    TagComponent:
+      Tag: Empty Entity
+    TransformComponent:
+      Translation: [0.300000012, -1.70000005, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+  - Entity: 1234567890
+    TagComponent:
+      Tag: Empty Entity
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.756756783, 0.423666924, 0.423666924, 1]

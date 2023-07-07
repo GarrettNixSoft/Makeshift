@@ -18,6 +18,7 @@ namespace Makeshift {
 		inline unsigned int getHeight() const override { return data.height; }
 
 		// Window attributes
+		void setTitle(const std::string& title) override;
 		inline void setEventCallback(const EventCallbackFn& callback) override { data.eventCallback = callback; }
 		void setVsync(bool enabled) override;
 		bool isVsync() const override;

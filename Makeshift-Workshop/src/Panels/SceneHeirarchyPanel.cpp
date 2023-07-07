@@ -9,13 +9,14 @@
 
 namespace Makeshift {
 
-	SceneHeirarchyPanel::SceneHeirarchyPanel(const Ref<Scene>& scene) {
-		setContext(scene);
+	SceneHeirarchyPanel::SceneHeirarchyPanel(const Ref<Scene>& scene, const Ref<EditorContext>& context) {
+		setContext(scene, context);
 	}
 
-	void SceneHeirarchyPanel::setContext(const Ref<Scene>& context) {
+	void SceneHeirarchyPanel::setContext(const Ref<Scene>& context, const Ref<EditorContext>& editorContext) {
 		m_Context = context;
 		m_SelectionContext = {};
+		m_EditorContext = editorContext;
 	}
 
 	void SceneHeirarchyPanel::OnImGuiRender() {
@@ -37,6 +38,8 @@ namespace Makeshift {
 
 			if (ImGui::MenuItem("Create Empty Entity")) {
 				m_Context->createEntity("Empty Entity");
+
+				m_EditorContext->flagEdit();
 			}
 
 			ImGui::EndPopup();
@@ -50,8 +53,6 @@ namespace Makeshift {
 		if (m_SelectionContext) {
 
 			drawComponents(m_SelectionContext);
-
-			
 
 		}
 
@@ -93,8 +94,10 @@ namespace Makeshift {
 		}
 
 		// perform possible deferred deletion now that it's safe to do so
-		if (deleteEntity) {
-			m_Context->destroyEntity(entity);
+		if (deleteEntity) {{
+				m_Context->destroyEntity(entity);
+				m_EditorContext->flagEdit();
+			}
 			// clear selection if we just deleted the selected entity
 			if (m_SelectionContext == entity)
 				m_SelectionContext = {};
@@ -102,7 +105,9 @@ namespace Makeshift {
 
 	}
 
-	static void drawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f) {
+	static bool drawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f) {
+
+		bool edit = false;
 
 		ImGuiIO& io = ImGui::GetIO();
 		auto boldFont = io.Fonts->Fonts[0]; // fonts stored in the order they are loaded in ImGuiLayer (TODO: write a system for this)
@@ -126,14 +131,16 @@ namespace Makeshift {
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
 
 		ImGui::PushFont(boldFont);
-		if (ImGui::Button("X", buttonSize))
+		if (ImGui::Button("X", buttonSize)) {
 			values.x = resetValue;
+			edit = true;
+		}
 		ImGui::PopFont();
 
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, "%.2f")) edit = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -142,14 +149,16 @@ namespace Makeshift {
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
 
 		ImGui::PushFont(boldFont);
-		if (ImGui::Button("Y", buttonSize))
+		if (ImGui::Button("Y", buttonSize)) {
 			values.y = resetValue;
+			edit = true;
+		}
 		ImGui::PopFont();
 
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, "%.2f")) edit = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -158,14 +167,16 @@ namespace Makeshift {
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
 
 		ImGui::PushFont(boldFont);
-		if (ImGui::Button("Z", buttonSize))
+		if (ImGui::Button("Z", buttonSize)) {
 			values.z = resetValue;
+			edit = true;
+		}
 		ImGui::PopFont();
 
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f");
+		if (ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f")) edit = true;
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -175,10 +186,12 @@ namespace Makeshift {
 
 		ImGui::PopID();
 
+		return edit;
+
 	}
 
 	template<typename T, typename UIFunction>
-	static void drawComponent(const std::string& label, Entity entity, UIFunction uiFunction) {
+	static void drawComponent(const std::string& label, Entity entity, const Ref<EditorContext>& editorContext, UIFunction uiFunction) {
 
 		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed
 			| ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowItemOverlap;
@@ -216,6 +229,7 @@ namespace Makeshift {
 
 			if (removeComponent) {
 				entity.removeComponent<T>();
+				editorContext->flagEdit();
 			}
 
 		}
@@ -234,6 +248,7 @@ namespace Makeshift {
 
 			if (ImGui::InputText("##Tag", buffer, sizeof(buffer))) {
 				tag = std::string(buffer);
+				m_EditorContext->flagEdit();
 			}
 		}
 
@@ -250,11 +265,13 @@ namespace Makeshift {
 			if (ImGui::MenuItem("Camera")) {
 				m_SelectionContext.addComponent<CameraComponent>();
 				ImGui::CloseCurrentPopup();
+				m_EditorContext->flagEdit();
 			}
 
 			if (ImGui::MenuItem("Sprite Renderer")) {
 				m_SelectionContext.addComponent<SpriteRendererComponent>();
 				ImGui::CloseCurrentPopup();
+				m_EditorContext->flagEdit();
 			}
 
 			ImGui::EndPopup();
@@ -265,17 +282,17 @@ namespace Makeshift {
 
 		// Draw component UI!
 
-		drawComponent<TransformComponent>("Transform", entity, [](auto& component) {
+		drawComponent<TransformComponent>("Transform", entity, m_EditorContext, [&](auto& component) {
 
-			drawVec3Control("Translation", component.translation);
+			if (drawVec3Control("Translation", component.translation)) m_EditorContext->flagEdit();
 			glm::vec3 rotation = glm::degrees(component.rotation);
-			drawVec3Control("Rotation", rotation);
+			if (drawVec3Control("Rotation", rotation)) m_EditorContext->flagEdit();
 			component.rotation = glm::radians(rotation);
-			drawVec3Control("Scale", component.scale, 1.0f);
+			if (drawVec3Control("Scale", component.scale, 1.0f)) m_EditorContext->flagEdit();
 
 		});
 
-		drawComponent<CameraComponent>("Camera", entity, [](auto& component) {
+		drawComponent<CameraComponent>("Camera", entity, m_EditorContext, [&](auto& component) {
 
 			auto& camera = component.camera;
 
@@ -304,41 +321,53 @@ namespace Makeshift {
 			if (camera.getProjectionType() == SceneCamera::ProjectionType::Perspective) {
 
 				float perspectiveFOV = glm::degrees(camera.getPerspectiveVerticalFOV());
-				if (ImGui::DragFloat("Vertical FOV", &perspectiveFOV))
+				if (ImGui::DragFloat("Vertical FOV", &perspectiveFOV)) {
 					camera.setPerspectiveVerticalFOV(glm::radians(perspectiveFOV));
+					m_EditorContext->flagEdit();
+				}
 
 				float perspectiveNear = camera.getPerspectiveNearClip();
-				if (ImGui::DragFloat("Near Clip", &perspectiveNear))
+				if (ImGui::DragFloat("Near Clip", &perspectiveNear)) {
 					camera.setPerspectiveNearClip(perspectiveNear);
+					m_EditorContext->flagEdit();
+				}
 
 				float perspectiveFar = camera.getPerspectiveFarClip();
-				if (ImGui::DragFloat("Far Clip", &perspectiveFar))
+				if (ImGui::DragFloat("Far Clip", &perspectiveFar)) {
 					camera.setPerspectiveFarClip(perspectiveFar);
+					m_EditorContext->flagEdit();
+				}
 
 			}
 
 			else if (camera.getProjectionType() == SceneCamera::ProjectionType::Orthographic) {
 
 				float orthoSize = camera.getOrthographicSize();
-				if (ImGui::DragFloat("Size", &orthoSize))
+				if (ImGui::DragFloat("Size", &orthoSize)) {
 					camera.setOrthographicSize(orthoSize);
+					m_EditorContext->flagEdit();
+				}
 
 				float orthoNear = camera.getOrthographicNearClip();
-				if (ImGui::DragFloat("Near Clip", &orthoNear))
+				if (ImGui::DragFloat("Near Clip", &orthoNear)) {
 					camera.setOrthographicNearClip(orthoNear);
+					m_EditorContext->flagEdit();
+				}
 
 				float orthoFar = camera.getOrthographicFarClip();
-				if (ImGui::DragFloat("Far Clip", &orthoFar))
+				if (ImGui::DragFloat("Far Clip", &orthoFar)) {
 					camera.setOrthographicFarClip(orthoFar);
+					m_EditorContext->flagEdit();
+				}
 
 				ImGui::Checkbox("Fixed Aspect Ratio", &component.fixedAspectRatio);
 			}
 
 		});
 
-		drawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component) {
+		drawComponent<SpriteRendererComponent>("Sprite Renderer", entity, m_EditorContext, [&](auto& component) {
 
-			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
+			if (ImGui::ColorEdit4("Color", glm::value_ptr(component.color))) m_EditorContext->flagEdit();
 
 		});
 
