@@ -19,6 +19,18 @@ namespace Makeshift {
 		return state == GLFW_PRESS;
 	}
 
+	bool Input::IsCtrlPresssed() {
+		return IsKeyPressed(Key::LeftControl) || IsKeyPressed(Key::RightControl);
+	}
+
+	bool Input::IsShiftPressed() {
+		return IsKeyPressed(Key::LeftShift) || IsKeyPressed(Key::RightShift);
+	}
+
+	bool Input::IsAltPressed() {
+		return IsKeyPressed(Key::LeftAlt) || IsKeyPressed(Key::RightAlt);
+	}
+
 
 	std::pair<float, float> Input::getMousePosition() {
 		auto window = static_cast<GLFWwindow*>(Application::Get().getWindow().getNativeWindow());

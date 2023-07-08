@@ -60,6 +60,12 @@ namespace Makeshift {
 
 	}
 
+	void SceneHeirarchyPanel::setSelectedEntity(Entity entity) {
+
+		m_SelectionContext = entity;
+
+	}
+
 	void SceneHeirarchyPanel::drawEntityNode(Entity entity) {
 		auto& tag = entity.getComponent<TagComponent>().tag;
 		

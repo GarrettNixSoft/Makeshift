@@ -417,11 +417,11 @@ namespace Makeshift {
 					m_ShowConfirmNewModal = false;
 				}
 				ImGui::SameLine();
-				ImGui::SetItemDefaultFocus();
 				if (ImGui::Button("Cancel")) {
 					ImGui::CloseCurrentPopup();
 					m_ShowConfirmNewModal = false;
 				}
+				ImGui::SetItemDefaultFocus();
 				ImGui::EndPopup();
 			}
 		}
@@ -445,11 +445,11 @@ namespace Makeshift {
 					m_ShowConfirmOpenModal = false;
 				}
 				ImGui::SameLine();
-				ImGui::SetItemDefaultFocus();
 				if (ImGui::Button("Cancel")) {
 					ImGui::CloseCurrentPopup();
 					m_ShowConfirmOpenModal = false;
 				}
+				ImGui::SetItemDefaultFocus();
 				ImGui::EndPopup();
 			}
 		}
@@ -473,11 +473,11 @@ namespace Makeshift {
 					m_ShowConfirmExitModal = false;
 				}
 				ImGui::SameLine();
-				ImGui::SetItemDefaultFocus();
 				if (ImGui::Button("Cancel")) {
 					ImGui::CloseCurrentPopup();
 					m_ShowConfirmExitModal = false;
 				}
+				ImGui::SetItemDefaultFocus();
 				ImGui::EndPopup();
 			}
 		}
@@ -493,6 +493,7 @@ namespace Makeshift {
 
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<KeyPressedEvent>(MK_BIND_EVENT_FN(WorkshopLayer::onKeyPressed));
+		dispatcher.dispatch<MouseButtonPressedEvent>(MK_BIND_EVENT_FN(WorkshopLayer::onMouseButtonPressed));
 		dispatcher.dispatch<WindowCloseEvent>(MK_BIND_EVENT_FN(WorkshopLayer::onWindowClosed));
 	}
 
@@ -561,6 +562,14 @@ namespace Makeshift {
 			
 		}
 
+	}
+
+	bool WorkshopLayer::onMouseButtonPressed(MouseButtonPressedEvent& e) {
+		if (e.getMouseButton() == Mouse::ButtonLeft) {
+			if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsAltPressed())
+				m_SceneHeirarchyPanel.setSelectedEntity(m_HoveredEntity);
+		}
+		return false;
 	}
 
 	bool WorkshopLayer::onWindowClosed(WindowCloseEvent& e) {

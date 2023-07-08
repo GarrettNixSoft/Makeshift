@@ -8,8 +8,14 @@ namespace Makeshift {
 
 	class MK_API Input {
 	public:
+		// ================ KEYBOARD ================
 		static bool IsKeyPressed(KeyCode keycode);
 
+		static bool IsCtrlPresssed();
+		static bool IsShiftPressed();
+		static bool IsAltPressed();
+
+		// ================ MOUSE ================
 		static bool isMouseButtonPressed(int button);
 		static float GetMouseX();
 		static float GetMouseY();

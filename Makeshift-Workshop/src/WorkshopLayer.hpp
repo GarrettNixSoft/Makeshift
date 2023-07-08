@@ -25,6 +25,7 @@ namespace Makeshift {
 		virtual void onEvent(Event& e) override;
 	private:
 		bool onKeyPressed(KeyPressedEvent& e);
+		bool onMouseButtonPressed(MouseButtonPressedEvent& e);
 		bool onWindowClosed(WindowCloseEvent& e);
 
 		void newScene();
