@@ -387,3 +387,5 @@ FodyWeavers.xsd
 /Makeshift-Workshop/Makeshift-Workshop.vcxproj.filters
 /Makeshift-Workshop/assets/scenes/example3D.mkshft
 /Makeshift-Workshop/assets/scenes/saved_scene.mkshft
+/Makeshift/vendor/VulkanSDK
+/Makeshift-Workshop/assets/cache

@@ -13,10 +13,22 @@
 
 namespace Makeshift {
 
+	struct ApplicationCommandLineArgs {
+
+		int count = 0;
+		char** args = nullptr;
+
+		const char* operator[](int index) const {
+			MK_CORE_ASSERT(index < count, "arg index out of bounds");
+			return args[index];
+		}
+
+	};
+
 	class Application {
 
 	public:
-		Application(const std::string& name = "Makeshift App");
+		Application(const std::string& name = "Makeshift App", ApplicationCommandLineArgs args = ApplicationCommandLineArgs());
 		virtual ~Application();
 
 		void run();
@@ -33,11 +45,14 @@ namespace Makeshift {
 		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
 
 		inline static Application& Get() { return *s_Instance; }
+
+		ApplicationCommandLineArgs getCommandLineArgs() const { return m_CommandLineArgs; }
 	private:
 		bool onWindowClose(WindowCloseEvent& e);
 		bool onWindowResize(WindowResizeEvent& e);
 	private:
-		std::unique_ptr<Window> m_Window;
+		ApplicationCommandLineArgs m_CommandLineArgs;
+		Scope<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		bool m_Minimized = false;
@@ -51,6 +66,6 @@ namespace Makeshift {
 	};
 
 	// To be defined by CLIENT
-	Application* CreateApplication();
+	Application* CreateApplication(ApplicationCommandLineArgs args);
 
 }

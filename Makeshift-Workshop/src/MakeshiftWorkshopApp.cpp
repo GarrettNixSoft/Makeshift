@@ -22,7 +22,7 @@ namespace Makeshift {
 	};
 
 
-	Application* Makeshift::CreateApplication() {
+	Application* Makeshift::CreateApplication(ApplicationCommandLineArgs args) {
 		return new MakeshiftWorkshop();
 	}
 

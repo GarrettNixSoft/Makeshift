@@ -3,10 +3,12 @@
 
 #include "VertexArray.hpp"
 #include "Shader.hpp"
+#include "UniformBuffer.hpp"
 
 #include "RenderCommand.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Makeshift {
 
@@ -61,6 +63,12 @@ namespace Makeshift {
 		glm::vec4 quadVertexPositions[4];
 
 		Renderer2D::Statistics stats;
+
+		struct CameraData {
+			glm::mat4 viewProjection;
+		};
+		CameraData cameraBuffer;
+		Ref<UniformBuffer> cameraUniformBuffer;
 
 	};
 
@@ -133,15 +141,13 @@ namespace Makeshift {
 		for (uint32_t i = 0; i < s_Data.MAX_TEXTURE_SLOTS; i++) {
 			samplers[i] = i;
 		}
-
-		// set all texture slots to 0
-		s_Data.textureSlots[0] = s_Data.whiteTexture;
 		// ================================ TEXTURES ================================
 
 		// ================================ SHADERS ================================
 		s_Data.textureShader = Shader::Create("assets/shaders/texture.glsl");
-		s_Data.textureShader->bind();
-		s_Data.textureShader->setIntArray("u_Textures", samplers, s_Data.MAX_TEXTURE_SLOTS);
+
+		// set the first texture slot to 0
+		s_Data.textureSlots[0] = s_Data.whiteTexture;
 		// ================================ SHADERS ================================
 
 		s_Data.quadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
@@ -150,6 +156,8 @@ namespace Makeshift {
 		s_Data.quadVertexPositions[3] = { -0.5f, 0.5f, 0.0f, 1.0f };
 
 		s_Data.quadVertexArray->bind();
+
+		s_Data.cameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
 
 	}
 
@@ -181,6 +189,9 @@ namespace Makeshift {
 		s_Data.textureShader->bind();
 		s_Data.textureShader->setMat4("u_ViewProjection", camera.getViewProjection());
 
+		s_Data.cameraBuffer.viewProjection = camera.getViewProjection();
+		s_Data.cameraUniformBuffer->setData(&s_Data.cameraBuffer, sizeof(Renderer2DData::CameraData));
+
 		startBatch();
 	}
 
@@ -191,6 +202,9 @@ namespace Makeshift {
 
 		s_Data.textureShader->bind();
 		s_Data.textureShader->setMat4("u_ViewProjection", viewProj);
+
+		s_Data.cameraBuffer.viewProjection = camera.getProjection() * glm::inverse(transform);
+		s_Data.cameraUniformBuffer->setData(&s_Data.cameraBuffer, sizeof(Renderer2DData::CameraData));
 
 		startBatch();
 	}
@@ -212,6 +226,7 @@ namespace Makeshift {
 			s_Data.textureSlots[i]->bind(i);
 		}
 
+		s_Data.textureShader->bind();
 		RenderCommand::DrawIndexed(s_Data.quadVertexArray, s_Data.quadIndexCount);
 		s_Data.stats.DrawCalls++;
 

@@ -1,6 +1,8 @@
-workspace "Makeshift"
-	architecture "x64"
+include "./vendor/premake/premake_customization/solution_items.lua"
+include "Dependencies.lua"
 
+workspace "Makeshift"
+	architecture "x86_64"
 	startproject "Makeshift-Workshop"
 
 	configurations {
@@ -8,24 +10,19 @@ workspace "Makeshift"
 		"Release",
 		"Dist"
 	}
+	
+	solution_items {
+		".editorconfig"
+	}
+	
+	flags {
+		"MultiProcessorCompile"
+	}
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
--- Include directories relative to solution (root) dir
-IncludeDir = {}
-IncludeDir["GLFW"] = "Makeshift/vendor/GLFW/include"
-IncludeDir["Glad"] = "Makeshift/vendor/Glad/include"
-IncludeDir["ImGui"] = "Makeshift/vendor/imgui"
-IncludeDir["glm"] = "Makeshift/vendor/glm"
-IncludeDir["stb_image"] = "Makeshift/vendor/stb_image"
-IncludeDir["entt"] = "Makeshift/vendor/entt/include"
-IncludeDir["yaml_cpp"] = "Makeshift/vendor/yaml-cpp/include"
-IncludeDir["ImGuizmo"] = "Makeshift/vendor/imguizmo"
-
-IncludeDir["Vulkan"] = "C:/VulkanSDK/1.3.246.1/Include"
-IncludeDir["vma"] = "Makeshift/vendor/vma/include"
-
 group "Dependencies"
+	include "vendor/premake"
 	include "Makeshift/vendor/GLFW"
 	include "Makeshift/vendor/Glad"
 	include "Makeshift/vendor/imgui"
@@ -34,178 +31,6 @@ group "Dependencies"
 
 group ""
 
-project "Makeshift"
-	location "Makeshift"
-	kind "StaticLib"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
-	pchheader "mkpch.hpp"
-	pchsource "Makeshift/src/mkpch.cpp"
-
-	files {
-		"%{prj.name}/src/**.hpp",
-		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/vendor/stb_image/**.h",
-		"%{prj.name}/vendor/stb_image/**.cpp",
-		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl",
-		"%{prj.name}/vendor/imguizmo/ImGuizmo.h",
-		"%{prj.name}/vendor/imguizmo/ImGuizmo.cpp"
-	}
-	
-	defines {
-		"_CRT_SECURE_NO_WARNINGS",
-		"GLFW_INCLUDE_NONE",
-		"YAML_CPP_STATIC_DEFINE"
-	}
-
-	includedirs {
-		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include",
-		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.Glad}",
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.entt}",
-		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.ImGuizmo}",
-
-		"%{IncludeDir.Vulkan}",
-		"%{IncludeDir.vma}"
-	}
-
-	links {
-		"GLFW",
-		"Glad",
-		"ImGui",
-		"yaml-cpp",
-		"opengl32.lib",
-
-		"C:/VulkanSDK/1.3.246.1/Lib/vulkan-1.lib"
-	}
-
-	filter "files:vendor/imguizmo/**.cpp"
-	flags { "NoPCH" } -- This won't work for whatever reason, must manually set this flag each time the project is regenerated
-
-	filter "system:windows"
-		systemversion "latest"
-
-		defines {
-		}
-		
-	filter "configurations:Debug"
-		defines "MK_DEBUG"
-		runtime "Debug"
-		symbols "on"
-
-	filter "configurations:Release"
-		defines "MK_RELEASE"
-		runtime "Release"
-		optimize "on"
-
-	filter "configurations:Dist"
-		defines "MK_DIST"
-		runtime "Release"
-		optimize "on"
-
-project "Sandbox"
-	location "Sandbox"
-	kind "ConsoleApp"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
-	files {
-		"%{prj.name}/src/**.hpp",
-		"%{prj.name}/src/**.cpp"
-	}
-
-	includedirs {
-		"Makeshift/vendor/spdlog/include",
-		"Makeshift/src",
-		"Makeshift/vendor",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}"
-	}
-
-	links {
-		"Makeshift"
-	}
-
-	filter "system:windows"
-		systemversion "latest"
-
-	filter "configurations:Debug"
-		defines "MK_DEBUG"
-		runtime "Debug"
-		symbols "on"
-
-	filter "configurations:Release"
-		defines "MK_RELEASE"
-		runtime "Release"
-		optimize "on"
-
-	filter "configurations:Dist"
-		defines "MK_DIST"
-		runtime "Release"
-		optimize "on"
-
-project "Makeshift-Workshop"
-	location "Makeshift-Workshop"
-	kind "ConsoleApp"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
-	files {
-		"%{prj.name}/src/**.hpp",
-		"%{prj.name}/src/**.cpp"
-	}
-
-	includedirs {
-		"Makeshift/vendor/spdlog/include",
-		"Makeshift/src",
-		"Makeshift/vendor",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}",
-
-		"%{IncludeDir.ImGuizmo}"
-	}
-
-	links {
-		"Makeshift"
-	}
-
-	filter "system:windows"
-		systemversion "latest"
-
-	filter "configurations:Debug"
-		defines "MK_DEBUG"
-		runtime "Debug"
-		symbols "on"
-
-	filter "configurations:Release"
-		defines "MK_RELEASE"
-		runtime "Release"
-		optimize "on"
-
-	filter "configurations:Dist"
-		defines "MK_DIST"
-		runtime "Release"
-		optimize "on"
-
-	filter "files:assets/shaders/*"
-		buildcommands '"C:/VulkanSDK/1.3.246.1/Bin/glslc.exe" -V -o "%{file.directory}/bin/%{file.name}.spv" "%{file.relpath}"'
-		buildoutputs "%{file.directory}/bin/%{file.name}.spv"
+include "Makeshift"
+include "Sandbox"
+include "Makeshift-Workshop"

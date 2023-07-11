@@ -26,7 +26,7 @@ public:
 		};
 
 		Makeshift::Ref<Makeshift::VertexBuffer> vertexBuffer;
-		vertexBuffer == Makeshift::VertexBuffer::Create(vertices, sizeof(vertices));
+		vertexBuffer = Makeshift::VertexBuffer::Create(vertices, sizeof(vertices));
 
 		Makeshift::BufferLayout layout = {
 			{ Makeshift::ShaderDataType::Vec3, "position" },

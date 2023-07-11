@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="..">
+      <UniqueIdentifier>{61705900-4DFC-870B-B6AA-880BA255880B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Makeshift">
+      <UniqueIdentifier>{0CABE287-F80D-722C-A193-AAE28DD53DAF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Makeshift\vendor">
+      <UniqueIdentifier>{E9DB7DDE-553D-5BEC-DEAA-A19E4A0B92AB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Makeshift\vendor\GLFW">
+      <UniqueIdentifier>{C8705B71-B495-AAF1-DDE0-8F81C964A90F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Makeshift\vendor\Glad">
+      <UniqueIdentifier>{70FC5B71-5C21-ABF1-856C-908171F0A90F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Makeshift\vendor\imgui">
+      <UniqueIdentifier>{1374439F-7F36-7729-C8E6-05B634E84F07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Makeshift\vendor\vma">
+      <UniqueIdentifier>{9C728760-08AA-CFF7-11B4-331B7D6AF6F0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Makeshift\vendor\yaml-cpp">
+      <UniqueIdentifier>{BBB8A871-A773-981D-502B-11683CC5E2AD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Makeshift-Workshop">
+      <UniqueIdentifier>{36940EFC-A200-CAF6-6BF4-6154D71FEC5E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Sandbox">
+      <UniqueIdentifier>{3F7B6B1D-2B33-AD6A-943A-86C68011485B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Makeshift-Workshop\premake5.lua">
+      <Filter>..\Makeshift-Workshop</Filter>
+    </None>
+    <None Include="..\..\Makeshift\premake5.lua">
+      <Filter>..\Makeshift</Filter>
+    </None>
+    <None Include="..\..\Makeshift\vendor\GLFW\premake5.lua">
+      <Filter>..\Makeshift\vendor\GLFW</Filter>
+    </None>
+    <None Include="..\..\Makeshift\vendor\Glad\premake5.lua">
+      <Filter>..\Makeshift\vendor\Glad</Filter>
+    </None>
+    <None Include="..\..\Makeshift\vendor\imgui\premake5.lua">
+      <Filter>..\Makeshift\vendor\imgui</Filter>
+    </None>
+    <None Include="..\..\Makeshift\vendor\vma\premake5.lua">
+      <Filter>..\Makeshift\vendor\vma</Filter>
+    </None>
+    <None Include="..\..\Makeshift\vendor\yaml-cpp\premake5.lua">
+      <Filter>..\Makeshift\vendor\yaml-cpp</Filter>
+    </None>
+    <None Include="..\..\Sandbox\premake5.lua">
+      <Filter>..\Sandbox</Filter>
+    </None>
+    <None Include="..\..\premake5.lua">
+      <Filter>..</Filter>
+    </None>
+    <None Include="premake5.lua" />
+  </ItemGroup>
+</Project>
