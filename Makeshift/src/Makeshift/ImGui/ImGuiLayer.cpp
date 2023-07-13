@@ -38,8 +38,9 @@ namespace Makeshift {
 		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskbarIcons;
 		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
 
-		io.Fonts->AddFontFromFileTTF("assets/fonts/pt_sans/PTSans-Bold.ttf", 18.0f);
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/pt_sans/PTSans-Regular.ttf", 18.0f);
+		float fontSize = 18.0f;
+		io.Fonts->AddFontFromFileTTF("assets/fonts/pt_sans/PTSans-Bold.ttf", fontSize);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/pt_sans/PTSans-Regular.ttf", fontSize);
 
 		// style the gui
 		ImGui::StyleColorsDark();

@@ -271,9 +271,10 @@ namespace Makeshift {
 		
 		// ================================ DOCK SPACE ================================
 
-		// ================================ SCENE HEIRARCHY PANEL ================================
-		m_SceneHeirarchyPanel.OnImGuiRender();
-		// ================================ SCENE HEIRARCHY PANEL ================================
+		// ================================ CUSTOM PANELS ================================
+		m_SceneHeirarchyPanel.onImGuiRender();
+		m_ContentBrowserPanel.onImGuiRender();
+		// ================================ CUSTOM PANELS ================================
 
 		// ================================ RENDER STATS ================================
 		ImGui::Begin("Stats");

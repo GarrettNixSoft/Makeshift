@@ -16,7 +16,7 @@ namespace Makeshift {
 
 		void setContext(const Ref<Scene>& context, const Ref<EditorContext>& editorContext);
 
-		void OnImGuiRender();
+		void onImGuiRender();
 
 		Entity getSelectedEntity() const { return m_SelectionContext; }
 		void setSelectedEntity(Entity entity);

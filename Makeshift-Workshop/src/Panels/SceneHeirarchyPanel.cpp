@@ -19,7 +19,7 @@ namespace Makeshift {
 		m_EditorContext = editorContext;
 	}
 
-	void SceneHeirarchyPanel::OnImGuiRender() {
+	void SceneHeirarchyPanel::onImGuiRender() {
 
 		ImGui::Begin("Scene Heirarchy");
 

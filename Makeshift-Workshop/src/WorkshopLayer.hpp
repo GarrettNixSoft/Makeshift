@@ -3,6 +3,7 @@
 #include <Makeshift.hpp>
 
 #include "Panels/SceneHeirarchyPanel.hpp"
+#include "Panels/ContentBrowserPanel.hpp"
 
 #include "Makeshift/Renderer/EditorCamera.hpp"
 
@@ -73,6 +74,7 @@ namespace Makeshift {
 
 		// Panels
 		SceneHeirarchyPanel m_SceneHeirarchyPanel;
+		ContentBrowserPanel m_ContentBrowserPanel;
 
 		// Modals
 		bool m_ShowConfirmNewModal = false;
