@@ -2,15 +2,21 @@
 
 #include "Makeshift/Renderer/Shader.hpp"
 
+#include "vulkan/vulkan.hpp"
+
 #include <glm/glm.hpp>
 
 #include <string>
 
 namespace Makeshift {
 
+	enum class VulkanShaderStage : uint32_t {
+		UNKNOWN = 0, VERTEX = 1, FRAGMENT = 2
+	};
+
 	class VulkanShader : public Shader {
 	public:
-		VulkanShader(const std::string& filePath);
+		VulkanShader(const std::string& filepath);
 		VulkanShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		virtual ~VulkanShader();
 
@@ -32,8 +38,23 @@ namespace Makeshift {
 		virtual void setMat3(const std::string& name, const glm::mat3& value) override;
 		virtual void setMat4(const std::string& name, const glm::mat4& value) override;
 	private:
-		uint32_t rendererId;
+		std::string readFile(const std::string& filepath);
+		std::unordered_map<VulkanShaderStage, std::string> preprocess(const std::string& source);
+
+		void compileOrGetVulkanBinaries(const std::unordered_map<VulkanShaderStage, std::string>& shaderSources);
+
+		void createProgram();
+
+		void reflect(VulkanShaderStage stage, const std::vector<uint32_t>& shaderData);
+	private:
+		VkDevice parentDevice;
+
+		VkShaderModule m_VertexModule;
+		VkShaderModule m_FragmentModule;
+		std::string m_FilePath;
 		std::string m_Name;
+
+		std::unordered_map<VulkanShaderStage, std::vector<uint32_t>> m_VulkanSPIRV;
 	};
 
 }

@@ -40,7 +40,7 @@ namespace Makeshift {
 
 		static void createImageViews(VkDevice device, const std::vector<VkImage>& swapChainImages, VkFormat& swapChainImageFormat, std::vector<VkImageView>& imageViews);
 
-		static void createGraphicsPipeline();
+		static VkPipeline createGraphicsPipeline();
 
 
 	public:

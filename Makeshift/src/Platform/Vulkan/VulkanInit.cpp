@@ -525,7 +525,12 @@ namespace Makeshift {
 		}
 	}
 
-	void VulkanInit::createGraphicsPipeline() {
+	VkPipeline VulkanInit::createGraphicsPipeline() {
+
+		// CREATE SHADER STAGES
+		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
 
 	}
 
