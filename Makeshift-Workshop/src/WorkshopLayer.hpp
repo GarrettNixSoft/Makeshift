@@ -10,6 +10,7 @@
 #include "EditorContext.hpp"
 
 #include <string>
+#include <filesystem>
 
 namespace Makeshift {
 
@@ -31,6 +32,7 @@ namespace Makeshift {
 
 		void newScene();
 		void openScene();
+		void openScene(const std::filesystem::path& path);
 		void saveScene();
 		void saveSceneAs();
 

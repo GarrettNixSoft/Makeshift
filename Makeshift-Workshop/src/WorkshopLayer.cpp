@@ -18,6 +18,8 @@
 
 namespace Makeshift {
 
+	extern const std::filesystem::path g_AssetPath;
+
 	WorkshopLayer::WorkshopLayer() : Layer("Sandbox2D"), m_CameraController(1920.0f / 1080.0f) {
 
 	}
@@ -333,6 +335,16 @@ namespace Makeshift {
 		uint32_t textureId = m_Framebuffer->getColorAttachmentRendererId();
 		ImGui::Image((void*)textureId, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
+		// Drag/Drop Assets into the Scene
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+				const wchar_t* path = (const wchar_t*)payload->Data;
+				openScene(g_AssetPath / path);
+				markTitleEditStatus();
+			}
+			ImGui::EndDragDropTarget();
+		}
+
 		// Gizmo stuff
 		Entity selectedEntity = m_SceneHeirarchyPanel.getSelectedEntity();
 		if (selectedEntity && m_GizmoType != -1) {
@@ -598,6 +610,14 @@ namespace Makeshift {
 
 	void WorkshopLayer::openScene() {
 		std::string filepath = FileDialogs::OpenFile("Makeshift Scene (*.mkshft)\0*.mkshft\0");
+
+		if (!filepath.empty()) {
+			openScene(filepath);
+		}
+	}
+
+	void WorkshopLayer::openScene(const std::filesystem::path& path) {
+		std::string filepath = path.string();
 
 		if (!filepath.empty()) {
 			// Create a new scene to load into (clear)

@@ -6,10 +6,10 @@
 namespace Makeshift {
 
 	// Change this when project system is implemented
-	static std::filesystem::path s_AssetPath = "assets";
+	extern const std::filesystem::path g_AssetPath = "assets";
 
 	ContentBrowserPanel::ContentBrowserPanel()
-		: m_CurrentDirectory(s_AssetPath) {
+		: m_CurrentDirectory(g_AssetPath) {
 		m_DirectoryIcon = Texture2D::Create("resources/icons/content_browser/directory_icon.png");
 		m_FileIcon = Texture2D::Create("resources/icons/content_browser/file_icon.png");
 	}
@@ -19,7 +19,7 @@ namespace Makeshift {
 		ImGui::Begin("Content Browser");
 
 		// TO PARENT DIR
-		if (m_CurrentDirectory != s_AssetPath) {
+		if (m_CurrentDirectory != g_AssetPath) {
 			if (ImGui::Button("..")) {
 				m_CurrentDirectory = m_CurrentDirectory.parent_path();
 			}
@@ -39,28 +39,44 @@ namespace Makeshift {
 		for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory)) {
 
 			const auto& path = directoryEntry.path();
-			auto relativePath = std::filesystem::relative(path, s_AssetPath);
+			auto relativePath = std::filesystem::relative(path, g_AssetPath);
 
-			std::string relativePathString = relativePath.u8string();
 			std::string filenameString = relativePath.filename().string();
+			ImGui::PushID(filenameString.c_str());
 
-			// DIR BUTTONS
-			if (directoryEntry.is_directory()) {
-				ImGui::ImageButton((ImTextureID)m_DirectoryIcon->getRendererId(), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
-				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+			Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;
+
+			// Button Style
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4());
+
+			ImGui::ImageButton((ImTextureID)icon->getRendererId(), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+
+			if (ImGui::BeginDragDropSource()) {
+				const wchar_t* itemPath = relativePath.c_str();				// Add 1 here for null termination
+				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t), ImGuiCond_Once);
+				ImGui::EndDragDropSource();
+			}
+
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+				// DIR BUTTON LOGIC
+				if (directoryEntry.is_directory()) {
 					m_CurrentDirectory /= path.filename();
 				}
-			}
-			// FILE BUTTONS
-			else {
-				ImGui::ImageButton((ImTextureID)m_FileIcon->getRendererId(), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
-				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+				// FILE BUTTON lOGIC
+				else {
 					// TODO: Open asset file
 				}
 			}
+
+			// Pop Button Style
+			ImGui::PopStyleColor();
+
+			// File/Directory Name Label
 			ImGui::TextWrapped(filenameString.c_str());
 
 			ImGui::NextColumn();
+
+			ImGui::PopID();
 
 		}
 
