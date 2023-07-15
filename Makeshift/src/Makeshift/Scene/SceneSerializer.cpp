@@ -170,13 +170,15 @@ namespace Makeshift {
 
 	bool SceneSerializer::deserialize(const std::string filepath) {
 		
-		// open a file stream, read it into a string stream
-		std::ifstream stream(filepath);
-		std::stringstream strStream;
-		strStream << stream.rdbuf();
-
-		// load the string from the string stream and have the YAML lib parse it
-		YAML::Node data = YAML::Load(strStream.str());
+		// Load the YAML from the file, catch parsing errors
+		YAML::Node data;
+		try {
+			data = YAML::LoadFile(filepath);
+		}
+		catch (YAML::ParserException e) {
+			MK_CORE_ERROR("Failed to load .hazel file '{0}'\n     {1}", filepath, e.what());
+			return false;
+		}
 
 		// verify we have a Scene to read
 		if (!data["Scene"])

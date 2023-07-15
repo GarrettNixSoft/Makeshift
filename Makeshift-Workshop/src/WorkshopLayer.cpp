@@ -282,8 +282,9 @@ namespace Makeshift {
 		ImGui::Begin("Stats");
 
 		std::string entityName = "None";
-		if (m_HoveredEntity)
+		if (m_HoveredEntity) {
 			entityName = m_HoveredEntity.getComponent<TagComponent>().tag;
+		}
 
 		ImGui::Text("Hovered Entity: %s", entityName.c_str());
 

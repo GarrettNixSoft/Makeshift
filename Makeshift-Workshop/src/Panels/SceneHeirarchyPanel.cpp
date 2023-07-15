@@ -100,10 +100,9 @@ namespace Makeshift {
 		}
 
 		// perform possible deferred deletion now that it's safe to do so
-		if (deleteEntity) {{
-				m_Context->destroyEntity(entity);
-				m_EditorContext->flagEdit();
-			}
+		if (deleteEntity) {
+			m_Context->destroyEntity(entity);
+			m_EditorContext->flagEdit();
 			// clear selection if we just deleted the selected entity
 			if (m_SelectionContext == entity)
 				m_SelectionContext = {};

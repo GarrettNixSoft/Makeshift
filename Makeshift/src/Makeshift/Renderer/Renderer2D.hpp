@@ -23,6 +23,7 @@ namespace Makeshift {
 		static void BeginScene(const OrthographicCamera& camera); // TODO remove
 		static void EndScene();
 
+		static void StartBatch();
 		static void Flush();
 
 		// Render Primitives
@@ -62,7 +63,7 @@ namespace Makeshift {
 		static void ResetStats();
 		static Statistics GetStats();
 	private:
-		static void FlushAndReset();
+		static void NextBatch();
 	};
 
 }
