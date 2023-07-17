@@ -2,6 +2,9 @@
 
 #include "Makeshift/Scene/SceneCamera.hpp"
 
+#include "Makeshift/Renderer/Texture.hpp"
+#include "Makeshift/Renderer/SubTexture2D.hpp"
+
 #include "ScriptableEntity.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -45,10 +48,24 @@ namespace Makeshift {
 	struct SpriteRendererComponent {
 
 		glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
+		Ref<Texture2D> texture;
+		float tilingFactor = 1.0f;
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
 		SpriteRendererComponent(const glm::vec4& clr) : color(clr) {}
+
+	};
+
+	struct SpriteSubtextureRendererComponent {
+
+		glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
+		Ref<SubTexture2D> texture;
+		float tilingFactor = 1.0f;
+
+		SpriteSubtextureRendererComponent() = default;
+		SpriteSubtextureRendererComponent(const SpriteSubtextureRendererComponent&) = default;
+		SpriteSubtextureRendererComponent(const glm::vec4& clr) : color(clr) {}
 
 	};
 

@@ -7,7 +7,11 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#include <filesystem>
+
 namespace Makeshift {
+
+	extern const std::filesystem::path g_AssetPath;
 
 	SceneHeirarchyPanel::SceneHeirarchyPanel(const Ref<Scene>& scene, const Ref<EditorContext>& context) {
 		setContext(scene, context);
@@ -373,6 +377,18 @@ namespace Makeshift {
 		drawComponent<SpriteRendererComponent>("Sprite Renderer", entity, m_EditorContext, [&](auto& component) {
 
 			if (ImGui::ColorEdit4("Color", glm::value_ptr(component.color))) m_EditorContext->flagEdit();
+
+			ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
+			if (ImGui::BeginDragDropTarget()) {
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+					const wchar_t* path = (const wchar_t*)payload->Data;
+					std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
+					component.texture = Texture2D::Create(texturePath.string());
+				}
+				ImGui::EndDragDropTarget();
+			}
+
+			if (ImGui::DragFloat("Tiling Factor", &component.tilingFactor, 0.1f, 0.0f, 100.0f)) m_EditorContext->flagEdit();
 
 		});
 

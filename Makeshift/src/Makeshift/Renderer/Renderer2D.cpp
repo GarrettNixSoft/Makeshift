@@ -313,7 +313,6 @@ namespace Makeshift {
 		MK_PROFILE_FUNCTION();
 
 		constexpr size_t quadVertexCount = 4;
-		constexpr glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
 		if (s_Data.quadIndexCount >= Renderer2DData::MAX_INDICES) {
@@ -338,7 +337,7 @@ namespace Makeshift {
 
 		for (size_t i = 0; i < quadVertexCount; i++) {
 			s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[i];
-			s_Data.quadVertexBufferPtr->color = color;
+			s_Data.quadVertexBufferPtr->color = tintColor;
 			s_Data.quadVertexBufferPtr->texCoord = textureCoords[i];
 			s_Data.quadVertexBufferPtr->texIndex = textureIndex;
 			s_Data.quadVertexBufferPtr->tilingFactor = tiling;
@@ -471,9 +470,19 @@ namespace Makeshift {
 
 	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityId) {
 
-		// TODO: when SpriteRendererComponent supports textures, handle that branching here
+		if (src.texture)
+			DrawQuad(transform, src.texture, src.color, src.tilingFactor, entityId);
+		else
+			DrawQuad(transform, src.color, entityId);
 
-		DrawQuad(transform, src.color, entityId);
+	}
+
+	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteSubtextureRendererComponent& src, int entityId) {
+
+		if (src.texture)
+			DrawQuad(transform, src.texture, src.color, src.tilingFactor, entityId);
+		else
+			DrawQuad(transform, src.color, entityId);
 
 	}
 

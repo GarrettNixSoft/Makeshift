@@ -51,6 +51,7 @@ namespace Makeshift {
 
 		// Render Objects
 		static void DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityId);
+		static void DrawSprite(const glm::mat4& transform, SpriteSubtextureRendererComponent& src, int entityId);
 
 		// Render stats
 		struct Statistics {
